@@ -8,15 +8,60 @@
 
 <style>
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; font-family: 'Montserrat', sans-serif; }
-    .container { height: 100vh; display: flex; flex-direction: column; padding: 4vh 5vw; transition: all 0.5s; }
-    h1 { text-align: center; font-family: 'Playfair Display', serif; font-size: 7vh; margin: 0 0 3vh 0; text-transform: uppercase; letter-spacing: 4px; }
-    #menu { flex-grow: 1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 8vw; row-gap: 2vh; align-content: start; }
-    .category h2 { font-size: 3.8vh; border-bottom: 2px solid; margin: 0 0 1.5vh 0; padding-bottom: 5px; text-transform: uppercase; }
-    .items-container { display: flex; flex-direction: column; gap: 1.5vh; }
-    .item-header { font-size: 3vh; font-weight: 600; }
-    .desc { font-size: 1.8vh; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 38vw; margin-top: 2px; }
-    #prezzo-box { margin-top: auto; text-align: center; font-size: 5vh; font-weight: bold; padding: 2vh; border: 3px solid; border-radius: 15px; display: none; }
+    html, body { 
+        margin: 0; padding: 0; height: 100vh; width: 100vw; 
+        overflow: hidden; font-family: 'Montserrat', sans-serif; 
+    }
+    
+    .container { 
+        height: 100vh; display: flex; flex-direction: column; 
+        padding: 2vh 4vw; transition: all 0.5s; 
+    }
+
+    h1 { 
+        text-align: center; font-family: 'Playfair Display', serif; 
+        font-size: 5.5vh; margin: 0 0 2vh 0; 
+        text-transform: uppercase; letter-spacing: 3px; flex-shrink: 0;
+    }
+
+    /* Griglia Menu con scroll interno se troppo pieno */
+    #menu { 
+        flex-grow: 1; 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        column-gap: 6vw; 
+        row-gap: 2vh; 
+        align-content: start;
+        overflow-y: auto; /* Permette lo scroll solo qui se i piatti sono troppi */
+        padding-right: 10px;
+    }
+
+    /* Nascondi barra scroll per estetica su TV */
+    #menu::-webkit-scrollbar { display: none; }
+
+    .category { break-inside: avoid; margin-bottom: 1.5vh; }
+    .category h2 { 
+        font-size: 3.2vh; border-bottom: 2px solid; 
+        margin: 0 0 1vh 0; padding-bottom: 3px; text-transform: uppercase; 
+    }
+
+    .items-container { display: flex; flex-direction: column; gap: 1vh; }
+    .item-header { font-size: 2.6vh; font-weight: 600; line-height: 1.2; }
+    
+    .desc { 
+        font-size: 1.6vh; font-style: italic; 
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        max-width: 38vw; margin-top: 1px; opacity: 0.8;
+    }
+
+    /* Box Prezzo Ottimizzato */
+    #prezzo-box { 
+        margin-top: 1.5vh; text-align: center; 
+        font-size: 3.5vh; font-weight: bold; 
+        padding: 1.5vh; border: 2px solid; 
+        border-radius: 12px; flex-shrink: 0;
+        display: none; 
+    }
 </style>
 </head>
 <body>
@@ -46,26 +91,31 @@ async function updateDisplay() {
         const resSet = await fetch(URL_SETTINGS);
         const settingsData = await resSet.json();
         const s = {};
-        settingsData.forEach(row => { s[row["Proprietà"]] = row["Valore"]; });
+        settingsData.forEach(row => { 
+            if(row["Proprietà"]) s[row["Proprietà"].trim()] = row["Valore"]; 
+        });
 
         const container = document.getElementById('main-container');
         const mainTitle = document.getElementById('main-title');
         const boxPrezzo = document.getElementById('prezzo-box');
 
-        // Applicazione Impostazioni
+        // Colori e Testi
         container.style.backgroundColor = s["Colore Sfondo"] || "#111";
         container.style.color = s["Colore Testo"] || "#fff";
         mainTitle.innerText = s["Titolo Pagina"] || "MENU";
         mainTitle.style.color = s["Colore Titolo"] || "#d4af37";
 
-        if(s["Prezzo"]) {
+        // Gestione Prezzo
+        if(s["Prezzo"] && s["Prezzo"].trim() !== "") {
             boxPrezzo.innerText = s["Prezzo"];
             boxPrezzo.style.borderColor = s["Colore Titolo"] || "#d4af37";
             boxPrezzo.style.color = s["Colore Titolo"] || "#d4af37";
             boxPrezzo.style.display = "block";
-        } else { boxPrezzo.style.display = "none"; }
+        } else { 
+            boxPrezzo.style.display = "none"; 
+        }
 
-        // Caricamento Menu
+        // Menu
         const resMenu = await fetch(URL_MENU);
         const data = await resMenu.json();
         const menuDiv = document.getElementById("menu");
@@ -73,7 +123,8 @@ async function updateDisplay() {
         ORDINE_CATEGORIE.forEach(cat => grouped[cat] = []);
 
         data.forEach(row => {
-            if ((row.Disponibile || "").toLowerCase().trim().startsWith("s")) {
+            const disp = (row.Disponibile || "").toLowerCase().trim();
+            if (disp === "si" || disp === "sì") {
                 const rawCat = (row.Categoria || "").trim().toLowerCase();
                 const catUf = ORDINE_CATEGORIE.find(c => c.toLowerCase() === rawCat);
                 if (catUf) {
@@ -101,7 +152,7 @@ async function updateDisplay() {
         });
         menuDiv.innerHTML = html;
 
-    } catch (e) { console.error("Errore"); }
+    } catch (e) { console.error("Errore aggiornamento"); }
 }
 
 updateDisplay();
