@@ -2,198 +2,184 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menu Bar Display</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-/* Reset e impostazioni base per occupare tutto lo schermo */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100vh; /* 100% dell'altezza dello schermo */
-    width: 100vw;
-    background: #111;
-    color: #f5f5f5;
-    font-family: 'Montserrat', sans-serif;
-    overflow: hidden; /* Nasconde le barre di scorrimento */
-    display: flex;
-    flex-direction: column;
-}
+    * { box-sizing: border-box; }
+    
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+        background: #111;
+        color: #f5f5f5;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden; /* Fondamentale per bloccare tutto in una pagina */
+    }
 
-/* Contenitore principale flessibile */
-.container {
-    flex: 1; /* Occupa tutto lo spazio disponibile */
-    padding: 2vh 4vw; /* Spaziatura dinamica */
-    display: flex;
-    flex-direction: column;
-}
+    .container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 4vh 6vw;
+    }
 
-/* Titolo principale */
-h1 {
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 6vh; /* Dimensione basata sull'altezza schermo */
-    color: #d4af37; /* Oro */
-    margin: 0 0 2vh 0;
-    flex-shrink: 0; /* Il titolo non si schiaccia */
-}
+    h1 {
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 8vh;
+        color: #d4af37;
+        margin: 0 0 3vh 0;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
 
-/* Griglia del Menu */
-#menu {
-    flex: 1; /* Il menu prende tutto lo spazio rimanente */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly; /* Distribuisce le categorie verticalmente */
-}
+    #menu {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly; /* Distribuisce le sezioni verticalmente per riempire lo schermo */
+    }
 
-.category {
-    margin-bottom: 1vh;
-}
+    .category {
+        width: 100%;
+        animation: fadeIn 1s ease-in;
+    }
 
-.category h2 {
-    font-size: 4vh;
-    color: #d4af37;
-    border-bottom: 0.2vh solid #d4af37;
-    margin: 0 0 1vh 0;
-    display: inline-block;
-    padding-right: 20px;
-}
+    .category h2 {
+        font-size: 4.5vh;
+        color: #d4af37;
+        border-bottom: 2px solid #d4af37;
+        margin: 0 0 1.5vh 0;
+        padding-bottom: 5px;
+        text-transform: uppercase;
+    }
 
-/* Contenitore del singolo piatto */
-.dish-container {
-    margin-bottom: 1vh;
-}
+    .items-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2vh;
+    }
 
-.item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 2.8vh; /* Testo grande responsive */
-    font-weight: 600;
-}
+    .item-row {
+        display: flex;
+        flex-direction: column;
+    }
 
-.desc {
-    font-size: 1.8vh; /* Testo ingredienti più piccolo */
-    color: #aaa;
-    margin-left: 0;
-    font-style: italic;
-}
+    .item-header {
+        font-size: 3.2vh;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+    }
 
-/* Se ci sono troppi piatti, riduciamo un po' le dimensioni su schermi piccoli */
-@media (max-height: 600px) {
-    h1 { font-size: 5vh; }
-    .category h2 { font-size: 3.5vh; }
-    .item { font-size: 2.5vh; }
-}
+    .desc {
+        font-size: 2.2vh;
+        color: #bbb;
+        font-style: italic;
+        margin-top: 2px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 </style>
 </head>
 
 <body>
 <div class="container">
-    <h1>BAR MENU</h1>
-    <div id="menu">Caricamento...</div>
+    <h1 id="main-title">BAR MENU</h1>
+    <div id="menu">Caricamento in corso...</div>
 </div>
 
 <script>
 // --- CONFIGURAZIONE ---
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const SHEET_NAME = "Menu";
-const URL = 'https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}';
+const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
-// DEFINISCI QUI L'ORDINE ESATTO E I NOMI DA VISUALIZZARE
-// L'ordine nell'array determina l'ordine sullo schermo.
+// DEFINISCI QUI L'ORDINE E IL NOME CORRETTO
 const ORDINE_CATEGORIE = ["Antipasto", "Primo", "Secondo", "Contorno", "Dolce", "Bevande"];
 
-// Funzione per pulire le stringhe
-function clean(value) {
-    return value ? value.toString().trim() : "";
-}
-
-// Funzione per normalizzare le categorie (es: "PRIMO" -> "Primo")
-function normalizeCategory(cat) {
-    if (!cat) return "";
-    // Cerca se la categoria scritta nel foglio corrisponde (senza guardare maiuscole/minuscole)
-    // a una delle categorie ordinate.
-    const match = ORDINE_CATEGORIE.find(c => c.toLowerCase() === cat.toLowerCase());
-    return match ? match : null; // Se non è nella lista, ritorna null (o puoi mettere cat per mostrare le extra)
+// Funzione di pulizia universale
+function clean(str) {
+    return str ? str.toString().trim() : "";
 }
 
 async function loadMenu() {
     try {
         const res = await fetch(URL);
+        if (!res.ok) throw new Error();
         const data = await res.json();
 
         const menuDiv = document.getElementById("menu");
-        
-        // Raggruppiamo i dati
         const grouped = {};
 
+        // Prepariamo i contenitori vuoti
+        ORDINE_CATEGORIE.forEach(cat => grouped[cat] = []);
+
         data.forEach(row => {
-            // Controllo disponibilità robusto (accetta "si", "Si", "SÌ", "yes")
-            const disponibile = clean(row.Disponibile).toLowerCase();
-            if (!disponibile.startsWith("s") && disponibile !== "yes") return;
+            // 1. Pulizia "Disponibile" (accetta "si", "sì", "SI", "  si  ")
+            const disp = clean(row.Disponibile).toLowerCase();
+            if (disp !== "si" && disp !== "sì") return;
 
-            // Normalizziamo la categoria
-            const rawCat = clean(row.Categoria);
-            const categoriaUfficiale = normalizeCategory(rawCat);
+            // 2. Pulizia Categoria (confronto insensibile a maiuscole e spazi)
+            const rawCat = clean(row.Categoria).toLowerCase();
+            const catUfficiale = ORDINE_CATEGORIE.find(c => c.toLowerCase() === rawCat);
 
-            // Se la categoria non è nella nostra lista "ORDINE_CATEGORIE", la ignoriamo
-            // (oppure la mettiamo in "Altro" se preferisci)
-            if (!categoriaUfficiale) return;
+            if (catUfficiale) {
+                // 3. Recupero ingredienti gestendo lo spazio nel nome colonna
+                // Cerca sia "Ingredienti" che "Ingredienti "
+                let ingredienti = "";
+                for (let key in row) {
+                    if (key.trim().toLowerCase() === "ingredienti") {
+                        ingredienti = clean(row[key]);
+                    }
+                }
 
-            const piatto = clean(row.Piatto);
-            // Attenzione: nel tuo JSON originale la chiave aveva uno spazio finale "Ingredienti "
-            // Cerchiamo di prenderla in modo sicuro
-            const ingredienti = clean(row["Ingredienti "] || row["Ingredienti"] || row["Descrizione"]); 
-
-            if (!piatto) return;
-
-            if (!grouped[categoriaUfficiale]) grouped[categoriaUfficiale] = [];
-            grouped[categoriaUfficiale].push({ piatto, ingredienti });
+                grouped[catUfficiale].push({
+                    piatto: clean(row.Piatto),
+                    desc: ingredienti
+                });
+            }
         });
 
-        // --- RENDERING ---
+        // Generazione HTML
         let htmlContent = "";
-
-        // Iteriamo SOLO sull'array ORDINE_CATEGORIE
-        // Così garantiamo l'ordine e mostriamo solo le categorie che hanno piatti
-        ORDINE_CATEGORIE.forEach(catName => {
-            if (grouped[catName] && grouped[catName].length > 0) {
-                
-                let itemsHtml = "";
-                grouped[catName].forEach(item => {
-                    itemsHtml += `
-                        <div class="dish-container">
-                            <div class="item">
-                                <div>${item.piatto}</div>
-                            </div>
-                            ${item.ingredienti ? <div class="desc">${item.ingredienti}</div> : ''}
-                        </div>
-                    `;
-                });
-
+        ORDINE_CATEGORIE.forEach(cat => {
+            if (grouped[cat].length > 0) {
                 htmlContent += `
                     <div class="category">
-                        <h2>${catName}</h2>
-                        <div>${itemsHtml}</div>
+                        <h2>${cat}</h2>
+                        <div class="items-container">
+                            ${grouped[cat].map(item => `
+                                <div class="item-row">
+                                    <div class="item-header">
+                                        <span>${item.piatto}</span>
+                                    </div>
+                                    ${item.desc ? `<div class="desc">${item.desc}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
             }
         });
 
-        menuDiv.innerHTML = htmlContent;
+        menuDiv.innerHTML = htmlContent || "Nessun piatto disponibile.";
 
-    } catch (error) {
-        console.error("Errore caricamento menu:", error);
+    } catch (e) {
+        console.error("Errore dati");
     }
 }
 
-// Avvia
 loadMenu();
-// Aggiorna ogni 10 secondi
-setInterval(loadMenu, 10000); 
-
+setInterval(loadMenu, 10000); // Aggiorna ogni 10 secondi
 </script>
 </body>
 </html>
