@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Bar Pro Display</title>
+<title>Menu Bar Pro - Auto-Fit Layout</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -15,57 +15,56 @@
     
     .container { 
         height: 100vh; display: flex; flex-direction: column; 
-        padding: 3vh 5vw; transition: all 0.5s; 
+        padding: 3vh 5vw; transition: all 0.3s ease-in-out; 
     }
 
     h1 { 
         text-align: center; font-family: 'Playfair Display', serif; 
-        font-size: 6vh; margin: 0 0 2vh 0; 
-        text-transform: uppercase; letter-spacing: 3px; flex-shrink: 0;
+        text-transform: uppercase; letter-spacing: 4px; flex-shrink: 0;
+        margin: 0 0 2vh 0;
     }
 
     #menu { 
-        flex-grow: 1; 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        column-gap: 8vw; 
-        row-gap: 2vh; 
-        align-content: start;
-        overflow: hidden;
+        flex: 1; display: grid; grid-template-columns: 1fr 1fr; 
+        column-gap: 8vw; row-gap: 2vh; align-content: start;
     }
 
-    .category { break-inside: avoid; }
-    .category h2 { 
-        font-size: 3.5vh; border-bottom: 2px solid; 
-        margin: 0 0 1.5vh 0; padding-bottom: 5px; text-transform: uppercase; 
-    }
+    .category h2 { border-bottom: 2px solid; margin: 0 0 1vh 0; text-transform: uppercase; }
+    .item-row { margin-bottom: 0.5vh; }
+    .item-header { font-weight: 600; line-height: 1.1; }
+    .desc { font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 35vw; }
 
-    .items-container { display: flex; flex-direction: column; gap: 1.2vh; }
-    .item-header { font-size: 2.8vh; font-weight: 600; }
-    
-    .desc { 
-        font-size: 1.8vh; font-style: italic; 
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        max-width: 35vw; margin-top: 2px;
-    }
-
-    /* BOX PREZZO FISSO */
     #prezzo-box { 
-        margin-top: auto; 
-        text-align: center; 
-        font-size: 4vh; 
-        font-weight: bold; 
-        padding: 2vh; 
-        border: 3px solid; 
-        border-radius: 15px; 
-        flex-shrink: 0;
-        display: none; /* Verrà mostrato via JS */
+        text-align: center; font-weight: bold; border: 3px solid; 
+        border-radius: 15px; flex-shrink: 0; margin-top: auto; display: none;
     }
+
+    /* --- LOGICA DI RIDUZIONE DINAMICA (Classi applicate da JS) --- */
+
+    /* 1. Layout Standard (Pochi piatti, no prezzo) */
+    .size-large h1 { font-size: 7vh; }
+    .size-large .category h2 { font-size: 4vh; }
+    .size-large .item-header { font-size: 3.2vh; }
+    .size-large .desc { font-size: 2vh; }
+    .size-large #prezzo-box { font-size: 5vh; padding: 2vh; }
+
+    /* 2. Layout Medio (Molti piatti O Prezzo attivo) */
+    .size-medium h1 { font-size: 5.5vh; }
+    .size-medium .category h2 { font-size: 3.2vh; }
+    .size-medium .item-header { font-size: 2.6vh; }
+    .size-medium .desc { font-size: 1.6vh; }
+    .size-medium #prezzo-box { font-size: 3.8vh; padding: 1.5vh; }
+
+    /* 3. Layout Small (Moltissimi piatti + Prezzo attivo) */
+    .size-small h1 { font-size: 4.5vh; }
+    .size-small .category h2 { font-size: 2.8vh; }
+    .size-small .item-header { font-size: 2.2vh; }
+    .size-small .desc { font-size: 1.4vh; }
+    .size-small #prezzo-box { font-size: 3vh; padding: 1vh; }
+
 </style>
 </head>
-<body>
-
-<div class="container" id="main-container">
+<body class="size-large"> <div class="container" id="main-container">
     <h1 id="main-title">CARICAMENTO...</h1>
     <div id="menu"></div>
     <div id="prezzo-box"></div>
@@ -75,7 +74,6 @@
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const URL_MENU = `https://opensheet.elk.sh/${SHEET_ID}/Menu`;
 const URL_SETTINGS = `https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`;
-
 const ORDINE_CATEGORIE = ["Antipasto", "Primo", "Secondo", "Contorno", "Dolce", "Bevande"];
 
 function formatPiatto(str) {
@@ -87,59 +85,61 @@ function formatPiatto(str) {
 
 async function updateDisplay() {
     try {
-        // 1. CARICA IMPOSTAZIONI
-        const resSet = await fetch(URL_SETTINGS);
+        const [resSet, resMenu] = await Promise.all([fetch(URL_SETTINGS), fetch(URL_MENU)]);
         const settingsData = await resSet.json();
+        const menuData = await resMenu.json();
         
-        // Creiamo un oggetto pulito eliminando spazi extra dai nomi delle proprietà
         const s = {};
-        settingsData.forEach(row => {
-            if (row["Proprietà"]) {
-                const key = row["Proprietà"].toString().trim();
-                s[key] = row["Valore"];
-            }
-        });
+        settingsData.forEach(row => { if(row["Proprietà"]) s[row["Proprietà"].trim()] = row["Valore"]; });
 
         const container = document.getElementById('main-container');
-        const mainTitle = document.getElementById('main-title');
         const boxPrezzo = document.getElementById('prezzo-box');
+        const menuDiv = document.getElementById("menu");
 
-        // Applica stili
+        // Applica colori base
         container.style.backgroundColor = s["Colore Sfondo"] || "#111";
         container.style.color = s["Colore Testo"] || "#fff";
-        mainTitle.innerText = s["Titolo Pagina"] || "BAR MENU";
-        mainTitle.style.color = s["Colore Titolo"] || "#d4af37";
+        document.getElementById('main-title').innerText = s["Titolo Pagina"] || "MENU";
+        document.getElementById('main-title').style.color = s["Colore Titolo"] || "#d4af37";
 
-        // GESTIONE BOX PREZZO (Cerca la riga "Prezzo")
-        const valorePrezzo = s["Prezzo"] || s["Prezzo Fisso"]; // Controlla entrambi i nomi per sicurezza
-        if (valorePrezzo && valorePrezzo.toString().trim() !== "") {
-            boxPrezzo.innerText = valorePrezzo;
-            boxPrezzo.style.borderColor = s["Colore Titolo"] || "#d4af37";
-            boxPrezzo.style.color = s["Colore Titolo"] || "#d4af37";
-            boxPrezzo.style.display = "block";
-        } else {
-            boxPrezzo.style.display = "none";
-        }
-
-        // 2. CARICA MENU
-        const resMenu = await fetch(URL_MENU);
-        const data = await resMenu.json();
-        const menuDiv = document.getElementById("menu");
+        // Filtra piatti disponibili
         const grouped = {};
         ORDINE_CATEGORIE.forEach(cat => grouped[cat] = []);
+        let totalItems = 0;
 
-        data.forEach(row => {
-            const disp = (row.Disponibile || "").toString().toLowerCase().trim();
-            if (disp === "si" || disp === "sì") {
+        menuData.forEach(row => {
+            if ((row.Disponibile || "").toString().toLowerCase().trim().startsWith("s")) {
                 const rawCat = (row.Categoria || "").toString().trim().toLowerCase();
                 const catUf = ORDINE_CATEGORIE.find(c => c.toLowerCase() === rawCat);
                 if (catUf) {
-                    let ing = row["Ingredienti "] || row["Ingredienti"] || "";
-                    grouped[catUf].push({ piatto: formatPiatto(row.Piatto), desc: ing });
+                    grouped[catUf].push({ piatto: formatPiatto(row.Piatto), desc: row["Ingredienti "] || row["Ingredienti"] || "" });
+                    totalItems++;
                 }
             }
         });
 
+        // --- LOGICA DI ADATTAMENTO DINAMICO ---
+        const haPrezzo = s["Prezzo"] && s["Prezzo"].trim() !== "";
+        container.classList.remove("size-large", "size-medium", "size-small");
+
+        if (totalItems > 16 || (haPrezzo && totalItems > 12)) {
+            container.classList.add("size-small");
+        } else if (totalItems > 8 || haPrezzo) {
+            container.classList.add("size-medium");
+        } else {
+            container.classList.add("size-large");
+        }
+
+        // Gestione Prezzo
+        if (haPrezzo) {
+            boxPrezzo.innerText = s["Prezzo"];
+            boxPrezzo.style.borderColor = s["Colore Titolo"] || "#d4af37";
+            boxPrezzo.style.color = s["Colore Titolo"] || "#d4af37";
+            boxPrezzo.style.display = HaPrezzo ? "block" : "none";
+            boxPrezzo.style.display = "block";
+        } else { boxPrezzo.style.display = "none"; }
+
+        // Rendering Menu
         let html = "";
         ORDINE_CATEGORIE.forEach(cat => {
             if (grouped[cat].length > 0) {
@@ -158,13 +158,11 @@ async function updateDisplay() {
         });
         menuDiv.innerHTML = html;
 
-    } catch (e) {
-        console.error("Errore nel caricamento:", e);
-    }
+    } catch (e) { console.error(e); }
 }
 
 updateDisplay();
-setInterval(updateDisplay, 8000);
+setInterval(updateDisplay, 7000);
 </script>
 </body>
 </html>
