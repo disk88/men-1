@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Bar Display</title>
+<title>Menu Bar Display - 2 Columns</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
@@ -18,40 +18,45 @@
         background: #111;
         color: #f5f5f5;
         font-family: 'Montserrat', sans-serif;
-        overflow: hidden; /* Fondamentale per bloccare tutto in una pagina */
+        overflow: hidden; 
     }
 
     .container {
         height: 100vh;
         display: flex;
         flex-direction: column;
-        padding: 4vh 6vw;
+        padding: 3vh 4vw;
     }
 
     h1 {
         text-align: center;
         font-family: 'Playfair Display', serif;
-        font-size: 8vh;
+        font-size: 6vh;
         color: #d4af37;
         margin: 0 0 3vh 0;
         text-transform: uppercase;
-        letter-spacing: 3px;
+        letter-spacing: 4px;
+        flex-shrink: 0;
     }
 
+    /* Griglia a due colonne */
     #menu {
         flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly; /* Distribuisce le sezioni verticalmente per riempire lo schermo */
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Due colonne uguali */
+        grid-auto-flow: row;
+        column-gap: 6vw; /* Spazio tra le colonne */
+        row-gap: 2vh;    /* Spazio tra le righe */
+        align-content: start;
     }
 
     .category {
-        width: 100%;
-        animation: fadeIn 1s ease-in;
+        break-inside: avoid;
+        margin-bottom: 2vh;
     }
 
     .category h2 {
-        font-size: 4.5vh;
+        font-size: 3.5vh;
         color: #d4af37;
         border-bottom: 2px solid #d4af37;
         margin: 0 0 1.5vh 0;
@@ -62,26 +67,33 @@
     .items-container {
         display: flex;
         flex-direction: column;
-        gap: 1.2vh;
+        gap: 1vh;
     }
 
     .item-row {
         display: flex;
         flex-direction: column;
+        margin-bottom: 0.5vh;
     }
 
     .item-header {
-        font-size: 3.2vh;
+        font-size: 2.6vh; /* Ridotto leggermente per stare in colonna */
         font-weight: 600;
         display: flex;
         justify-content: space-between;
     }
 
     .desc {
-        font-size: 2.2vh;
+        font-size: 1.8vh;
         color: #bbb;
         font-style: italic;
         margin-top: 2px;
+        line-height: 1.2;
+    }
+
+    /* Animazione per il refresh dei dati */
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
     }
 
     @keyframes fadeIn {
@@ -98,15 +110,12 @@
 </div>
 
 <script>
-// --- CONFIGURAZIONE ---
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const SHEET_NAME = "Menu";
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
-// DEFINISCI QUI L'ORDINE E IL NOME CORRETTO
 const ORDINE_CATEGORIE = ["Antipasto", "Primo", "Secondo", "Contorno", "Dolce", "Bevande"];
 
-// Funzione di pulizia universale
 function clean(str) {
     return str ? str.toString().trim() : "";
 }
@@ -120,21 +129,16 @@ async function loadMenu() {
         const menuDiv = document.getElementById("menu");
         const grouped = {};
 
-        // Prepariamo i contenitori vuoti
         ORDINE_CATEGORIE.forEach(cat => grouped[cat] = []);
 
         data.forEach(row => {
-            // 1. Pulizia "Disponibile" (accetta "si", "sì", "SI", "  si  ")
             const disp = clean(row.Disponibile).toLowerCase();
             if (disp !== "si" && disp !== "sì") return;
 
-            // 2. Pulizia Categoria (confronto insensibile a maiuscole e spazi)
             const rawCat = clean(row.Categoria).toLowerCase();
             const catUfficiale = ORDINE_CATEGORIE.find(c => c.toLowerCase() === rawCat);
 
             if (catUfficiale) {
-                // 3. Recupero ingredienti gestendo lo spazio nel nome colonna
-                // Cerca sia "Ingredienti" che "Ingredienti "
                 let ingredienti = "";
                 for (let key in row) {
                     if (key.trim().toLowerCase() === "ingredienti") {
@@ -149,12 +153,11 @@ async function loadMenu() {
             }
         });
 
-        // Generazione HTML
         let htmlContent = "";
         ORDINE_CATEGORIE.forEach(cat => {
             if (grouped[cat].length > 0) {
                 htmlContent += `
-                    <div class="category">
+                    <div class="category fade-in">
                         <h2>${cat}</h2>
                         <div class="items-container">
                             ${grouped[cat].map(item => `
@@ -174,12 +177,12 @@ async function loadMenu() {
         menuDiv.innerHTML = htmlContent || "Nessun piatto disponibile.";
 
     } catch (e) {
-        console.error("Errore dati");
+        console.error("Errore caricamento");
     }
 }
 
 loadMenu();
-setInterval(loadMenu, 10000); // Aggiorna ogni 10 secondi
+setInterval(loadMenu, 15000); 
 </script>
 </body>
 </html>
