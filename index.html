@@ -2,46 +2,89 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Menu Bar</title>
+<title>Menu Bar Display</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
+/* Reset e impostazioni base per occupare tutto lo schermo */
+html, body {
     margin: 0;
+    padding: 0;
+    height: 100vh; /* 100% dell'altezza dello schermo */
+    width: 100vw;
     background: #111;
     color: #f5f5f5;
     font-family: 'Montserrat', sans-serif;
+    overflow: hidden; /* Nasconde le barre di scorrimento */
+    display: flex;
+    flex-direction: column;
 }
+
+/* Contenitore principale flessibile */
 .container {
-    padding: 40px 60px;
+    flex: 1; /* Occupa tutto lo spazio disponibile */
+    padding: 2vh 4vw; /* Spaziatura dinamica */
+    display: flex;
+    flex-direction: column;
 }
+
+/* Titolo principale */
 h1 {
     text-align: center;
     font-family: 'Playfair Display', serif;
-    font-size: 64px;
-    color: #d4af37;
-    margin-bottom: 40px;
+    font-size: 6vh; /* Dimensione basata sull'altezza schermo */
+    color: #d4af37; /* Oro */
+    margin: 0 0 2vh 0;
+    flex-shrink: 0; /* Il titolo non si schiaccia */
 }
+
+/* Griglia del Menu */
+#menu {
+    flex: 1; /* Il menu prende tutto lo spazio rimanente */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly; /* Distribuisce le categorie verticalmente */
+}
+
 .category {
-    margin-bottom: 50px;
+    margin-bottom: 1vh;
 }
+
 .category h2 {
-    font-size: 42px;
-    border-bottom: 2px solid #d4af37;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    font-size: 4vh;
+    color: #d4af37;
+    border-bottom: 0.2vh solid #d4af37;
+    margin: 0 0 1vh 0;
+    display: inline-block;
+    padding-right: 20px;
 }
+
+/* Contenitore del singolo piatto */
+.dish-container {
+    margin-bottom: 1vh;
+}
+
 .item {
     display: flex;
     justify-content: space-between;
-    font-size: 32px;
-    margin-bottom: 14px;
+    align-items: baseline;
+    font-size: 2.8vh; /* Testo grande responsive */
+    font-weight: 600;
 }
+
 .desc {
-    font-size: 22px;
+    font-size: 1.8vh; /* Testo ingredienti più piccolo */
     color: #aaa;
-    margin-left: 20px;
+    margin-left: 0;
+    font-style: italic;
+}
+
+/* Se ci sono troppi piatti, riduciamo un po' le dimensioni su schermi piccoli */
+@media (max-height: 600px) {
+    h1 { font-size: 5vh; }
+    .category h2 { font-size: 3.5vh; }
+    .item { font-size: 2.5vh; }
 }
 </style>
 </head>
@@ -49,63 +92,108 @@ h1 {
 <body>
 <div class="container">
     <h1>BAR MENU</h1>
-    <div id="menu"></div>
+    <div id="menu">Caricamento...</div>
 </div>
 
 <script>
+// --- CONFIGURAZIONE ---
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const SHEET_NAME = "Menu";
-const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
+const URL = https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME};
 
+// DEFINISCI QUI L'ORDINE ESATTO E I NOMI DA VISUALIZZARE
+// L'ordine nell'array determina l'ordine sullo schermo.
+const ORDINE_CATEGORIE = ["Antipasto", "Primo", "Secondo", "Contorno", "Dolce", "Bevande"];
+
+// Funzione per pulire le stringhe
 function clean(value) {
     return value ? value.toString().trim() : "";
 }
 
+// Funzione per normalizzare le categorie (es: "PRIMO" -> "Primo")
+function normalizeCategory(cat) {
+    if (!cat) return "";
+    // Cerca se la categoria scritta nel foglio corrisponde (senza guardare maiuscole/minuscole)
+    // a una delle categorie ordinate.
+    const match = ORDINE_CATEGORIE.find(c => c.toLowerCase() === cat.toLowerCase());
+    return match ? match : null; // Se non è nella lista, ritorna null (o puoi mettere cat per mostrare le extra)
+}
+
 async function loadMenu() {
-    const res = await fetch(URL);
-    const data = await res.json();
+    try {
+        const res = await fetch(URL);
+        const data = await res.json();
 
-    const menuDiv = document.getElementById("menu");
-    menuDiv.innerHTML = "";
+        const menuDiv = document.getElementById("menu");
+        
+        // Raggruppiamo i dati
+        const grouped = {};
 
-    const grouped = {};
+        data.forEach(row => {
+            // Controllo disponibilità robusto (accetta "si", "Si", "SÌ", "yes")
+            const disponibile = clean(row.Disponibile).toLowerCase();
+            if (!disponibile.startsWith("s") && disponibile !== "yes") return;
 
-    data.forEach(row => {
-        const disponibile = clean(row.Disponibile).toLowerCase();
-        if (disponibile !== "si" && disponibile !== "sì") return;
+            // Normalizziamo la categoria
+            const rawCat = clean(row.Categoria);
+            const categoriaUfficiale = normalizeCategory(rawCat);
 
-        const categoria = clean(row.Categoria);
-        const piatto = clean(row.Piatto);
-        const ingredienti = clean(row["Ingredienti "]); // spazio reale
+            // Se la categoria non è nella nostra lista "ORDINE_CATEGORIE", la ignoriamo
+            // (oppure la mettiamo in "Altro" se preferisci)
+            if (!categoriaUfficiale) return;
 
-        if (!categoria || !piatto) return;
+            const piatto = clean(row.Piatto);
+            // Attenzione: nel tuo JSON originale la chiave aveva uno spazio finale "Ingredienti "
+            // Cerchiamo di prenderla in modo sicuro
+            const ingredienti = clean(row["Ingredienti "] || row["Ingredienti"] || row["Descrizione"]); 
 
-        if (!grouped[categoria]) grouped[categoria] = [];
-        grouped[categoria].push({ piatto, ingredienti });
-    });
+            if (!piatto) return;
 
-    for (const cat in grouped) {
-        const catDiv = document.createElement("div");
-        catDiv.className = "category";
-        catDiv.innerHTML = `<h2>${cat}</h2>`;
-
-        grouped[cat].forEach(item => {
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <div class="item">
-                    <div>${item.piatto}</div>
-                </div>
-                <div class="desc">${item.ingredienti}</div>
-            `;
-            catDiv.appendChild(div);
+            if (!grouped[categoriaUfficiale]) grouped[categoriaUfficiale] = [];
+            grouped[categoriaUfficiale].push({ piatto, ingredienti });
         });
 
-        menuDiv.appendChild(catDiv);
+        // --- RENDERING ---
+        let htmlContent = "";
+
+        // Iteriamo SOLO sull'array ORDINE_CATEGORIE
+        // Così garantiamo l'ordine e mostriamo solo le categorie che hanno piatti
+        ORDINE_CATEGORIE.forEach(catName => {
+            if (grouped[catName] && grouped[catName].length > 0) {
+                
+                let itemsHtml = "";
+                grouped[catName].forEach(item => {
+                    itemsHtml += `
+                        <div class="dish-container">
+                            <div class="item">
+                                <div>${item.piatto}</div>
+                            </div>
+                            ${item.ingredienti ? <div class="desc">${item.ingredienti}</div> : ''}
+                        </div>
+                    `;
+                });
+
+                htmlContent += `
+                    <div class="category">
+                        <h2>${catName}</h2>
+                        <div>${itemsHtml}</div>
+                    </div>
+                `;
+            }
+        });
+
+        menuDiv.innerHTML = htmlContent;
+
+    } catch (error) {
+        console.error("Errore caricamento menu:", error);
     }
 }
 
+// Avvia
 loadMenu();
-setInterval(loadMenu, 5000);
+// Aggiorna ogni 10 secondi
+setInterval(loadMenu, 10000); 
+
 </script>
 </body>
 </html>
