@@ -38,9 +38,6 @@ h1 {
     font-size: 32px;
     margin-bottom: 14px;
 }
-.price {
-    color: #d4af37;
-}
 .desc {
     font-size: 22px;
     color: #aaa;
@@ -75,12 +72,11 @@ async function loadMenu() {
 
     data.forEach(row => {
         const disponibile = clean(row.Disponibile).toLowerCase();
-
         if (disponibile !== "si" && disponibile !== "sì") return;
 
         const categoria = clean(row.Categoria);
         const piatto = clean(row.Piatto);
-        const ingredienti = clean(row["Ingredienti "]); // spazio voluto
+        const ingredienti = clean(row["Ingredienti "]); // spazio reale
 
         if (!categoria || !piatto) return;
 
