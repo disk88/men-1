@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Bar Display - 2 Columns</title>
+<title>Menu Bar Display - Pro Layout</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
@@ -25,7 +25,7 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
-        padding: 3vh 4vw;
+        padding: 3vh 5vw;
     }
 
     h1 {
@@ -39,20 +39,18 @@
         flex-shrink: 0;
     }
 
-    /* Griglia a due colonne */
     #menu {
         flex-grow: 1;
         display: grid;
-        grid-template-columns: 1fr 1fr; /* Due colonne uguali */
+        grid-template-columns: 1fr 1fr;
         grid-auto-flow: row;
-        column-gap: 6vw; /* Spazio tra le colonne */
-        row-gap: 2vh;    /* Spazio tra le righe */
+        column-gap: 8vw;
+        row-gap: 3vh;
         align-content: start;
     }
 
     .category {
         break-inside: avoid;
-        margin-bottom: 2vh;
     }
 
     .category h2 {
@@ -67,46 +65,42 @@
     .items-container {
         display: flex;
         flex-direction: column;
-        gap: 1vh;
+        gap: 1.5vh;
     }
 
     .item-row {
         display: flex;
         flex-direction: column;
-        margin-bottom: 0.5vh;
+        max-width: 100%; /* Impedisce l'allargamento della colonna */
     }
 
     .item-header {
-        font-size: 2.6vh; /* Ridotto leggermente per stare in colonna */
+        font-size: 2.8vh;
         font-weight: 600;
-        display: flex;
-        justify-content: space-between;
+        color: #fff;
     }
 
     .desc {
-        font-size: 1.8vh;
-        color: #bbb;
+        font-size: 1.5vh; /* Carattere ingredienti diminuito */
+        color: #999;
         font-style: italic;
         margin-top: 2px;
-        line-height: 1.2;
+        /* Logica per non andare a capo e accorciare se troppo lungo */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; 
+        max-width: 35vw; 
     }
 
-    /* Animazione per il refresh dei dati */
-    .fade-in {
-        animation: fadeIn 0.8s ease-in;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
+    .fade-in { animation: fadeIn 0.8s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 
 <body>
 <div class="container">
     <h1 id="main-title">BAR MENU</h1>
-    <div id="menu">Caricamento in corso...</div>
+    <div id="menu">Caricamento...</div>
 </div>
 
 <script>
@@ -116,6 +110,22 @@ const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const ORDINE_CATEGORIE = ["Antipasto", "Primo", "Secondo", "Contorno", "Dolce", "Bevande"];
 
+// Funzione per formattare il nome del piatto con maiuscole intelligenti
+function formatPiatto(str) {
+    if (!str) return "";
+    const esclusioni = ["al", "alla", "allo", "ai", "agli", "alle", "con", "di", "del", "della", "dello", "dei", "degli", "delle", "e", "ed", "in"];
+    let parole = str.toLowerCase().trim().split(/\s+/);
+    
+    let risultato = parole.map((parola, index) => {
+        if (index > 0 && esclusioni.includes(parola)) {
+            return parola;
+        }
+        return parola.charAt(0).toUpperCase() + parola.slice(1);
+    });
+    
+    return risultato.join(" ");
+}
+
 function clean(str) {
     return str ? str.toString().trim() : "";
 }
@@ -123,9 +133,7 @@ function clean(str) {
 async function loadMenu() {
     try {
         const res = await fetch(URL);
-        if (!res.ok) throw new Error();
         const data = await res.json();
-
         const menuDiv = document.getElementById("menu");
         const grouped = {};
 
@@ -145,9 +153,8 @@ async function loadMenu() {
                         ingredienti = clean(row[key]);
                     }
                 }
-
                 grouped[catUfficiale].push({
-                    piatto: clean(row.Piatto),
+                    piatto: formatPiatto(clean(row.Piatto)),
                     desc: ingredienti
                 });
             }
@@ -162,10 +169,8 @@ async function loadMenu() {
                         <div class="items-container">
                             ${grouped[cat].map(item => `
                                 <div class="item-row">
-                                    <div class="item-header">
-                                        <span>${item.piatto}</span>
-                                    </div>
-                                    ${item.desc ? `<div class="desc">${item.desc}</div>` : ''}
+                                    <div class="item-header">${item.piatto}</div>
+                                    ${item.desc ? `<div class="desc" title="${item.desc}">${item.desc}</div>` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -175,14 +180,11 @@ async function loadMenu() {
         });
 
         menuDiv.innerHTML = htmlContent || "Nessun piatto disponibile.";
-
-    } catch (e) {
-        console.error("Errore caricamento");
-    }
+    } catch (e) { console.error("Errore"); }
 }
 
 loadMenu();
-setInterval(loadMenu, 15000); 
+setInterval(loadMenu, 15000);
 </script>
 </body>
 </html>
