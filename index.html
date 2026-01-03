@@ -69,9 +69,10 @@ async function loadMenu() {
 
     const grouped = {};
     data.forEach(row => {
-        if (row.Attivo !== "SI") return;
-        if (!grouped[row.Categoria]) grouped[row.Categoria] = [];
-        grouped[row.Categoria].push(row);
+        if (row.disponibile !== "SI") return;
+
+        if (!grouped[row.categoria]) grouped[row.categoria] = [];
+        grouped[row.categoria].push(row);
     });
 
     for (const cat in grouped) {
@@ -83,10 +84,9 @@ async function loadMenu() {
             const div = document.createElement("div");
             div.innerHTML = `
                 <div class="item">
-                    <div>${item.Nome}</div>
-                    <div class="price">${item.Prezzo}</div>
+                    <div>${item.piatto}</div>
                 </div>
-                <div class="desc">${item.Descrizione || ""}</div>
+                <div class="desc">${item.ingredienti || ""}</div>
             `;
             catDiv.appendChild(div);
         });
