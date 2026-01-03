@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Bar Pro - Auto-Fit Layout</title>
+<title>Menu Bar Pro - Auto-Fit</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -15,7 +15,7 @@
     
     .container { 
         height: 100vh; display: flex; flex-direction: column; 
-        padding: 3vh 5vw; transition: all 0.3s ease-in-out; 
+        padding: 4vh 5vw; transition: all 0.4s ease; 
     }
 
     h1 { 
@@ -25,46 +25,56 @@
     }
 
     #menu { 
-        flex: 1; display: grid; grid-template-columns: 1fr 1fr; 
-        column-gap: 8vw; row-gap: 2vh; align-content: start;
+        flex: 1; 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        column-gap: 8vw; 
+        row-gap: 2vh; 
+        align-content: space-evenly; /* Distribuisce le categorie verticalmente */
     }
 
-    .category h2 { border-bottom: 2px solid; margin: 0 0 1vh 0; text-transform: uppercase; }
+    .category { display: flex; flex-direction: column; justify-content: center; }
+    .category h2 { border-bottom: 2px solid; margin: 0 0 1.5vh 0; text-transform: uppercase; }
+    
+    .items-container { 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        gap: 1vh;
+    }
+
     .item-row { margin-bottom: 0.5vh; }
     .item-header { font-weight: 600; line-height: 1.1; }
-    .desc { font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 35vw; }
+    .desc { font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 38vw; }
 
     #prezzo-box { 
         text-align: center; font-weight: bold; border: 3px solid; 
-        border-radius: 15px; flex-shrink: 0; margin-top: auto; display: none;
+        border-radius: 15px; flex-shrink: 0; margin-top: 2vh;
     }
 
-    /* --- LOGICA DI RIDUZIONE DINAMICA (Classi applicate da JS) --- */
-
-    /* 1. Layout Standard (Pochi piatti, no prezzo) */
-    .size-large h1 { font-size: 7vh; }
-    .size-large .category h2 { font-size: 4vh; }
-    .size-large .item-header { font-size: 3.2vh; }
-    .size-large .desc { font-size: 2vh; }
+    /* --- SCALE DINAMICHE --- */
+    .size-large h1 { font-size: 8vh; }
+    .size-large .category h2 { font-size: 4.5vh; }
+    .size-large .item-header { font-size: 3.5vh; }
+    .size-large .desc { font-size: 2.2vh; }
     .size-large #prezzo-box { font-size: 5vh; padding: 2vh; }
 
-    /* 2. Layout Medio (Molti piatti O Prezzo attivo) */
-    .size-medium h1 { font-size: 5.5vh; }
-    .size-medium .category h2 { font-size: 3.2vh; }
-    .size-medium .item-header { font-size: 2.6vh; }
-    .size-medium .desc { font-size: 1.6vh; }
-    .size-medium #prezzo-box { font-size: 3.8vh; padding: 1.5vh; }
+    .size-medium h1 { font-size: 6vh; }
+    .size-medium .category h2 { font-size: 3.5vh; }
+    .size-medium .item-header { font-size: 2.8vh; }
+    .size-medium .desc { font-size: 1.8vh; }
+    .size-medium #prezzo-box { font-size: 4vh; padding: 1.5vh; }
 
-    /* 3. Layout Small (Moltissimi piatti + Prezzo attivo) */
-    .size-small h1 { font-size: 4.5vh; }
-    .size-small .category h2 { font-size: 2.8vh; }
+    .size-small h1 { font-size: 5vh; }
+    .size-small .category h2 { font-size: 3vh; }
     .size-small .item-header { font-size: 2.2vh; }
-    .size-small .desc { font-size: 1.4vh; }
-    .size-small #prezzo-box { font-size: 3vh; padding: 1vh; }
-
+    .size-small .desc { font-size: 1.5vh; }
+    .size-small #prezzo-box { font-size: 3.2vh; padding: 1vh; }
 </style>
 </head>
-<body class="size-large"> <div class="container" id="main-container">
+<body class="size-large">
+
+<div class="container" id="main-container">
     <h1 id="main-title">CARICAMENTO...</h1>
     <div id="menu"></div>
     <div id="prezzo-box"></div>
@@ -85,46 +95,52 @@ function formatPiatto(str) {
 
 async function updateDisplay() {
     try {
-        const [resSet, resMenu] = await Promise.all([fetch(URL_SETTINGS), fetch(URL_MENU)]);
-        const settingsData = await resSet.json();
-        const menuData = await resMenu.json();
+        const [resSet, resMenu] = await Promise.all([
+            fetch(URL_SETTINGS).then(r => r.json()),
+            fetch(URL_MENU).then(r => r.json())
+        ]);
         
         const s = {};
-        settingsData.forEach(row => { if(row["Proprietà"]) s[row["Proprietà"].trim()] = row["Valore"]; });
+        resSet.forEach(row => { if(row["Proprietà"]) s[row["Proprietà"].trim()] = row["Valore"]; });
 
         const container = document.getElementById('main-container');
         const boxPrezzo = document.getElementById('prezzo-box');
         const menuDiv = document.getElementById("menu");
 
-        // Applica colori base
+        // Colori
         container.style.backgroundColor = s["Colore Sfondo"] || "#111";
         container.style.color = s["Colore Testo"] || "#fff";
         document.getElementById('main-title').innerText = s["Titolo Pagina"] || "MENU";
         document.getElementById('main-title').style.color = s["Colore Titolo"] || "#d4af37";
 
-        // Filtra piatti disponibili
+        // Filtro piatti
         const grouped = {};
         ORDINE_CATEGORIE.forEach(cat => grouped[cat] = []);
         let totalItems = 0;
 
-        menuData.forEach(row => {
-            if ((row.Disponibile || "").toString().toLowerCase().trim().startsWith("s")) {
+        resMenu.forEach(row => {
+            const disp = (row.Disponibile || "").toString().toLowerCase().trim();
+            if (disp === "si" || disp === "sì") {
                 const rawCat = (row.Categoria || "").toString().trim().toLowerCase();
                 const catUf = ORDINE_CATEGORIE.find(c => c.toLowerCase() === rawCat);
                 if (catUf) {
-                    grouped[catUf].push({ piatto: formatPiatto(row.Piatto), desc: row["Ingredienti "] || row["Ingredienti"] || "" });
+                    grouped[catUf].push({ 
+                        piatto: formatPiatto(row.Piatto), 
+                        desc: row["Ingredienti "] || row["Ingredienti"] || "" 
+                    });
                     totalItems++;
                 }
             }
         });
 
-        // --- LOGICA DI ADATTAMENTO DINAMICO ---
-        const haPrezzo = s["Prezzo"] && s["Prezzo"].trim() !== "";
+        // --- ADATTAMENTO ---
+        const valPrezzo = (s["Prezzo"] || "").toString().trim();
+        const haPrezzo = valPrezzo !== "";
+        
         container.classList.remove("size-large", "size-medium", "size-small");
-
-        if (totalItems > 16 || (haPrezzo && totalItems > 12)) {
+        if (totalItems > 14 || (haPrezzo && totalItems > 10)) {
             container.classList.add("size-small");
-        } else if (totalItems > 8 || haPrezzo) {
+        } else if (totalItems > 7 || haPrezzo) {
             container.classList.add("size-medium");
         } else {
             container.classList.add("size-large");
@@ -132,14 +148,15 @@ async function updateDisplay() {
 
         // Gestione Prezzo
         if (haPrezzo) {
-            boxPrezzo.innerText = s["Prezzo"];
+            boxPrezzo.innerText = valPrezzo;
             boxPrezzo.style.borderColor = s["Colore Titolo"] || "#d4af37";
             boxPrezzo.style.color = s["Colore Titolo"] || "#d4af37";
-            boxPrezzo.style.display = HaPrezzo ? "block" : "none";
             boxPrezzo.style.display = "block";
-        } else { boxPrezzo.style.display = "none"; }
+        } else {
+            boxPrezzo.style.display = "none";
+        }
 
-        // Rendering Menu
+        // Rendering
         let html = "";
         ORDINE_CATEGORIE.forEach(cat => {
             if (grouped[cat].length > 0) {
@@ -158,11 +175,11 @@ async function updateDisplay() {
         });
         menuDiv.innerHTML = html;
 
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Errore:", e); }
 }
 
 updateDisplay();
-setInterval(updateDisplay, 7000);
+setInterval(updateDisplay, 6000);
 </script>
 </body>
 </html>
