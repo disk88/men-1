@@ -58,7 +58,7 @@ h1 {
 <script>
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const SHEET_NAME = "Menu";
-const URL = https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME};
+const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 function clean(value) {
     return value ? value.toString().trim() : "";
@@ -91,7 +91,7 @@ async function loadMenu() {
     for (const cat in grouped) {
         const catDiv = document.createElement("div");
         catDiv.className = "category";
-        catDiv.innerHTML = <h2>${cat}</h2>;
+        catDiv.innerHTML = `<h2>${cat}</h2>`;
 
         grouped[cat].forEach(item => {
             const div = document.createElement("div");
