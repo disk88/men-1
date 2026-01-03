@@ -58,7 +58,11 @@ h1 {
 <script>
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const SHEET_NAME = "Menu";
-const URL = 'https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}';
+const URL = https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME};
+
+function clean(value) {
+    return value ? value.toString().trim() : "";
+}
 
 async function loadMenu() {
     const res = await fetch(URL);
@@ -68,25 +72,34 @@ async function loadMenu() {
     menuDiv.innerHTML = "";
 
     const grouped = {};
-    data.forEach(row => {
-        if (row.Disponibile !== "SI") return;
 
-        if (!grouped[row.Categoria]) grouped[row.Categoria] = [];
-        grouped[row.Categoria].push(row);
+    data.forEach(row => {
+        const disponibile = clean(row.Disponibile).toLowerCase();
+
+        if (disponibile !== "si" && disponibile !== "sì") return;
+
+        const categoria = clean(row.Categoria);
+        const piatto = clean(row.Piatto);
+        const ingredienti = clean(row["Ingredienti "]); // spazio voluto
+
+        if (!categoria || !piatto) return;
+
+        if (!grouped[categoria]) grouped[categoria] = [];
+        grouped[categoria].push({ piatto, ingredienti });
     });
 
     for (const cat in grouped) {
         const catDiv = document.createElement("div");
         catDiv.className = "category";
-        catDiv.innerHTML = '<h2>${cat}</h2>';
+        catDiv.innerHTML = <h2>${cat}</h2>;
 
         grouped[cat].forEach(item => {
             const div = document.createElement("div");
             div.innerHTML = `
                 <div class="item">
-                    <div>${item.Piatto}</div>
+                    <div>${item.piatto}</div>
                 </div>
-                <div class="desc">${item.Ingredienti || ""}</div>
+                <div class="desc">${item.ingredienti}</div>
             `;
             catDiv.appendChild(div);
         });
