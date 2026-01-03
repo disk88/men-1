@@ -15,52 +15,51 @@
     
     .container { 
         height: 100vh; display: flex; flex-direction: column; 
-        padding: 2vh 4vw; transition: all 0.5s; 
+        padding: 3vh 5vw; transition: all 0.5s; 
     }
 
     h1 { 
         text-align: center; font-family: 'Playfair Display', serif; 
-        font-size: 5.5vh; margin: 0 0 2vh 0; 
+        font-size: 6vh; margin: 0 0 2vh 0; 
         text-transform: uppercase; letter-spacing: 3px; flex-shrink: 0;
     }
 
-    /* Griglia Menu con scroll interno se troppo pieno */
     #menu { 
         flex-grow: 1; 
         display: grid; 
         grid-template-columns: 1fr 1fr; 
-        column-gap: 6vw; 
+        column-gap: 8vw; 
         row-gap: 2vh; 
         align-content: start;
-        overflow-y: auto; /* Permette lo scroll solo qui se i piatti sono troppi */
-        padding-right: 10px;
+        overflow: hidden;
     }
 
-    /* Nascondi barra scroll per estetica su TV */
-    #menu::-webkit-scrollbar { display: none; }
-
-    .category { break-inside: avoid; margin-bottom: 1.5vh; }
+    .category { break-inside: avoid; }
     .category h2 { 
-        font-size: 3.2vh; border-bottom: 2px solid; 
-        margin: 0 0 1vh 0; padding-bottom: 3px; text-transform: uppercase; 
+        font-size: 3.5vh; border-bottom: 2px solid; 
+        margin: 0 0 1.5vh 0; padding-bottom: 5px; text-transform: uppercase; 
     }
 
-    .items-container { display: flex; flex-direction: column; gap: 1vh; }
-    .item-header { font-size: 2.6vh; font-weight: 600; line-height: 1.2; }
+    .items-container { display: flex; flex-direction: column; gap: 1.2vh; }
+    .item-header { font-size: 2.8vh; font-weight: 600; }
     
     .desc { 
-        font-size: 1.6vh; font-style: italic; 
+        font-size: 1.8vh; font-style: italic; 
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        max-width: 38vw; margin-top: 1px; opacity: 0.8;
+        max-width: 35vw; margin-top: 2px;
     }
 
-    /* Box Prezzo Ottimizzato */
+    /* BOX PREZZO FISSO */
     #prezzo-box { 
-        margin-top: 1.5vh; text-align: center; 
-        font-size: 3.5vh; font-weight: bold; 
-        padding: 1.5vh; border: 2px solid; 
-        border-radius: 12px; flex-shrink: 0;
-        display: none; 
+        margin-top: auto; 
+        text-align: center; 
+        font-size: 4vh; 
+        font-weight: bold; 
+        padding: 2vh; 
+        border: 3px solid; 
+        border-radius: 15px; 
+        flex-shrink: 0;
+        display: none; /* Verrà mostrato via JS */
     }
 </style>
 </head>
@@ -88,34 +87,41 @@ function formatPiatto(str) {
 
 async function updateDisplay() {
     try {
+        // 1. CARICA IMPOSTAZIONI
         const resSet = await fetch(URL_SETTINGS);
         const settingsData = await resSet.json();
+        
+        // Creiamo un oggetto pulito eliminando spazi extra dai nomi delle proprietà
         const s = {};
-        settingsData.forEach(row => { 
-            if(row["Proprietà"]) s[row["Proprietà"].trim()] = row["Valore"]; 
+        settingsData.forEach(row => {
+            if (row["Proprietà"]) {
+                const key = row["Proprietà"].toString().trim();
+                s[key] = row["Valore"];
+            }
         });
 
         const container = document.getElementById('main-container');
         const mainTitle = document.getElementById('main-title');
         const boxPrezzo = document.getElementById('prezzo-box');
 
-        // Colori e Testi
+        // Applica stili
         container.style.backgroundColor = s["Colore Sfondo"] || "#111";
         container.style.color = s["Colore Testo"] || "#fff";
-        mainTitle.innerText = s["Titolo Pagina"] || "MENU";
+        mainTitle.innerText = s["Titolo Pagina"] || "BAR MENU";
         mainTitle.style.color = s["Colore Titolo"] || "#d4af37";
 
-        // Gestione Prezzo
-        if(s["Prezzo"] && s["Prezzo"].trim() !== "") {
-            boxPrezzo.innerText = s["Prezzo"];
+        // GESTIONE BOX PREZZO (Cerca la riga "Prezzo")
+        const valorePrezzo = s["Prezzo"] || s["Prezzo Fisso"]; // Controlla entrambi i nomi per sicurezza
+        if (valorePrezzo && valorePrezzo.toString().trim() !== "") {
+            boxPrezzo.innerText = valorePrezzo;
             boxPrezzo.style.borderColor = s["Colore Titolo"] || "#d4af37";
             boxPrezzo.style.color = s["Colore Titolo"] || "#d4af37";
             boxPrezzo.style.display = "block";
-        } else { 
-            boxPrezzo.style.display = "none"; 
+        } else {
+            boxPrezzo.style.display = "none";
         }
 
-        // Menu
+        // 2. CARICA MENU
         const resMenu = await fetch(URL_MENU);
         const data = await resMenu.json();
         const menuDiv = document.getElementById("menu");
@@ -123,9 +129,9 @@ async function updateDisplay() {
         ORDINE_CATEGORIE.forEach(cat => grouped[cat] = []);
 
         data.forEach(row => {
-            const disp = (row.Disponibile || "").toLowerCase().trim();
+            const disp = (row.Disponibile || "").toString().toLowerCase().trim();
             if (disp === "si" || disp === "sì") {
-                const rawCat = (row.Categoria || "").trim().toLowerCase();
+                const rawCat = (row.Categoria || "").toString().trim().toLowerCase();
                 const catUf = ORDINE_CATEGORIE.find(c => c.toLowerCase() === rawCat);
                 if (catUf) {
                     let ing = row["Ingredienti "] || row["Ingredienti"] || "";
@@ -152,11 +158,13 @@ async function updateDisplay() {
         });
         menuDiv.innerHTML = html;
 
-    } catch (e) { console.error("Errore aggiornamento"); }
+    } catch (e) {
+        console.error("Errore nel caricamento:", e);
+    }
 }
 
 updateDisplay();
-setInterval(updateDisplay, 7000);
+setInterval(updateDisplay, 15000);
 </script>
 </body>
 </html>
