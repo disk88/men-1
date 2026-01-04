@@ -5,244 +5,248 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menu Digitale</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&family=Lora:wght@400;600&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --bg:#111;
-  --text:#fff;
-  --title:#d4af37;
-  --category:#d4af37;
-  --ingredients:#ccc;
-}
-
 * { box-sizing: border-box; }
 
-html,body {
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Montserrat,sans-serif;
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    font-family: Montserrat, sans-serif;
 }
 
-body { overflow:hidden; }
-@media (max-width:768px){ body{overflow-y:auto;} }
+/* default: TV */
+body {
+    overflow: hidden;
+}
 
-#app {
-  min-height:100vh;
-  padding:2vh 4vw;
-  display:flex;
-  flex-direction:column;
+/* MOBILE: scroll sempre */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+    }
+}
+
+#main {
+    min-height: 100vh;
+    padding: 3vh 5vw;
+    display: flex;
+    flex-direction: column;
 }
 
 /* HEADER */
-header {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:2vw;
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2vw;
+    margin-bottom: 2vh;
 }
 
-header img {
-  max-height:9vh;
+#logo {
+    max-height: 10vh;
+    max-width: 18vw;
+    display: none;
 }
 
-h1 {
-  font-family:'Playfair Display',serif;
-  font-size:7vh;
-  letter-spacing:4px;
-  text-transform:uppercase;
-  margin:0;
-  color:var(--title);
+#title {
+    font-family: 'Playfair Display', serif;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 0;
+    text-align: center;
 }
 
-/* CONTENT */
-#content {
-  flex:1;
-  position:relative;
-  margin-top:1.5vh;
-}
-
+/* MENU */
 #menu {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:2vh 5vw;
+    flex: 1;
+    display: grid;
+    column-gap: 6vw;
+    row-gap: 2.5vh;
 }
 
-@media (max-width:768px){
-  #menu{grid-template-columns:1fr;}
-}
-
+/* CATEGORIE */
 .category h2 {
-  margin:0 0 .5vh 0;
-  border-bottom:2px solid var(--category);
-  color:var(--category);
-  text-transform:uppercase;
-  font-size:3.2vh;
+    margin: 0 0 1vh 0;
+    border-bottom: 2px solid;
+    text-transform: uppercase;
 }
 
-.item {
-  display:flex;
-  justify-content:space-between;
-  font-size:2.4vh;
-  font-weight:600;
+/* PIATTI */
+.item-header {
+    font-weight: 600;
+    line-height: 1.1;
 }
 
 .desc {
-  font-size:1.9vh;
-  font-style:italic;
-  color:var(--ingredients);
-  margin-bottom:.6vh;
+    font-style: italic;
+    opacity: 0.75;
 }
 
-/* PRICE */
-#price {
-  display:none;
-  margin-top:1vh;
-  align-self:center;
-  padding:.6vh 2vw;
-  border:2px solid var(--title);
-  border-radius:10px;
-  color:var(--title);
-  font-size:2.6vh;
+/* PREZZO (RIDOTTO) */
+#prezzo-box {
+    text-align: center;
+    margin-top: 2vh;
+    border: 2px solid;
+    border-radius: 12px;
+    font-weight: 600;
+    display: none;
+    align-self: center;
 }
 
-/* PROMO */
-#promo {
-  position:absolute;
-  inset:0;
-  margin:auto;
-  max-width:100%;
-  max-height:100%;
-  display:none;
-}
+/* SCALE */
+.size-large #title { font-size: 6.5vh; }
+.size-large .category h2 { font-size: 3.8vh; }
+.size-large .item-header { font-size: 3vh; }
+.size-large .desc { font-size: 1.9vh; }
+.size-large #prezzo-box { font-size: 3.2vh; padding: 1.2vh 3vh; }
 
-/* ANIMATIONS */
-.fade{animation:fade .8s ease;}
-.slide{animation:slide .8s ease;}
-.zoom{animation:zoom .8s ease;}
-.flip{animation:flip .8s ease;}
+.size-medium #title { font-size: 5.5vh; }
+.size-medium .category h2 { font-size: 3.1vh; }
+.size-medium .item-header { font-size: 2.4vh; }
+.size-medium .desc { font-size: 1.6vh; }
+.size-medium #prezzo-box { font-size: 2.8vh; padding: 1vh 2.5vh; }
 
-@keyframes fade{from{opacity:0}to{opacity:1}}
-@keyframes slide{from{transform:translateX(30%);opacity:0}to{transform:none;opacity:1}}
-@keyframes zoom{from{transform:scale(1.1);opacity:0}to{transform:none;opacity:1}}
-@keyframes flip{from{transform:rotateY(90deg)}to{transform:none}}
+.size-small #title { font-size: 4.8vh; }
+.size-small .category h2 { font-size: 2.6vh; }
+.size-small .item-header { font-size: 2.1vh; }
+.size-small .desc { font-size: 1.4vh; }
+.size-small #prezzo-box { font-size: 2.5vh; padding: 0.8vh 2vh; }
 </style>
 </head>
 
 <body>
-<div id="app">
-  <header>
-    <img id="logo" style="display:none">
-    <h1 id="title">CARICAMENTO</h1>
-  </header>
+<div id="main" class="size-large">
 
-  <div id="content">
+    <div id="header">
+        <img id="logo">
+        <h1 id="title">CARICAMENTO...</h1>
+    </div>
+
     <div id="menu"></div>
-    <img id="promo">
-  </div>
 
-  <div id="price"></div>
+    <div id="prezzo-box"></div>
 </div>
 
 <script>
-const ID="1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
-const URL=s=>`https://opensheet.elk.sh/${ID}/${s}`;
+const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
+const MENU_URL = `https://opensheet.elk.sh/${SHEET_ID}/Menu`;
+const SETTINGS_URL = `https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`;
 
-const THEMES={
-  elegante:{bg:"#111",text:"#f5f5f5",title:"#d4af37",category:"#d4af37",ingredients:"#ccc"},
-  wine:{bg:"#1b0f14",text:"#f5eaea",title:"#a63a50",category:"#a63a50",ingredients:"#e0c2c9"},
-  dark:{bg:"#000",text:"#eee",title:"#fff",category:"#fff",ingredients:"#bbb"}
-};
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-const $=id=>document.getElementById(id);
-const clean=v=>(v||"").toString().trim();
-const cap=s=>clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase());
-
-let promoTimer=null, showPromo=false;
-
-async function load(){
-  const [settings,menu,bar]=await Promise.all([
-    fetch(URL("Impostazioni")).then(r=>r.json()),
-    fetch(URL("Menu")).then(r=>r.json()),
-    fetch(URL("Bar")).then(r=>r.json())
-  ]);
-
-  const S={};
-  settings.forEach(r=>S[clean(r.Proprietà)]=clean(r.Valore));
-
-  const mode=(S["Modalità"]||"cucina").toLowerCase();
-  const theme=THEMES[(mode==="bar"?S["Tema Bar"]:S["Tema Cucina"])?.toLowerCase()];
-
-  if(theme){
-    Object.entries(theme).forEach(([k,v])=>{
-      document.documentElement.style.setProperty(`--${k}`,v);
-    });
-  }
-
-  $("title").innerText=mode==="bar"?S["Titolo Bar"]||"BAR":S["Titolo Cucina"]||"MENU";
-
-  if(S["Logo URL"]){
-    $("logo").src=S["Logo URL"];
-    $("logo").style.display="block";
-  }
-
-  $("menu").innerHTML="";
-  let grouped={};
-
-  (mode==="bar"?bar:menu).forEach(r=>{
-    if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
-      const c=clean(r.Categoria)||"Altro";
-      grouped[c]=grouped[c]||[];
-      grouped[c].push(
-        mode==="bar"
-          ? {n:cap(r.Nome),p:clean(r.Prezzo)}
-          : {n:cap(r.Piatto),d:clean(r.Ingredienti)}
-      );
-    }
-  });
-
-  Object.entries(grouped).forEach(([c,items])=>{
-    $("menu").innerHTML+=`
-      <div class="category">
-        <h2>${c}</h2>
-        ${items.map(i=>`
-          <div>
-            <div class="item">
-              <span>${i.n}</span>${i.p?`<span>${i.p}</span>`:""}
-            </div>
-            ${i.d?`<div class="desc">${i.d}</div>`:""}
-          </div>`).join("")}
-      </div>`;
-  });
-
-  /* PREZZO CUCINA */
-  if(mode==="cucina" && S["Prezzo"]){
-    $("price").innerText=S["Prezzo"];
-    $("price").style.display="block";
-  } else $("price").style.display="none";
-
-  /* PROMO BAR */
-  clearInterval(promoTimer);
-  $("promo").style.display="none";
-  showPromo=false;
-
-  if(mode==="bar" && S["Immagine Promo"]){
-    $("promo").src=S["Immagine Promo"];
-    $("promo").className=(S["Animazione Rotazione"]||"fade").toLowerCase();
-    promoTimer=setInterval(()=>{
-      showPromo=!showPromo;
-      $("menu").style.display=showPromo?"none":"grid";
-      $("promo").style.display=showPromo?"block":"none";
-    },(parseInt(S["Tempo Rotazione"])||8)*1000);
-  }
+function clean(v) {
+    return (v || "").toString().trim();
 }
 
-load();
-setInterval(load,6000);
+function capWords(str) {
+    return clean(str).toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+}
+
+async function update() {
+    try {
+        const [menuData, settingsData] = await Promise.all([
+            fetch(MENU_URL).then(r => r.json()),
+            fetch(SETTINGS_URL).then(r => r.json())
+        ]);
+
+        const S = {};
+        settingsData.forEach(r => {
+            if (r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore);
+        });
+
+        /* STILI BASE */
+        document.body.style.background = S["Colore Sfondo"] || "#111";
+        document.body.style.color = S["Colore Testo"] || "#fff";
+        if (S["Font Testo"]) document.body.style.fontFamily = S["Font Testo"];
+
+        const title = document.getElementById("title");
+        title.innerText = S["Titolo Pagina"] || "MENU";
+        title.style.color = S["Colore Titolo"] || "#d4af37";
+        if (S["Font Titolo"]) title.style.fontFamily = S["Font Titolo"];
+
+        const logo = document.getElementById("logo");
+        if (S["Logo URL"]) {
+            logo.src = S["Logo URL"];
+            logo.style.display = "block";
+        } else {
+            logo.style.display = "none";
+        }
+
+        /* MENU */
+        const menuDiv = document.getElementById("menu");
+        menuDiv.innerHTML = "";
+        let count = 0;
+        const grouped = {};
+
+        menuData.forEach(r => {
+            const disp = clean(r.Disponibile).toLowerCase();
+            if (disp === "si" || disp === "sì") {
+                const cat = clean(r.Categoria) || "Altro";
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push({
+                    piatto: capWords(r.Piatto),
+                    desc: clean(r["Ingredienti "] || r["Ingredienti"])
+                });
+                count++;
+            }
+        });
+
+        Object.keys(grouped).forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "category";
+            div.innerHTML = `
+                <h2 style="color:${S["Colore Titolo"] || "#d4af37"};
+                           border-color:${S["Colore Titolo"] || "#d4af37"}">${cat}</h2>
+                ${grouped[cat].map(i => `
+                    <div>
+                        <div class="item-header">${i.piatto}</div>
+                        ${i.desc ? `<div class="desc">${i.desc}</div>` : ""}
+                    </div>
+                `).join("")}
+            `;
+            menuDiv.appendChild(div);
+        });
+
+        /* ORIENTAMENTO */
+        const orient = (S["Orientamento"] || "auto").toLowerCase();
+        if (orient === "verticale") {
+            menuDiv.style.gridTemplateColumns = "1fr";
+        } else if (orient === "orizzontale") {
+            menuDiv.style.gridTemplateColumns = "1fr 1fr";
+        } else {
+            menuDiv.style.gridTemplateColumns =
+                window.innerWidth > window.innerHeight ? "1fr 1fr" : "1fr";
+        }
+
+        /* SCALE */
+        const main = document.getElementById("main");
+        main.classList.remove("size-large","size-medium","size-small");
+        if (count > 14) main.classList.add("size-small");
+        else if (count > 7) main.classList.add("size-medium");
+        else main.classList.add("size-large");
+
+        /* PREZZO */
+        const box = document.getElementById("prezzo-box");
+        if (S["Prezzo"]) {
+            box.innerText = S["Prezzo"];
+            box.style.display = "block";
+            box.style.color = S["Colore Titolo"] || "#d4af37";
+            box.style.borderColor = S["Colore Titolo"] || "#d4af37";
+        } else {
+            box.style.display = "none";
+        }
+
+    } catch (e) {
+        console.error("ERRORE:", e);
+    }
+}
+
+update();
+setInterval(update, 6000);
 </script>
 </body>
 </html>
