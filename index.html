@@ -5,141 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menu Digitale</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&family=Lora:wght@400;600&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 * { box-sizing: border-box; }
 
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    font-family: Montserrat, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* TV */
-body { overflow: hidden; }
+body {
+  overflow: hidden;
+}
 
-/* MOBILE */
 @media (max-width: 768px) {
-    body { overflow-y: auto; }
+  body { overflow-y: auto; }
 }
 
 :root {
-    --ingredient-color: #aaa;
+  --cat-color: #fff;
+  --ing-color: #aaa;
 }
 
 #main {
-    min-height: 100vh;
-    padding: 3vh 5vw;
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  padding: 3vh 5vw;
+  display: flex;
+  flex-direction: column;
 }
 
 #header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2vw;
-    margin-bottom: 2vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+  margin-bottom: 2vh;
 }
 
 #logo {
-    max-height: 10vh;
-    max-width: 18vw;
-    display: none;
+  max-height: 10vh;
+  display: none;
 }
 
 #title {
-    font-family: 'Playfair Display', serif;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    margin: 0;
-    text-align: center;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
 }
 
 #menu {
-    flex: 1;
-    display: grid;
-    column-gap: 6vw;
-    row-gap: 2.5vh;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3vh 6vw;
+}
+
+@media (max-width: 768px) {
+  #menu { grid-template-columns: 1fr; }
 }
 
 .category h2 {
-    margin: 0 0 1vh 0;
-    border-bottom: 2px solid;
-    text-transform: uppercase;
+  margin: 0 0 1vh 0;
+  border-bottom: 2px solid var(--cat-color);
+  color: var(--cat-color);
 }
 
 .item-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 2vw;
-}
-
-.item-header {
-    font-weight: 600;
-    line-height: 1.1;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
 }
 
 .desc {
-    font-style: italic;
-    color: var(--ingredient-color);
+  font-style: italic;
+  color: var(--ing-color);
 }
 
-#prezzo-box {
-    margin-top: 2vh;
-    border: 2px solid;
-    border-radius: 12px;
-    font-weight: 600;
-    display: none;
-    align-self: center;
-}
-
-/* PROMO */
-#promo {
-    display: none;
-    max-height: 45vh;
-    margin: auto;
-    object-fit: contain;
-}
-
-/* SCALE */
-.size-xl #title { font-size: 8vh; }
-.size-xl .category h2 { font-size: 4.6vh; }
-.size-xl .item-header { font-size: 3.7vh; }
-.size-xl .desc { font-size: 2.4vh; }
-
-.size-large #title { font-size: 6.5vh; }
-.size-large .category h2 { font-size: 3.8vh; }
-.size-large .item-header { font-size: 3vh; }
-.size-large .desc { font-size: 1.9vh; }
-
-.size-medium #title { font-size: 5.5vh; }
-.size-medium .category h2 { font-size: 3.1vh; }
-.size-medium .item-header { font-size: 2.4vh; }
-.size-medium .desc { font-size: 1.6vh; }
-
-.size-small #title { font-size: 4.8vh; }
-.size-small .category h2 { font-size: 2.6vh; }
-.size-small .item-header { font-size: 2.1vh; }
-.size-small .desc { font-size: 1.4vh; }
+/* SCALE DINAMICHE */
+.size-xl { font-size: 2.2vh; }
+.size-large { font-size: 1.9vh; }
+.size-medium { font-size: 1.6vh; }
+.size-small { font-size: 1.4vh; }
 </style>
 </head>
 
 <body>
 <div id="main" class="size-large">
-
-    <div id="header">
-        <img id="logo">
-        <h1 id="title">CARICAMENTO…</h1>
-    </div>
-
-    <div id="menu"></div>
-    <img id="promo">
-
-    <div id="prezzo-box"></div>
+  <div id="header">
+    <img id="logo">
+    <h1 id="title">CARICAMENTO…</h1>
+  </div>
+  <div id="menu"></div>
 </div>
 
 <script>
@@ -149,128 +108,84 @@ const BAR_URL = `https://opensheet.elk.sh/${SHEET_ID}/Bar`;
 const SETTINGS_URL = `https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`;
 
 const TEMI = {
-  "elegante oro": { bg:"#111", text:"#fff", title:"#d4af37", ingredients:"#aaa" },
-  "dark minimal": { bg:"#000", text:"#eee", title:"#fff", ingredients:"#bbb" },
-  "chiaro moderno": { bg:"#f7f7f7", text:"#222", title:"#111", ingredients:"#555" },
-  "wine bar": { bg:"#1b0f14", text:"#f5eaea", title:"#a63a50", ingredients:"#d2b5bc" }
+  "elegante oro": { bg:"#111", text:"#f5f5f5", title:"#d4af37", category:"#d4af37", ingredients:"#aaa" },
+  "wine bar": { bg:"#1b0f14", text:"#f5eaea", title:"#a63a50", category:"#a63a50", ingredients:"#d2b5bc" },
+  "dark minimal": { bg:"#000", text:"#eee", title:"#fff", category:"#fff", ingredients:"#bbb" }
 };
 
 function clean(v){ return (v||"").toString().trim(); }
-function cap(str){ return clean(str).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
-
-async function renderCucina(data){
-    const menu = document.getElementById("menu");
-    menu.innerHTML="";
-    let count=0, g={};
-
-    data.forEach(r=>{
-        if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
-            const c=clean(r.Categoria)||"Altro";
-            if(!g[c]) g[c]=[];
-            g[c].push({p:cap(r.Piatto), d:clean(r["Ingredienti "]||r.Ingredienti)});
-            count++;
-        }
-    });
-
-    Object.keys(g).forEach(c=>{
-        menu.innerHTML+=`
-        <div class="category">
-            <h2>${c}</h2>
-            ${g[c].map(i=>`
-                <div>
-                    <div class="item-header">${i.p}</div>
-                    ${i.d?`<div class="desc">${i.d}</div>`:""}
-                </div>`).join("")}
-        </div>`;
-    });
-    return count;
-}
-
-async function renderBar(data){
-    const menu=document.getElementById("menu");
-    menu.innerHTML="";
-    let count=0, g={};
-
-    data.forEach(r=>{
-        if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
-            const c=clean(r.Categoria)||"Bar";
-            if(!g[c]) g[c]=[];
-            g[c].push({n:cap(r.Bevanda), p:clean(r.Prezzo)});
-            count++;
-        }
-    });
-
-    Object.keys(g).forEach(c=>{
-        menu.innerHTML+=`
-        <div class="category">
-            <h2>${c}</h2>
-            ${g[c].map(b=>`
-                <div class="item-row">
-                    <div class="item-header">${b.n}</div>
-                    <div class="item-header">${b.p}</div>
-                </div>`).join("")}
-        </div>`;
-    });
-    return count;
-}
+function cap(s){ return clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
 
 async function update(){
-    const [menu,bar,settings]=await Promise.all([
-        fetch(MENU_URL).then(r=>r.json()),
-        fetch(BAR_URL).then(r=>r.json()),
-        fetch(SETTINGS_URL).then(r=>r.json())
-    ]);
+  const [menu, bar, settings] = await Promise.all([
+    fetch(MENU_URL).then(r=>r.json()),
+    fetch(BAR_URL).then(r=>r.json()),
+    fetch(SETTINGS_URL).then(r=>r.json())
+  ]);
 
-    const S={};
-    settings.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)]=clean(r.Valore); });
+  const S={};
+  settings.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore); });
 
-    const title=document.getElementById("title");
-    title.innerText=S["Titolo Pagina"]||"MENU";
-    if(S["Font Titolo"]) title.style.fontFamily=S["Font Titolo"];
+  const mode = (S["Modalità"]||"cucina").toLowerCase();
+  const themeName = mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"];
+  const theme = TEMI[(themeName||"").toLowerCase()];
 
-    if(S["Font Testo"]) document.body.style.fontFamily=S["Font Testo"];
+  if(theme){
+    document.body.style.background = theme.bg;
+    document.body.style.color = theme.text;
+    document.documentElement.style.setProperty("--cat-color", theme.category);
+    document.documentElement.style.setProperty("--ing-color", theme.ingredients);
+  }
 
-    if(S["Tema Colori"] && TEMI[S["Tema Colori"].toLowerCase()]){
-        const t=TEMI[S["Tema Colori"].toLowerCase()];
-        document.body.style.background=t.bg;
-        document.body.style.color=t.text;
-        title.style.color=t.title;
-        document.documentElement.style.setProperty("--ingredient-color",t.ingredients);
+  const title = document.getElementById("title");
+  title.innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
+  title.style.color = theme?.title || "#fff";
+  title.style.fontFamily = S["Font Titolo"] || "Playfair Display";
+
+  document.body.style.fontFamily = S["Font Testo"] || "Montserrat";
+
+  const logo=document.getElementById("logo");
+  if(S["Logo URL"]){
+    logo.src=S["Logo URL"];
+    logo.style.display="block";
+  }
+
+  const menuDiv=document.getElementById("menu");
+  menuDiv.innerHTML="";
+  let count=0, grouped={};
+
+  const data = mode==="bar" ? bar : menu;
+
+  data.forEach(r=>{
+    if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
+      const cat = clean(r.Categoria)||"Altro";
+      if(!grouped[cat]) grouped[cat]=[];
+      grouped[cat].push(
+        mode==="bar"
+        ? { n:cap(r.Nome), p:clean(r.Prezzo) }
+        : { n:cap(r.Piatto), d:clean(r.Ingredienti) }
+      );
+      count++;
     }
+  });
 
-    const logo=document.getElementById("logo");
-    if(S["Logo URL"]){ logo.src=S["Logo URL"]; logo.style.display="block"; }
+  Object.keys(grouped).forEach(c=>{
+    menuDiv.innerHTML+=`
+      <div class="category">
+        <h2>${c}</h2>
+        ${grouped[c].map(i=>`
+          <div>
+            <div class="item-row">
+              <span>${i.n}</span>
+              ${i.p?`<span>${i.p}</span>`:""}
+            </div>
+            ${i.d?`<div class="desc">${i.d}</div>`:""}
+          </div>`).join("")}
+      </div>`;
+  });
 
-    let count=0;
-    if((S["Modalità"]||"cucina").toLowerCase()==="bar"){
-        count=await renderBar(bar);
-    } else {
-        count=await renderCucina(menu);
-    }
-
-    const main=document.getElementById("main");
-    main.classList.remove("size-xl","size-large","size-medium","size-small");
-    main.classList.add(
-        count<=6?"size-xl":count<=10?"size-large":count<=16?"size-medium":"size-small"
-    );
-
-    const orient=(S["Orientamento"]||"auto").toLowerCase();
-    const menuDiv=document.getElementById("menu");
-    if(orient==="verticale") menuDiv.style.gridTemplateColumns="1fr";
-    else if(orient==="orizzontale") menuDiv.style.gridTemplateColumns="1fr 1fr";
-    else menuDiv.style.gridTemplateColumns=
-        window.innerWidth>window.innerHeight?"1fr 1fr":"1fr";
-
-    const promo=document.getElementById("promo");
-    if(S["Modalità"]==="bar" && S["Immagine Promo"]){
-        promo.src=S["Immagine Promo"];
-        let show=false;
-        setInterval(()=>{
-            show=!show;
-            menuDiv.style.display=show?"none":"grid";
-            promo.style.display=show?"block":"none";
-        },(parseInt(S["Tempo Rotazione"])||8)*1000);
-    }
+  const main=document.getElementById("main");
+  main.className = count<=6?"size-xl":count<=12?"size-large":count<=18?"size-medium":"size-small";
 }
 
 update();
