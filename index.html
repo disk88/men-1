@@ -11,238 +11,264 @@
 * { box-sizing: border-box; }
 
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    font-family: Montserrat, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  font-family: Montserrat, sans-serif;
 }
 
 body { overflow: hidden; }
-@media (max-width: 768px) {
-    body { overflow-y: auto; }
-}
 
-:root {
-    --bg: #111;
-    --text: #fff;
-    --accent: #d4af37;
+@media (max-width: 768px) {
+  body { overflow-y: auto; }
 }
 
 #main {
-    min-height: 100vh;
-    padding: 3vh 5vw;
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  padding: 3vh 5vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
+/* HEADER */
 #header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2vw;
-    margin-bottom: 2vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+  margin-bottom: 2vh;
 }
 
 #logo {
-    max-height: 10vh;
-    display: none;
+  max-height: 10vh;
+  max-width: 18vw;
+  display: none;
 }
 
 #title {
-    font-family: 'Playfair Display', serif;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    margin: 0;
-    font-size: 6vh;
+  font-family: 'Playfair Display', serif;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0;
+  text-align: center;
 }
 
+/* MENU */
 #menu {
-    flex: 1;
-    display: grid;
-    gap: 3vh 6vw;
+  flex: 1;
+  display: grid;
+  column-gap: 6vw;
+  row-gap: 2.5vh;
 }
 
+/* CATEGORIE */
 .category h2 {
-    border-bottom: 2px solid var(--accent);
-    margin-bottom: 1vh;
+  margin: 0 0 1vh 0;
+  border-bottom: 2px solid;
+  text-transform: uppercase;
 }
 
+/* CUCINA */
 .item-header { font-weight: 600; }
 .desc { font-style: italic; opacity: 0.75; }
 
+/* BAR */
+.bar-item {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+/* PREZZO */
 #prezzo-box {
-    margin-top: 2vh;
-    padding: 1vh 3vh;
-    border: 2px solid var(--accent);
-    border-radius: 12px;
-    display: none;
-    align-self: center;
+  text-align: center;
+  margin-top: 2vh;
+  border: 2px solid;
+  border-radius: 12px;
+  font-weight: 600;
+  display: none;
+  align-self: center;
 }
 
 /* PROMO */
 #promo {
-    display: none;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  display: none;
+  z-index: 10;
 }
 
-#promo img {
-    max-width: 100%;
-    max-height: 100%;
-}
+/* SCALE */
+.size-large #title { font-size: 6.5vh; }
+.size-large .category h2 { font-size: 3.8vh; }
+.size-large .item-header,
+.size-large .bar-item { font-size: 3vh; }
+.size-large .desc { font-size: 1.9vh; }
 
-/* ANIMAZIONI */
+.size-medium #title { font-size: 5.5vh; }
+.size-medium .category h2 { font-size: 3.1vh; }
+.size-medium .item-header,
+.size-medium .bar-item { font-size: 2.4vh; }
+.size-medium .desc { font-size: 1.6vh; }
+
+.size-small #title { font-size: 4.8vh; }
+.size-small .category h2 { font-size: 2.6vh; }
+.size-small .item-header,
+.size-small .bar-item { font-size: 2.1vh; }
+.size-small .desc { font-size: 1.4vh; }
+
+/* ANIMAZIONI PROMO */
 .fade { animation: fade 1s; }
 @keyframes fade { from {opacity:0} to {opacity:1} }
 
-.slide-left { animation: slideL 1s; }
-@keyframes slideL { from {transform:translateX(100%)} to {transform:none} }
-
-.slide-up { animation: slideU 1s; }
-@keyframes slideU { from {transform:translateY(100%)} to {transform:none} }
+.slide { animation: slide 1s; }
+@keyframes slide {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
 
 .zoom { animation: zoom 1s; }
-@keyframes zoom { from {transform:scale(1.3)} to {transform:scale(1)} }
+@keyframes zoom {
+  from { transform: scale(1.1); opacity:0; }
+  to { transform: scale(1); opacity:1; }
+}
+
+.blur { animation: blur 1s; }
+@keyframes blur {
+  from { filter: blur(20px); opacity:0; }
+  to { filter: blur(0); opacity:1; }
+}
 </style>
 </head>
 
 <body>
-<div id="main">
-    <div id="header">
-        <img id="logo">
-        <h1 id="title">CARICAMENTO...</h1>
-    </div>
+<div id="main" class="size-large">
+  <div id="header">
+    <img id="logo">
+    <h1 id="title">CARICAMENTO...</h1>
+  </div>
 
-    <div id="menu"></div>
-    <div id="promo"><img></div>
-
-    <div id="prezzo-box"></div>
+  <div id="menu"></div>
+  <div id="prezzo-box"></div>
+  <div id="promo"></div>
 </div>
 
 <script>
-const SHEET = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
-const U = s => `https://opensheet.elk.sh/${SHEET}/${s}`;
-const $ = id => document.getElementById(id);
-const clean = v => (v||"").toString().trim();
+const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-async function load() {
-    const [menu, bar, set] = await Promise.all([
-        fetch(U("Menu")).then(r=>r.json()),
-        fetch(U("Bar")).then(r=>r.json()),
-        fetch(U("Impostazioni")).then(r=>r.json())
-    ]);
+const THEMES = {
+  classic: { bg:"#111", text:"#fff", accent:"#d4af37" },
+  elegant: { bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
+  modern: { bg:"#fff", text:"#222", accent:"#c0392b" },
+  dark: { bg:"#000", text:"#ddd", accent:"#00c896" },
 
+  neon: { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
+  pub: { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
+  minimal: { bg:"#f7f7f7", text:"#111", accent:"#000" },
+  luxury: { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
+};
+
+function clean(v){ return (v||"").toString().trim(); }
+function capWords(s){ return clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
+
+async function update() {
+  try {
+    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
     const S = {};
-    set.forEach(r => S[clean(r.Proprietà)] = clean(r.Valore));
+    settings.forEach(r => S[clean(r.Proprietà)] = clean(r.Valore));
 
-    const page = (S["Pagina Attiva"]||"menu").toLowerCase();
-    const theme = page === "bar" ? S["Tema Bar"] : S["Tema Menu"];
+    const MODE = (S["Modalità"] || "cucina").toLowerCase();
+    const DATA_URL = MODE === "bar"
+      ? `https://opensheet.elk.sh/${SHEET_ID}/Bar`
+      : `https://opensheet.elk.sh/${SHEET_ID}/Menu`;
 
-    applyTheme(theme);
+    const data = await fetch(DATA_URL).then(r=>r.json());
 
-    $("title").innerText = page === "bar" ? (S["Titolo Bar"]||"BAR") : (S["Titolo Menu"]||"MENU");
+    const themeName = MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"];
+    const theme = THEMES[themeName] || THEMES.classic;
 
+    document.body.style.background = theme.bg;
+    document.body.style.color = theme.text;
+
+    const title = document.getElementById("title");
+    title.innerText = MODE === "bar" ? (S["Titolo Bar"]||"BAR") : (S["Titolo Cucina"]||"MENU");
+    title.style.color = theme.accent;
+
+    const logo = document.getElementById("logo");
     if (S["Logo URL"]) {
-        $("logo").src = S["Logo URL"];
-        $("logo").style.display = "block";
-    }
+      logo.src = S["Logo URL"];
+      logo.style.display = "block";
+    } else logo.style.display = "none";
 
-    if (page === "bar") {
-        renderBar(bar, S);
-    } else {
-        renderMenu(menu, S);
-    }
-}
+    const menuDiv = document.getElementById("menu");
+    menuDiv.innerHTML = "";
 
-function applyTheme(t) {
-    if (t === "neon") {
-        document.body.style.background = "#000";
-        document.body.style.color = "#0ff";
-        document.documentElement.style.setProperty("--accent","#0ff");
-    } else {
-        document.body.style.background = "#111";
-        document.body.style.color = "#fff";
-        document.documentElement.style.setProperty("--accent","#d4af37");
-    }
-}
-
-function renderMenu(data, S) {
-    $("promo").style.display = "none";
-    $("menu").style.display = "grid";
-    $("menu").innerHTML = "";
-
+    let count = 0;
     const grouped = {};
-    data.forEach(r=>{
-        if (!["si","sì"].includes(clean(r.Disponibile).toLowerCase())) return;
-        const c = clean(r.Categoria).toUpperCase();
-        if (!grouped[c]) grouped[c]=[];
-        grouped[c].push(r);
+
+    data.forEach(r => {
+      if (clean(r.Disponibile).toLowerCase() !== "si") return;
+
+      const cat = MODE === "bar"
+        ? clean(r.Categoria).toUpperCase()
+        : clean(r.Categoria) || "Altro";
+
+      if (!grouped[cat]) grouped[cat] = [];
+
+      grouped[cat].push(
+        MODE === "bar"
+        ? { nome: capWords(r.Nome), prezzo: clean(r.Prezzo) }
+        : { piatto: capWords(r.Piatto), desc: clean(r.Ingredienti) }
+      );
+      count++;
     });
 
-    Object.keys(grouped).forEach(c=>{
-        $("menu").innerHTML += `
-        <div class="category">
-            <h2>${c}</h2>
-            ${grouped[c].map(i=>`
-                <div class="item-header">${i.Piatto}</div>
-                <div class="desc">${i.Ingredienti||""}</div>
-            `).join("")}
-        </div>`;
+    Object.keys(grouped).forEach(cat => {
+      const div = document.createElement("div");
+      div.className = "category";
+      div.innerHTML = `
+        <h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>
+        ${grouped[cat].map(i =>
+          MODE === "bar"
+          ? `<div class="bar-item"><span>${i.nome}</span><span>${i.prezzo}</span></div>`
+          : `<div><div class="item-header">${i.piatto}</div>${i.desc?`<div class="desc">${i.desc}</div>`:""}</div>`
+        ).join("")}
+      `;
+      menuDiv.appendChild(div);
     });
 
-    if (S["Prezzo"]) {
-        $("prezzo-box").innerText = S["Prezzo"];
-        $("prezzo-box").style.display = "block";
-    }
-}
+    const main = document.getElementById("main");
+    main.classList.remove("size-large","size-medium","size-small");
+    if (count > 14) main.classList.add("size-small");
+    else if (count > 7) main.classList.add("size-medium");
+    else main.classList.add("size-large");
 
-function renderBar(data, S) {
-    $("menu").innerHTML = "";
-    $("menu").style.display = "grid";
-    $("promo").style.display = "none";
-
-    const grouped = {};
-    data.forEach(r=>{
-        if (!["si","sì"].includes(clean(r.Disponibile).toLowerCase())) return;
-        const c = clean(r.Categoria).toUpperCase();
-        if (!grouped[c]) grouped[c]=[];
-        grouped[c].push(r);
-    });
-
-    Object.keys(grouped).forEach(c=>{
-        $("menu").innerHTML += `
-        <div class="category">
-            <h2>${c}</h2>
-            ${grouped[c].map(i=>`
-                <div class="item-header">${i.Nome} — ${i.Prezzo}</div>
-            `).join("")}
-        </div>`;
-    });
-
-    if (S["Promo Immagine"]) {
-        startPromo(S);
-    }
-}
-
-function startPromo(S) {
-    const img = $("promo").querySelector("img");
-    img.src = S["Promo Immagine"];
-    const anim = S["Animazione Promo"] || "fade";
-    const time = (parseInt(S["Tempo Promo"])||8)*1000;
-
-    let show = false;
-    setInterval(()=>{
+    const promo = document.getElementById("promo");
+    if (MODE === "bar" && S["Immagine Promo"]) {
+      promo.style.backgroundImage = `url(${S["Immagine Promo"]})`;
+      let show = false;
+      setInterval(()=>{
         show = !show;
-        $("menu").style.display = show ? "none":"grid";
-        $("promo").style.display = show ? "flex":"none";
-        img.className = anim;
-    }, time);
+        promo.style.display = show ? "block" : "none";
+        menuDiv.style.display = show ? "none" : "grid";
+        promo.className = S["Animazione Promo"] || "fade";
+      }, Number(S["Tempo Promo"] || 8000));
+    } else {
+      promo.style.display = "none";
+      menuDiv.style.display = "grid";
+    }
+
+  } catch(e) {
+    console.error("ERRORE:", e);
+  }
 }
 
-load();
-setInterval(load, 8000);
+update();
+setInterval(update, 6000);
 </script>
 </body>
 </html>
