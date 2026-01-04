@@ -3,107 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Digitale Pro</title>
+<title>Menu Digitale</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 * { box-sizing: border-box; }
 
-html, body { 
-    margin: 0; padding: 0; width: 100%; height: 100%; 
-    background-color: #000; 
-    font-family: 'Montserrat', sans-serif;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* SU SCHERMI GRANDI (TV/PC): BLOCCO SCROLL E PAGINA SINGOLA */
-body { overflow: hidden; }
+body {
+  overflow: hidden;
+}
 
-/* SU MOBILE: ABILITA SCROLL E RIMUOVE LIMITI ALTEZZA */
 @media (max-width: 768px) {
-    body { overflow-y: auto !important; height: auto !important; }
-    #main { height: auto !important; min-height: 100vh; display: block !important; }
-    #menu { display: block !important; }
-    .category { width: 100% !important; margin-bottom: 4vh !important; page-break-inside: avoid; }
-    #footer-banner { position: static !important; margin-top: 3vh !important; }
+  body { overflow-y: auto; }
 }
 
 :root {
-    --cat-color: #fff; --ing-color: #aaa; --title-color: #fff; --anim-speed: 0.8s;
+  --cat-color: #fff;
+  --ing-color: #aaa;
 }
 
-/* CONTENITORE PRINCIPALE */
-#main, #promo-overlay {
-    position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-    display: flex; flex-direction: column; padding: 3vh 4vw;
-    transition: opacity var(--anim-speed) ease, transform var(--anim-speed) ease;
+#main {
+  min-height: 100vh;
+  padding: 3vh 5vw;
+  display: flex;
+  flex-direction: column;
 }
 
-#promo-overlay { z-index: 1000; background: #000; align-items: center; justify-content: center; display: none; }
-#promo-overlay img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-/* INTESTAZIONE */
-#header { 
-    display: flex; align-items: center; justify-content: center; 
-    gap: 2vw; margin-bottom: 2vh; flex-shrink: 0; 
+#header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+  margin-bottom: 2vh;
 }
-#logo { max-height: 11vh; display: none; }
-#title { margin: 0; text-transform: uppercase; letter-spacing: 3px; text-align: center; line-height: 1; }
 
-/* MENU GRIGLIA (COME PRIMA) */
+#logo {
+  max-height: 10vh;
+  display: none;
+}
+
+#title {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
 #menu {
-    flex: 1; /* Occupa tutto lo spazio disponibile */
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Due colonne */
-    column-gap: 5vw;
-    row-gap: 2vh;
-    align-content: start; /* Parte dall'alto */
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3vh 6vw;
+}
+
+@media (max-width: 768px) {
+  #menu { grid-template-columns: 1fr; }
 }
 
 .category h2 {
-    margin: 0 0 0.8vh 0;
-    border-bottom: 2px solid var(--cat-color);
-    color: var(--cat-color);
-    text-transform: uppercase;
-    font-size: 1.4em;
+  margin: 0 0 1vh 0;
+  border-bottom: 2px solid var(--cat-color);
+  color: var(--cat-color);
 }
 
-.item-row { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.3vh; line-height: 1.1; }
-.desc { font-style: italic; color: var(--ing-color); font-size: 0.8em; margin-bottom: 0.8vh; line-height: 1.1; }
-
-/* BANNER PREZZO */
-#footer-banner {
-    width: 100%;
-    margin-top: auto; /* Spinge in fondo */
-    text-align: center;
-    padding: 1.5vh;
-    border: 3px solid var(--title-color);
-    border-radius: 12px;
-    color: var(--title-color);
-    font-weight: bold;
-    flex-shrink: 0;
-    display: none;
-    background: rgba(0,0,0,0.3); /* Leggera ombra per stacco */
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
 }
 
-/* ANIMAZIONI */
-.anim-sfumatura { opacity: 0 !important; }
-.anim-zoom { opacity: 0 !important; transform: scale(1.1) !important; }
-.anim-scorrimento { opacity: 0 !important; transform: translateY(50px) !important; }
-.anim-nessuna { transition: none !important; opacity: 0 !important; }
+.desc {
+  font-style: italic;
+  color: var(--ing-color);
+}
 
+/* SCALE DINAMICHE */
+.size-xl { font-size: 2.2vh; }
+.size-large { font-size: 1.9vh; }
+.size-medium { font-size: 1.6vh; }
+.size-small { font-size: 1.4vh; }
 </style>
 </head>
+
 <body>
-
-<div id="promo-overlay"><img id="promo-img" src=""></div>
-
-<div id="main">
-    <div id="header">
-        <img id="logo">
-        <h1 id="title">CARICAMENTO...</h1>
-    </div>
-    <div id="menu"></div>
-    <div id="footer-banner"></div>
+<div id="main" class="size-large">
+  <div id="header">
+    <img id="logo">
+    <h1 id="title">CARICAMENTO…</h1>
+  </div>
+  <div id="menu"></div>
 </div>
 
 <script>
@@ -113,133 +108,88 @@ const BAR_URL = `https://opensheet.elk.sh/${SHEET_ID}/Bar`;
 const SETTINGS_URL = `https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`;
 
 const TEMI = {
-    "elegante oro": { bg:"#111", text:"#f5f5f5", title:"#d4af37", category:"#d4af37", ingredients:"#aaa" },
-    "wine bar": { bg:"#1b0f14", text:"#f5eaea", title:"#a63a50", category:"#a63a50", ingredients:"#d2b5bc" },
-    "dark minimal": { bg:"#000", text:"#eee", title:"#fff", category:"#fff", ingredients:"#bbb" }
+  "elegante oro": { bg:"#111", text:"#f5f5f5", title:"#d4af37", category:"#d4af37", ingredients:"#aaa" },
+  "wine bar": { bg:"#1b0f14", text:"#f5eaea", title:"#a63a50", category:"#a63a50", ingredients:"#d2b5bc" },
+  "dark minimal": { bg:"#000", text:"#eee", title:"#fff", category:"#fff", ingredients:"#bbb" }
 };
-
-let toggleView = false;
-let updateInterval;
 
 function clean(v){ return (v||"").toString().trim(); }
 function cap(s){ return clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
 
 async function update(){
-    try {
-        const [menuData, barData, settingsData] = await Promise.all([
-            fetch(MENU_URL).then(r=>r.json()), fetch(BAR_URL).then(r=>r.json()), fetch(SETTINGS_URL).then(r=>r.json())
-        ]);
+  const [menu, bar, settings] = await Promise.all([
+    fetch(MENU_URL).then(r=>r.json()),
+    fetch(BAR_URL).then(r=>r.json()),
+    fetch(SETTINGS_URL).then(r=>r.json())
+  ]);
 
-        const S={};
-        settingsData.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore); });
+  const S={};
+  settings.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore); });
 
-        const mode = (S["Modalità"]||"cucina").toLowerCase();
-        const theme = TEMI[( (mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"]) || "" ).toLowerCase()] || TEMI["dark minimal"];
-        
-        document.body.style.background = theme.bg;
-        document.body.style.color = theme.text;
-        document.documentElement.style.setProperty("--cat-color", theme.category);
-        document.documentElement.style.setProperty("--ing-color", theme.ingredients);
-        document.documentElement.style.setProperty("--title-color", theme.title);
+  const mode = (S["Modalità"]||"cucina").toLowerCase();
+  const themeName = mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"];
+  const theme = TEMI[(themeName||"").toLowerCase()];
 
-        // GESTIONE PROMO (Solo se in modalità Bar)
-        const promoUrl = S["Immagine Promo"];
-        const animType = (S["Scelta Animazione Rotazione"] || "nessuna").toLowerCase();
-        const main = document.getElementById("main");
-        const promoOverlay = document.getElementById("promo-overlay");
+  if(theme){
+    document.body.style.background = theme.bg;
+    document.body.style.color = theme.text;
+    document.documentElement.style.setProperty("--cat-color", theme.category);
+    document.documentElement.style.setProperty("--ing-color", theme.ingredients);
+  }
 
-        if (mode === "bar" && promoUrl) {
-            toggleView = !toggleView;
-            const animClass = "anim-" + animType;
-            main.classList.add(animClass); promoOverlay.classList.add(animClass);
-            
-            setTimeout(() => {
-                if (toggleView) {
-                    document.getElementById("promo-img").src = promoUrl;
-                    promoOverlay.style.display = "flex"; main.style.display = "none";
-                    setTimeout(() => promoOverlay.classList.remove(animClass), 50);
-                } else {
-                    promoOverlay.style.display = "none"; main.style.display = "flex";
-                    setTimeout(() => main.classList.remove(animClass), 50);
-                }
-            }, 800);
-            
-            if(toggleView) return; // Se siamo in promo, non serve renderizzare il menu
-        } else {
-            promoOverlay.style.display = "none"; main.style.display = "flex";
-        }
+  const title = document.getElementById("title");
+  title.innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
+  title.style.color = theme?.title || "#fff";
+  title.style.fontFamily = S["Font Titolo"] || "Playfair Display";
 
-        // --- RENDERIZZAZIONE ---
-        document.getElementById("title").innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR") : (S["Titolo Cucina"]||"MENU");
-        document.getElementById("title").style.fontFamily = S["Font Titolo"] || "Playfair Display";
-        
-        const logo = document.getElementById("logo");
-        if(S["Logo URL"]) { logo.src = S["Logo URL"]; logo.style.display="block"; } else { logo.style.display="none"; }
+  document.body.style.fontFamily = S["Font Testo"] || "Montserrat";
 
-        const menuDiv = document.getElementById("menu");
-        menuDiv.innerHTML = "";
-        let count = 0, grouped = {};
-        const activeData = mode==="bar" ? barData : menuData;
+  const logo=document.getElementById("logo");
+  if(S["Logo URL"]){
+    logo.src=S["Logo URL"];
+    logo.style.display="block";
+  }
 
-        activeData.forEach(r=>{
-            if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
-                const cat = clean(r.Categoria).toUpperCase() ||"ALTRO";
-                if(!grouped[cat]) grouped[cat]=[];
-                grouped[cat].push(mode==="bar" ? { n:cap(r.Nome), p:clean(r.Prezzo) } : { n:cap(r.Piatto), d:clean(r.Ingredienti) });
-                count++;
-            }
-        });
+  const menuDiv=document.getElementById("menu");
+  menuDiv.innerHTML="";
+  let count=0, grouped={};
 
-        Object.keys(grouped).forEach(c=>{
-            let itemsHtml = grouped[c].map(i=>`<div><div class="item-row"><span>${i.n}</span>${i.p?`<span>${i.p}</span>`:""}</div>${i.d?`<div class="desc">${i.d}</div>`:""}</div>`).join("");
-            menuDiv.innerHTML += `<div class="category"><h2>${c}</h2>${itemsHtml}</div>`;
-        });
+  const data = mode==="bar" ? bar : menu;
 
-        // BANNER PREZZO (Logica stretta)
-        const footer = document.getElementById("footer-banner");
-        const testoPrezzo = clean(S["Prezzo"]);
-        const mostraBanner = (mode !== "bar" && testoPrezzo !== "");
+  data.forEach(r=>{
+    if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
+      const cat = clean(r.Categoria)||"Altro";
+      if(!grouped[cat]) grouped[cat]=[];
+      grouped[cat].push(
+        mode==="bar"
+        ? { n:cap(r.Nome), p:clean(r.Prezzo) }
+        : { n:cap(r.Piatto), d:clean(r.Ingredienti) }
+      );
+      count++;
+    }
+  });
 
-        if (mostraBanner) {
-            footer.innerText = testoPrezzo;
-            footer.style.display = "block";
-            footer.style.borderColor = theme.title;
-            footer.style.color = theme.title;
-        } else {
-            footer.style.display = "none";
-        }
+  Object.keys(grouped).forEach(c=>{
+    menuDiv.innerHTML+=`
+      <div class="category">
+        <h2>${c}</h2>
+        ${grouped[c].map(i=>`
+          <div>
+            <div class="item-row">
+              <span>${i.n}</span>
+              ${i.p?`<span>${i.p}</span>`:""}
+            </div>
+            ${i.d?`<div class="desc">${i.d}</div>`:""}
+          </div>`).join("")}
+      </div>`;
+  });
 
-        // --- CALCOLO DIMENSIONE MASSIMIZZATA ---
-        // Cerchiamo di usare il font più grande possibile in base al numero di elementi
-        let baseSize;
-        
-        if (count <= 6) baseSize = 3.2;       // Pochissimi piatti (es. solo Menu Fisso)
-        else if (count <= 10) baseSize = 2.6; // Pochi piatti
-        else if (count <= 16) baseSize = 2.0; // Medio
-        else if (count <= 24) baseSize = 1.6; // Pieno
-        else baseSize = 1.35;                 // Molto pieno (font piccolo per farci stare tutto)
-
-        // Se c'è il banner, riduciamo un po' per sicurezza
-        if (mostraBanner) baseSize *= 0.90;
-
-        // Su mobile ignoriamo i vh dinamici per evitare testi minuscoli
-        if (window.innerWidth > 768) {
-             main.style.fontSize = baseSize + "vh";
-             document.getElementById("title").style.fontSize = (baseSize * 1.8) + "vh";
-             footer.style.fontSize = (baseSize * 1.5) + "vh";
-        } else {
-             // Reset stili mobile
-             main.style.fontSize = "16px";
-             document.getElementById("title").style.fontSize = "2em";
-             footer.style.fontSize = "1.2em";
-        }
-
-        clearInterval(updateInterval);
-        updateInterval = setInterval(update, parseInt(S["Tempo Rotazione"])*1000 || 8000);
-
-    } catch(e) { console.error(e); }
+  const main=document.getElementById("main");
+  main.className = count<=6?"size-xl":count<=12?"size-large":count<=18?"size-medium":"size-small";
 }
+
 update();
+setInterval(update,6000);
 </script>
 </body>
 </html>
