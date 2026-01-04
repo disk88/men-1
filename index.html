@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menu Digitale</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 * { box-sizing: border-box; }
@@ -25,9 +25,19 @@ body {
   body { overflow-y: auto; }
 }
 
+/* VARIABILI COLORE */
 :root {
-  --cat-color: #fff;
-  --ing-color: #aaa;
+  --bg: #111;
+  --text: #f5f5f5;
+  --title: #d4af37;
+  --category: #d4af37;
+  --ingredients: #cfcfcf;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
 }
 
 #main {
@@ -37,6 +47,7 @@ body {
   flex-direction: column;
 }
 
+/* HEADER */
 #header {
   display: flex;
   align-items: center;
@@ -46,21 +57,26 @@ body {
 }
 
 #logo {
-  max-height: 8vh;
+  max-height: 9vh;
   display: none;
 }
 
 #title {
   margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 7vh;
+  letter-spacing: 4px;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  color: var(--title);
 }
 
+/* CONTENUTO */
 #content {
   flex: 1;
   position: relative;
 }
 
+/* MENU */
 #menu {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -72,36 +88,44 @@ body {
 }
 
 .category h2 {
-  margin: 0 0 0.8vh 0;
-  border-bottom: 2px solid var(--cat-color);
-  color: var(--cat-color);
+  margin: 0 0 0.6vh 0;
+  padding-bottom: 0.3vh;
+  border-bottom: 2px solid var(--category);
+  color: var(--category);
+  text-transform: uppercase;
+  font-size: 3.2vh;
 }
 
 .item-row {
   display: flex;
   justify-content: space-between;
   font-weight: 600;
+  font-size: 2.4vh;
+  line-height: 1.15;
 }
 
 .desc {
   font-style: italic;
-  color: var(--ing-color);
+  color: var(--ingredients);
+  font-size: 1.9vh;
   line-height: 1.2;
+  margin-bottom: 0.6vh;
 }
 
-/* PREZZO BOX */
+/* PREZZO MENU CUCINA */
 #price-box {
   display: none;
-  margin-top: 1.5vh;
-  text-align: center;
-  font-weight: bold;
-  border: 2px solid;
-  border-radius: 10px;
-  padding: 0.8vh;
+  margin-top: 1.2vh;
   align-self: center;
+  padding: 0.6vh 2vw;
+  border: 2px solid var(--title);
+  border-radius: 10px;
+  color: var(--title);
+  font-size: 2.6vh;
+  font-weight: bold;
 }
 
-/* PROMO */
+/* PROMO BAR */
 #promo {
   position: absolute;
   inset: 0;
@@ -118,20 +142,20 @@ body {
 .flip { animation: flip 0.8s ease; }
 
 @keyframes fade { from {opacity:0} to {opacity:1} }
-@keyframes slide { from {transform:translateX(30%);opacity:0} to {transform:none;opacity:1} }
-@keyframes zoom { from {transform:scale(1.1);opacity:0} to {transform:none;opacity:1} }
+@keyframes slide { from {transform:translateX(25%);opacity:0} to {transform:none;opacity:1} }
+@keyframes zoom { from {transform:scale(1.08);opacity:0} to {transform:none;opacity:1} }
 @keyframes flip { from {transform:rotateY(90deg)} to {transform:none} }
 
-/* SCALE */
-.size-xl { font-size: 2.4vh; }
-.size-large { font-size: 2vh; }
-.size-medium { font-size: 1.7vh; }
-.size-small { font-size: 1.5vh; }
+/* SCALE DINAMICA */
+.size-xl { }
+.size-large { }
+.size-medium { }
+.size-small { font-size: 0.92em; }
 </style>
 </head>
 
 <body>
-<div id="main" class="size-large">
+<div id="main">
   <div id="header">
     <img id="logo">
     <h1 id="title">CARICAMENTO…</h1>
@@ -152,14 +176,15 @@ const BAR_URL = `https://opensheet.elk.sh/${SHEET_ID}/Bar`;
 const SETTINGS_URL = `https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`;
 
 const TEMI = {
-  "elegante oro": { bg:"#111", text:"#f5f5f5", title:"#d4af37", category:"#d4af37", ingredients:"#aaa" },
-  "wine bar": { bg:"#1b0f14", text:"#f5eaea", title:"#a63a50", category:"#a63a50", ingredients:"#d2b5bc" },
+  "elegante oro": { bg:"#111", text:"#f5f5f5", title:"#d4af37", category:"#d4af37", ingredients:"#cfcfcf" },
+  "wine bar": { bg:"#1b0f14", text:"#f5eaea", title:"#a63a50", category:"#a63a50", ingredients:"#e0c2c9" },
   "dark minimal": { bg:"#000", text:"#eee", title:"#fff", category:"#fff", ingredients:"#bbb" }
 };
 
 function clean(v){ return (v||"").toString().trim(); }
 function cap(s){ return clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
 
+let promoInterval = null;
 let showingPromo = false;
 
 async function update(){
@@ -173,23 +198,30 @@ async function update(){
   settings.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore); });
 
   const mode = (S["Modalità"]||"cucina").toLowerCase();
-  const themeName = mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"];
-  const theme = TEMI[(themeName||"").toLowerCase()];
 
-  if(theme){
-    document.body.style.background = theme.bg;
-    document.body.style.color = theme.text;
-    document.documentElement.style.setProperty("--cat-color", theme.category);
-    document.documentElement.style.setProperty("--ing-color", theme.ingredients);
+  /* TEMA */
+  const themeName = (mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"] || "").toLowerCase();
+  const t = TEMI[themeName];
+  if(t){
+    document.documentElement.style.setProperty("--bg", t.bg);
+    document.documentElement.style.setProperty("--text", t.text);
+    document.documentElement.style.setProperty("--title", t.title);
+    document.documentElement.style.setProperty("--category", t.category);
+    document.documentElement.style.setProperty("--ingredients", t.ingredients);
   }
 
-  const title = document.getElementById("title");
-  title.innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
-  title.style.color = theme?.title || "#fff";
+  /* TITOLO */
+  document.getElementById("title").innerText =
+    mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
 
+  /* LOGO */
   const logo=document.getElementById("logo");
-  if(S["Logo URL"]){ logo.src=S["Logo URL"]; logo.style.display="block"; }
+  if(S["Logo URL"]){
+    logo.src=S["Logo URL"];
+    logo.style.display="block";
+  } else logo.style.display="none";
 
+  /* MENU */
   const menuDiv=document.getElementById("menu");
   menuDiv.innerHTML="";
   let count=0, grouped={};
@@ -224,26 +256,23 @@ async function update(){
       </div>`;
   });
 
-  const main=document.getElementById("main");
-  main.className = count<=6?"size-xl":count<=12?"size-large":count<=18?"size-medium":"size-small";
-
-  /* PREZZO MENU */
+  /* PREZZO CUCINA */
   const priceBox=document.getElementById("price-box");
-  if(S["Prezzo"]){
+  if(mode==="cucina" && S["Prezzo"]){
     priceBox.innerText=S["Prezzo"];
-    priceBox.style.borderColor=theme?.title||"#fff";
-    priceBox.style.color=theme?.title||"#fff";
     priceBox.style.display="block";
   } else priceBox.style.display="none";
 
-  /* ROTAZIONE PROMO */
+  /* PROMO SOLO BAR */
   const promo=document.getElementById("promo");
-  const anim=(S["Animazione Rotazione"]||"fade").toLowerCase();
-  promo.className=anim;
+  promo.style.display="none";
+  clearInterval(promoInterval);
 
-  if(S["Immagine Promo"]){
+  if(mode==="bar" && S["Immagine Promo"]){
     promo.src=S["Immagine Promo"];
-    setInterval(()=>{
+    const anim=(S["Animazione Rotazione"]||"fade").toLowerCase();
+    promo.className=anim;
+    promoInterval=setInterval(()=>{
       showingPromo=!showingPromo;
       menuDiv.style.display=showingPromo?"none":"grid";
       promo.style.display=showingPromo?"block":"none";
@@ -252,6 +281,7 @@ async function update(){
 }
 
 update();
+setInterval(update,6000);
 </script>
 </body>
 </html>
