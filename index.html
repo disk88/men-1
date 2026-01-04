@@ -37,7 +37,7 @@
             align-items: center;
             justify-content: center;
             gap: 2vw;
-            margin-bottom: 2vh;
+            margin-bottom: 5vh; /* Aumentato per distanziare dal menu */
         }
         #logo {
             max-height: 10vh;
@@ -55,12 +55,12 @@
         #menu {
             flex: 1;
             display: grid;
-            gap: 5vh 6vw;
+            gap: 6vh 6vw; /* Leggermente più spazio tra categorie */
             grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
         }
         /* CATEGORIE */
         .category h2 {
-            margin: 0 0 1.5vh 0;
+            margin: 0 0 2vh 0; /* Più spazio sotto il titolo categoria */
             border-bottom: 2px solid;
             text-transform: uppercase;
         }
@@ -70,18 +70,20 @@
         }
         .desc {
             font-style: italic;
-            opacity: 0.75;
-            margin-bottom: 1vh;
+            opacity: 1;           /* Ora completamente visibile */
+            margin-bottom: 2vh;   /* Più spazio tra un piatto e l'altro */
+            line-height: 1.4;     /* Migliore leggibilità */
         }
         /* BAR */
         .bar-item {
             display: flex;
             justify-content: space-between;
             font-weight: 600;
+            margin-bottom: 1.5vh; /* Più spazio tra voci bar */
         }
         /* PREZZO */
         #prezzo-box {
-            margin: 3vh auto 0;
+            margin: 4vh auto 0;   /* Più spazio sopra il box prezzo */
             padding: 2vh 4vw;
             border: 3px solid;
             border-radius: 16px;
@@ -105,51 +107,53 @@
         #promo.show {
             opacity: 1;
         }
-        /* SCALE */
+        /* SCALE - Testi grandi per visibilità da lontano */
         .size-large #title {
-            font-size: 7.5vh; /* Aumentato per visibilità da lontano */
+            font-size: 7.8vh;
         }
         .size-large .category h2 {
-            font-size: 4.8vh; /* Aumentato */
+            font-size: 5vh;
         }
         .size-large .item-header, .size-large .bar-item {
-            font-size: 3.5vh; /* Aumentato */
+            font-size: 3.6vh;
         }
         .size-large .desc {
-            font-size: 2.2vh; /* Aumentato */
+            font-size: 2.8vh;   /* Ingredienti ben leggibili */
         }
         .size-large #prezzo-box {
-            font-size: 3.5vh; /* Aumentato */
+            font-size: 3.6vh;
         }
+
         .size-medium #title {
-            font-size: 6.5vh; /* Aumentato */
+            font-size: 6.8vh;
         }
         .size-medium .category h2 {
-            font-size: 4.1vh; /* Aumentato */
+            font-size: 4.3vh;
         }
         .size-medium .item-header, .size-medium .bar-item {
-            font-size: 2.9vh; /* Aumentato */
+            font-size: 3vh;
         }
         .size-medium .desc {
-            font-size: 1.9vh; /* Aumentato */
+            font-size: 2.4vh;   /* Ingredienti più grandi */
         }
         .size-medium #prezzo-box {
-            font-size: 3.1vh; /* Aumentato */
+            font-size: 3.2vh;
         }
+
         .size-small #title {
-            font-size: 5.8vh; /* Aumentato */
+            font-size: 6vh;
         }
         .size-small .category h2 {
-            font-size: 3.6vh; /* Aumentato */
+            font-size: 3.8vh;
         }
         .size-small .item-header, .size-small .bar-item {
-            font-size: 2.6vh; /* Aumentato */
+            font-size: 2.7vh;
         }
         .size-small .desc {
-            font-size: 1.7vh; /* Aumentato */
+            font-size: 2.1vh;   /* Ancora ben visibile */
         }
         .size-small #prezzo-box {
-            font-size: 2.8vh; /* Aumentato */
+            font-size: 2.9vh;
         }
     </style>
 </head>
@@ -163,6 +167,7 @@
         <div id="prezzo-box"></div>
         <div id="promo"></div>
     </div>
+
     <script>
         const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
         const THEMES = {
@@ -175,13 +180,12 @@
             minimal: {bg: "#f7f7f7", text: "#111", accent: "#000"},
             luxury: {bg: "#121212", text: "#f1f1f1", accent: "#c9a24d"}
         };
-        function clean(v) {
-            return (v || "").toString().trim();
-        }
-        function capWords(s) {
-            return clean(s).toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-        }
+
+        function clean(v) { return (v || "").toString().trim(); }
+        function capWords(s) { return clean(s).toLowerCase().replace(/\b\w/g, l => l.toUpperCase()); }
+
         let promoTimer = null;
+
         async function updateData() {
             try {
                 const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
@@ -193,19 +197,24 @@
                     : `https://opensheet.elk.sh/${SHEET_ID}/Menu`;
                 const data = await fetch(DATA_URL).then(r => r.json());
                 const theme = THEMES[(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"])] || THEMES.classic;
+
                 document.body.style.background = theme.bg;
                 document.body.style.color = theme.text;
+
                 const title = document.getElementById("title");
                 title.innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
                 title.style.color = theme.accent;
+
                 const logo = document.getElementById("logo");
                 if (S["Logo URL"]) {
                     logo.src = S["Logo URL"];
                     logo.style.display = "block";
                 } else logo.style.display = "none";
+
                 const menu = document.getElementById("menu");
                 menu.innerHTML = "";
                 let count = 0;
+
                 if (MODE === "cucina") {
                     stopPromo();
                     const ORDER = ["Antipasto", "Primo", "Secondo", "Contorno", "Dolce"];
@@ -267,16 +276,18 @@
                         stopPromo();
                     }
                 }
+
                 const main = document.getElementById("main");
                 main.classList.remove("size-large", "size-medium", "size-small");
                 if (count > 14) main.classList.add("size-small");
                 else if (count > 7) main.classList.add("size-medium");
                 else main.classList.add("size-large");
+
             } catch (e) {
                 console.error("Errore caricamento dati:", e);
-                // Opzionale: mostra messaggio errore nel DOM
             }
         }
+
         function startPromo(S) {
             stopPromo();
             if (!S["Immagine Promo"]) return;
@@ -288,12 +299,14 @@
                 promo.classList.toggle("show", show);
             }, Number(S["Tempo Promo"] || 8000));
         }
+
         function stopPromo() {
             clearInterval(promoTimer);
             promoTimer = null;
             const promo = document.getElementById("promo");
             promo.classList.remove("show");
         }
+
         updateData();
         setInterval(updateData, 30000);
     </script>
