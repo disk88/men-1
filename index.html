@@ -43,24 +43,29 @@
             letter-spacing: 4px;
             margin: 0;
             text-align: center;
+            font-size: 7vh;
         }
         /* MENU COMUNE */
         #menu {
             flex: 1;
-            display: grid;
-            gap: 3vh 3vw;
             overflow: hidden;
         }
-        /* CATEGORIE */
+        /* CATEGORIE COMUNI */
         .category h2 {
             margin: 0 0 1vh 0;
             border-bottom: 2px solid;
             text-transform: uppercase;
-            font-size: inherit;
         }
-        /* MODALITÀ CUCINA */
+        .category {
+            break-inside: avoid; /* Evita che una categoria venga spezzata tra colonne */
+            margin-bottom: 2.5vh;
+        }
+
+        /* MODALITÀ CUCINA - Layout a griglia classico (pochi elementi grandi) */
         .mode-cucina #menu {
+            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 3vh 3vw;
         }
         .mode-cucina .category h2 {
             font-size: 4.5vh;
@@ -77,12 +82,14 @@
             font-size: 2.6vh;
         }
 
-        /* MODALITÀ BAR */
+        /* MODALITÀ BAR - Layout a colonne (riempimento verticale intelligente) */
         .mode-bar #menu {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2vh 2vw;
-        }
-        .mode-bar .category {
+            columns: auto;               /* Numero colonne automatico */
+            column-count: auto;
+            column-width: 280px;         /* Larghezza minima per colonna */
+            column-gap: 3vw;
+            max-column-count: 6;         /* Limite massimo: 6 colonne */
+            column-fill: balance;        /* Bilancia il contenuto tra le colonne */
             font-size: 2.2vh;
         }
         .mode-bar .category h2 {
@@ -128,9 +135,6 @@
         }
         #promo.show {
             opacity: 1;
-        }
-        #title {
-            font-size: 7vh;
         }
     </style>
 </head>
@@ -268,8 +272,7 @@
             const promo = document.getElementById("promo");
             promo.style.backgroundImage = `url(${S["Immagine Promo"]})`;
             let show = false;
-            // Ora "Tempo Promo" è espresso in SECONDI
-            const intervalSeconds = Number(S["Tempo Promo"] || 8); // default 8 secondi se non specificato
+            const intervalSeconds = Number(S["Tempo Promo"] || 8);
             promoTimer = setInterval(() => {
                 show = !show;
                 promo.classList.toggle("show", show);
@@ -284,7 +287,6 @@
         }
 
         updateData();
-        // Refresh ogni 10 secondi invece di 30
         setInterval(updateData, 10000);
     </script>
 </body>
