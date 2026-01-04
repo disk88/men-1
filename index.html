@@ -32,7 +32,7 @@ body {
 
 #main {
   min-height: 100vh;
-  padding: 3vh 5vw;
+  padding: 2vh 4vw;
   display: flex;
   flex-direction: column;
 }
@@ -42,11 +42,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2vw;
-  margin-bottom: 2vh;
+  margin-bottom: 1.5vh;
 }
 
 #logo {
-  max-height: 10vh;
+  max-height: 8vh;
   display: none;
 }
 
@@ -56,11 +56,15 @@ body {
   letter-spacing: 3px;
 }
 
-#menu {
+#content {
   flex: 1;
+  position: relative;
+}
+
+#menu {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3vh 6vw;
+  gap: 2vh 5vw;
 }
 
 @media (max-width: 768px) {
@@ -68,7 +72,7 @@ body {
 }
 
 .category h2 {
-  margin: 0 0 1vh 0;
+  margin: 0 0 0.8vh 0;
   border-bottom: 2px solid var(--cat-color);
   color: var(--cat-color);
 }
@@ -82,13 +86,47 @@ body {
 .desc {
   font-style: italic;
   color: var(--ing-color);
+  line-height: 1.2;
 }
 
-/* SCALE DINAMICHE */
-.size-xl { font-size: 2.2vh; }
-.size-large { font-size: 1.9vh; }
-.size-medium { font-size: 1.6vh; }
-.size-small { font-size: 1.4vh; }
+/* PREZZO BOX */
+#price-box {
+  display: none;
+  margin-top: 1.5vh;
+  text-align: center;
+  font-weight: bold;
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 0.8vh;
+  align-self: center;
+}
+
+/* PROMO */
+#promo {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+  display: none;
+}
+
+/* ANIMAZIONI */
+.fade { animation: fade 0.8s ease; }
+.slide { animation: slide 0.8s ease; }
+.zoom { animation: zoom 0.8s ease; }
+.flip { animation: flip 0.8s ease; }
+
+@keyframes fade { from {opacity:0} to {opacity:1} }
+@keyframes slide { from {transform:translateX(30%);opacity:0} to {transform:none;opacity:1} }
+@keyframes zoom { from {transform:scale(1.1);opacity:0} to {transform:none;opacity:1} }
+@keyframes flip { from {transform:rotateY(90deg)} to {transform:none} }
+
+/* SCALE */
+.size-xl { font-size: 2.4vh; }
+.size-large { font-size: 2vh; }
+.size-medium { font-size: 1.7vh; }
+.size-small { font-size: 1.5vh; }
 </style>
 </head>
 
@@ -98,7 +136,13 @@ body {
     <img id="logo">
     <h1 id="title">CARICAMENTO…</h1>
   </div>
-  <div id="menu"></div>
+
+  <div id="content">
+    <div id="menu"></div>
+    <img id="promo">
+  </div>
+
+  <div id="price-box"></div>
 </div>
 
 <script>
@@ -115,6 +159,8 @@ const TEMI = {
 
 function clean(v){ return (v||"").toString().trim(); }
 function cap(s){ return clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
+
+let showingPromo = false;
 
 async function update(){
   const [menu, bar, settings] = await Promise.all([
@@ -140,15 +186,9 @@ async function update(){
   const title = document.getElementById("title");
   title.innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
   title.style.color = theme?.title || "#fff";
-  title.style.fontFamily = S["Font Titolo"] || "Playfair Display";
-
-  document.body.style.fontFamily = S["Font Testo"] || "Montserrat";
 
   const logo=document.getElementById("logo");
-  if(S["Logo URL"]){
-    logo.src=S["Logo URL"];
-    logo.style.display="block";
-  }
+  if(S["Logo URL"]){ logo.src=S["Logo URL"]; logo.style.display="block"; }
 
   const menuDiv=document.getElementById("menu");
   menuDiv.innerHTML="";
@@ -186,10 +226,32 @@ async function update(){
 
   const main=document.getElementById("main");
   main.className = count<=6?"size-xl":count<=12?"size-large":count<=18?"size-medium":"size-small";
+
+  /* PREZZO MENU */
+  const priceBox=document.getElementById("price-box");
+  if(S["Prezzo"]){
+    priceBox.innerText=S["Prezzo"];
+    priceBox.style.borderColor=theme?.title||"#fff";
+    priceBox.style.color=theme?.title||"#fff";
+    priceBox.style.display="block";
+  } else priceBox.style.display="none";
+
+  /* ROTAZIONE PROMO */
+  const promo=document.getElementById("promo");
+  const anim=(S["Animazione Rotazione"]||"fade").toLowerCase();
+  promo.className=anim;
+
+  if(S["Immagine Promo"]){
+    promo.src=S["Immagine Promo"];
+    setInterval(()=>{
+      showingPromo=!showingPromo;
+      menuDiv.style.display=showingPromo?"none":"grid";
+      promo.style.display=showingPromo?"block":"none";
+    }, (parseInt(S["Tempo Rotazione"])||8)*1000);
+  }
 }
 
 update();
-setInterval(update,6000);
 </script>
 </body>
 </html>
