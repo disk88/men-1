@@ -3,66 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Digitale Pro - Smart Banner</title>
+<title>Menu Digitale Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; }
+
+html, body { 
+    margin: 0; padding: 0; width: 100%; height: 100%; 
+    background-color: #000; 
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* SU SCHERMI GRANDI (TV/PC): BLOCCO SCROLL E PAGINA SINGOLA */
+body { overflow: hidden; }
+
+/* SU MOBILE: ABILITA SCROLL E RIMUOVE LIMITI ALTEZZA */
+@media (max-width: 768px) {
+    body { overflow-y: auto !important; height: auto !important; }
+    #main { height: auto !important; min-height: 100vh; display: block !important; }
+    #menu { display: block !important; }
+    .category { width: 100% !important; margin-bottom: 4vh !important; page-break-inside: avoid; }
+    #footer-banner { position: static !important; margin-top: 3vh !important; }
+}
 
 :root {
     --cat-color: #fff; --ing-color: #aaa; --title-color: #fff; --anim-speed: 0.8s;
 }
 
+/* CONTENITORE PRINCIPALE */
 #main, #promo-overlay {
     position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-    display: flex; flex-direction: column; padding: 3vh 5vw;
+    display: flex; flex-direction: column; padding: 3vh 4vw;
     transition: opacity var(--anim-speed) ease, transform var(--anim-speed) ease;
 }
 
 #promo-overlay { z-index: 1000; background: #000; align-items: center; justify-content: center; display: none; }
 #promo-overlay img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-/* LAYOUT A COLONNE: RIEMPI PRIMA VERTICALE POI ORIZZONTALE */
-#menu {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap; 
-    align-content: space-between;
-    gap: 0 6vw;
-    overflow: hidden;
+/* INTESTAZIONE */
+#header { 
+    display: flex; align-items: center; justify-content: center; 
+    gap: 2vw; margin-bottom: 2vh; flex-shrink: 0; 
 }
+#logo { max-height: 11vh; display: none; }
+#title { margin: 0; text-transform: uppercase; letter-spacing: 3px; text-align: center; line-height: 1; }
 
-.category {
-    width: 46%; 
-    break-inside: avoid;
-    margin-bottom: 2.5vh;
+/* MENU GRIGLIA (COME PRIMA) */
+#menu {
+    flex: 1; /* Occupa tutto lo spazio disponibile */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Due colonne */
+    column-gap: 5vw;
+    row-gap: 2vh;
+    align-content: start; /* Parte dall'alto */
 }
 
 .category h2 {
-    margin: 0 0 1vh 0;
+    margin: 0 0 0.8vh 0;
     border-bottom: 2px solid var(--cat-color);
     color: var(--cat-color);
     text-transform: uppercase;
-    font-size: 1.5em;
+    font-size: 1.4em;
 }
 
-.item-row { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.2vh; }
-.desc { font-style: italic; color: var(--ing-color); font-size: 0.85em; margin-bottom: 1vh; line-height: 1.2; }
+.item-row { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.3vh; line-height: 1.1; }
+.desc { font-style: italic; color: var(--ing-color); font-size: 0.8em; margin-bottom: 0.8vh; line-height: 1.1; }
 
-/* BANNER PREZZO: APPARE SOLO SE PRESENTE VALORE */
+/* BANNER PREZZO */
 #footer-banner {
     width: 100%;
-    margin-top: 2vh;
+    margin-top: auto; /* Spinge in fondo */
     text-align: center;
-    padding: 1.8vh;
+    padding: 1.5vh;
     border: 3px solid var(--title-color);
-    border-radius: 15px;
+    border-radius: 12px;
     color: var(--title-color);
     font-weight: bold;
     flex-shrink: 0;
-    display: none; /* Fondamentale: parte nascosto */
+    display: none;
+    background: rgba(0,0,0,0.3); /* Leggera ombra per stacco */
 }
 
 /* ANIMAZIONI */
@@ -71,9 +91,6 @@ html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color:
 .anim-scorrimento { opacity: 0 !important; transform: translateY(50px) !important; }
 .anim-nessuna { transition: none !important; opacity: 0 !important; }
 
-#header { display: flex; align-items: center; justify-content: center; gap: 2vw; margin-bottom: 3vh; flex-shrink: 0; }
-#logo { max-height: 10vh; display: none; }
-#title { margin: 0; text-transform: uppercase; letter-spacing: 3px; text-align: center; font-size: 5.5vh; }
 </style>
 </head>
 <body>
@@ -125,6 +142,7 @@ async function update(){
         document.documentElement.style.setProperty("--ing-color", theme.ingredients);
         document.documentElement.style.setProperty("--title-color", theme.title);
 
+        // GESTIONE PROMO (Solo se in modalità Bar)
         const promoUrl = S["Immagine Promo"];
         const animType = (S["Scelta Animazione Rotazione"] || "nessuna").toLowerCase();
         const main = document.getElementById("main");
@@ -134,6 +152,7 @@ async function update(){
             toggleView = !toggleView;
             const animClass = "anim-" + animType;
             main.classList.add(animClass); promoOverlay.classList.add(animClass);
+            
             setTimeout(() => {
                 if (toggleView) {
                     document.getElementById("promo-img").src = promoUrl;
@@ -144,13 +163,16 @@ async function update(){
                     setTimeout(() => main.classList.remove(animClass), 50);
                 }
             }, 800);
-            if(toggleView) return; 
+            
+            if(toggleView) return; // Se siamo in promo, non serve renderizzare il menu
         } else {
             promoOverlay.style.display = "none"; main.style.display = "flex";
         }
 
+        // --- RENDERIZZAZIONE ---
         document.getElementById("title").innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR") : (S["Titolo Cucina"]||"MENU");
         document.getElementById("title").style.fontFamily = S["Font Titolo"] || "Playfair Display";
+        
         const logo = document.getElementById("logo");
         if(S["Logo URL"]) { logo.src = S["Logo URL"]; logo.style.display="block"; } else { logo.style.display="none"; }
 
@@ -173,34 +195,47 @@ async function update(){
             menuDiv.innerHTML += `<div class="category"><h2>${c}</h2>${itemsHtml}</div>`;
         });
 
-        // LOGICA BANNER PREZZO RIGOROSA
+        // BANNER PREZZO (Logica stretta)
         const footer = document.getElementById("footer-banner");
         const testoPrezzo = clean(S["Prezzo"]);
-        
-        // Il banner appare SOLO se siamo in cucina E c'è testo nella cella
-        if (mode !== "bar" && testoPrezzo !== "") {
+        const mostraBanner = (mode !== "bar" && testoPrezzo !== "");
+
+        if (mostraBanner) {
             footer.innerText = testoPrezzo;
             footer.style.display = "block";
             footer.style.borderColor = theme.title;
             footer.style.color = theme.title;
         } else {
             footer.style.display = "none";
-            footer.innerText = ""; // Svuota per sicurezza
         }
 
-        // AUTO-SIZE AGGIUSTATO
-        let baseSize = count <= 8 ? 2.8 : count <= 14 ? 2.2 : count <= 22 ? 1.7 : 1.3;
+        // --- CALCOLO DIMENSIONE MASSIMIZZATA ---
+        // Cerchiamo di usare il font più grande possibile in base al numero di elementi
+        let baseSize;
         
-        // Se il banner è attivo, riduciamo leggermente il font del menu per far spazio
-        if (footer.style.display === "block") {
-            baseSize *= 0.9;
+        if (count <= 6) baseSize = 3.2;       // Pochissimi piatti (es. solo Menu Fisso)
+        else if (count <= 10) baseSize = 2.6; // Pochi piatti
+        else if (count <= 16) baseSize = 2.0; // Medio
+        else if (count <= 24) baseSize = 1.6; // Pieno
+        else baseSize = 1.35;                 // Molto pieno (font piccolo per farci stare tutto)
+
+        // Se c'è il banner, riduciamo un po' per sicurezza
+        if (mostraBanner) baseSize *= 0.90;
+
+        // Su mobile ignoriamo i vh dinamici per evitare testi minuscoli
+        if (window.innerWidth > 768) {
+             main.style.fontSize = baseSize + "vh";
+             document.getElementById("title").style.fontSize = (baseSize * 1.8) + "vh";
+             footer.style.fontSize = (baseSize * 1.5) + "vh";
+        } else {
+             // Reset stili mobile
+             main.style.fontSize = "16px";
+             document.getElementById("title").style.fontSize = "2em";
+             footer.style.fontSize = "1.2em";
         }
-        
-        main.style.fontSize = baseSize + "vh";
-        footer.style.fontSize = (baseSize * 1.6) + "vh";
 
         clearInterval(updateInterval);
-        updateInterval = setInterval(update, parseInt(S["Tempo Rotazione"])*1000 || 7000);
+        updateInterval = setInterval(update, parseInt(S["Tempo Rotazione"])*1000 || 8000);
 
     } catch(e) { console.error(e); }
 }
