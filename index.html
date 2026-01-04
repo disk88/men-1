@@ -116,8 +116,12 @@ const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 const MENU_URL = `https://opensheet.elk.sh/${SHEET_ID}/Menu`;
 const SETTINGS_URL = `https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`;
 
+function clean(v) {
+    return (v || "").toString().trim();
+}
+
 function capWords(str) {
-    return str.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    return clean(str).toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 }
 
 async function update() {
@@ -127,20 +131,28 @@ async function update() {
             fetch(SETTINGS_URL).then(r => r.json())
         ]);
 
+        /* ===== IMPOSTAZIONI ===== */
         const S = {};
         settingsData.forEach(r => {
-            if (r.Proprietà) S[r.Proprietà.trim()] = r.Valore;
+            if (r.Proprietà) {
+                S[clean(r.Proprietà)] = clean(r.Valore);
+            }
         });
 
-        /* COLORI E FONT */
         document.body.style.background = S["Colore Sfondo"] || "#111";
         document.body.style.color = S["Colore Testo"] || "#fff";
-        document.body.style.fontFamily = S["Font Testo"] ? `'${S["Font Testo"]}', sans-serif` : "Montserrat";
+
+        if (S["Font Testo"]) {
+            document.body.style.fontFamily = S["Font Testo"];
+        }
 
         const title = document.getElementById("title");
         title.innerText = S["Titolo Pagina"] || "MENU";
         title.style.color = S["Colore Titolo"] || "#d4af37";
-        title.style.fontFamily = S["Font Titolo"] ? `'${S["Font Titolo"]}', serif` : "Playfair Display";
+
+        if (S["Font Titolo"]) {
+            title.style.fontFamily = S["Font Titolo"];
+        }
 
         /* LOGO */
         const logo = document.getElementById("logo");
@@ -151,7 +163,7 @@ async function update() {
             logo.style.display = "none";
         }
 
-        /* MENU */
+        /* ===== MENU ===== */
         const menuDiv = document.getElementById("menu");
         menuDiv.innerHTML = "";
 
@@ -159,12 +171,14 @@ async function update() {
         let count = 0;
 
         menuData.forEach(r => {
-            if ((r.Disponibile || "").toLowerCase() === "si") {
-                const cat = r.Categoria || "Altro";
+            const disp = clean(r.Disponibile).toLowerCase();
+            if (disp === "si" || disp === "sì") {
+                const cat = clean(r.Categoria) || "Altro";
+
                 if (!grouped[cat]) grouped[cat] = [];
                 grouped[cat].push({
-                    piatto: capWords(r.Piatto || ""),
-                    desc: r.Ingredienti || ""
+                    piatto: capWords(r.Piatto),
+                    desc: clean(r["Ingredienti "] || r["Ingredienti"])
                 });
                 count++;
             }
@@ -174,16 +188,49 @@ async function update() {
             const div = document.createElement("div");
             div.className = "category";
             div.innerHTML = `
-                <h2 style="color:${S["Colore Titolo"]};border-color:${S["Colore Titolo"]}">${cat}</h2>
+                <h2 style="color:${S["Colore Titolo"] || "#d4af37"};
+                           border-color:${S["Colore Titolo"] || "#d4af37"}">
+                    ${cat}
+                </h2>
                 ${grouped[cat].map(i => `
                     <div>
                         <div class="item-header">${i.piatto}</div>
-                        ${i.desc ? `<div class="desc" style="color:${S["Colore Ingredienti"] || "#aaa"}">${i.desc}</div>` : ""}
+                        ${i.desc ? `<div class="desc">${i.desc}</div>` : ""}
                     </div>
                 `).join("")}
             `;
             menuDiv.appendChild(div);
         });
 
-        /* LAYOUT RESPONSIVE */
-        m
+        /* ===== RESPONSIVE ===== */
+        menuDiv.style.gridTemplateColumns =
+            window.innerWidth > window.innerHeight ? "1fr 1fr" : "1fr";
+
+        const main = document.getElementById("main");
+        main.classList.remove("size-large","size-medium","size-small");
+
+        if (count > 14) main.classList.add("size-small");
+        else if (count > 7) main.classList.add("size-medium");
+        else main.classList.add("size-large");
+
+        /* PREZZO */
+        const box = document.getElementById("prezzo-box");
+        if (S["Prezzo"]) {
+            box.innerText = S["Prezzo"];
+            box.style.display = "block";
+            box.style.color = S["Colore Titolo"] || "#d4af37";
+            box.style.borderColor = S["Colore Titolo"] || "#d4af37";
+        } else {
+            box.style.display = "none";
+        }
+
+    } catch (e) {
+        console.error("ERRORE MENU:", e);
+    }
+}
+
+update();
+setInterval(update, 6000);
+</script>
+</body>
+</html>
