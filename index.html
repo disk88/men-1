@@ -57,11 +57,11 @@
             text-transform: uppercase;
         }
         .category {
-            break-inside: avoid; /* Evita che una categoria venga spezzata tra colonne */
-            margin-bottom: 2.5vh;
+            break-inside: avoid;
+            margin-bottom: 3vh;
         }
 
-        /* MODALITÀ CUCINA - Layout a griglia classico (pochi elementi grandi) */
+        /* MODALITÀ CUCINA */
         .mode-cucina #menu {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
@@ -82,23 +82,23 @@
             font-size: 2.6vh;
         }
 
-        /* MODALITÀ BAR - Layout a colonne (riempimento verticale intelligente) */
-.mode-bar #menu {
+        /* MODALITÀ BAR */
+        .mode-bar #menu {
             columns: auto;
             column-width: 280px;
-            column-gap: 5vw;     /* Più spazio tra colonne: più elegante */
+            column-gap: 5vw;
             column-fill: balance;
-            font-size: 2.5vh;    /* Testi leggermente più grandi */
+            font-size: 2.5vh;
         }
         .mode-bar .category h2 {
-            font-size: 3.2vh;    /* Titoli categoria più evidenti */
+            font-size: 3.2vh;
             margin-bottom: 1vh;
         }
         .mode-bar .bar-item {
             display: flex;
             justify-content: space-between;
             font-weight: 600;
-            margin-bottom: 1vh;  /* Più spazio tra righe */
+            margin-bottom: 1vh;
             line-height: 1.4;
         }
         .mode-bar .bar-item span:last-child {
@@ -106,6 +106,7 @@
             min-width: 6ch;
             text-align: right;
         }
+
         /* PREZZO */
         #prezzo-box {
             margin: 3vh auto 0;
@@ -169,6 +170,7 @@
                 const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
                 const S = {};
                 settings.forEach(r => S[clean(r.Proprietà)] = clean(r.Valore));
+
                 const MODE = (S["Modalità"] || "cucina").toLowerCase();
                 const DATA_URL = MODE === "bar"
                     ? `https://opensheet.elk.sh/${SHEET_ID}/Bar`
@@ -230,14 +232,48 @@
                     } else box.style.display = "none";
                 } else {
                     document.getElementById("prezzo-box").style.display = "none";
+
+                    // Raccolta categorie e voci
                     const grouped = {};
-                    data.forEach(r => {
+                    const firstAppearance = {}; // Per ordine "tabella"
+                    data.forEach((r, index) => {
                         if (clean(r.Disponibile).toLowerCase() !== "si") return;
                         const cat = clean(r.Categoria).toUpperCase();
-                        if (!grouped[cat]) grouped[cat] = [];
+                        if (!grouped[cat]) {
+                            grouped[cat] = [];
+                            firstAppearance[cat] = index; // Memorizza ordine di apparizione
+                        }
                         grouped[cat].push({ n: capWords(r.Nome), p: clean(r.Prezzo) });
                     });
-                    Object.keys(grouped).sort().forEach(cat => {
+
+                    // Determina l'ordine delle categorie
+                    let categoryOrder = Object.keys(grouped);
+                    const ordineSetting = clean(S["Ordine Categorie Bar"] || "alfabetico").toLowerCase();
+
+                    if (ordineSetting === "tabella") {
+                        // Ordine come appaiono nel foglio
+                        categoryOrder.sort((a, b) => firstAppearance[a] - firstAppearance[b]);
+                    } else if (ordineSetting === "alfabetico" || ordineSetting === "") {
+                        // Alfabetico (default)
+                        categoryOrder.sort();
+                    } else {
+                        // Elenco personalizzato: "Birre, Cocktails, Amari"
+                        const customOrder = ordineSetting.split(",")
+                            .map(c => clean(c).toUpperCase())
+                            .filter(c => c);
+                        const sorted = [];
+                        customOrder.forEach(cat => {
+                            if (grouped[cat]) {
+                                sorted.push(cat);
+                                delete grouped[cat];
+                            }
+                        });
+                        // Aggiungi le rimanenti in ordine alfabetico
+                        categoryOrder = sorted.concat(Object.keys(grouped).sort());
+                    }
+
+                    // Crea le categorie nell'ordine scelto
+                    categoryOrder.forEach(cat => {
                         const div = document.createElement("div");
                         div.className = "category";
                         div.innerHTML = `
@@ -251,6 +287,7 @@
                         `;
                         menu.appendChild(div);
                     });
+
                     if (S["Immagine Promo"]) {
                         startPromo(S);
                     } else {
