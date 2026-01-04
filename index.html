@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Menu Digitale</title>
 
-<!-- GOOGLE FONTS DISPONIBILI -->
+<!-- GOOGLE FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&family=Lora:wght@400;600&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -15,49 +14,66 @@
 html, body {
     margin: 0;
     padding: 0;
-    width: 100vw;
     height: 100vh;
+    width: 100vw;
+    font-family: Montserrat, sans-serif;
+}
+
+/* TV: niente scroll */
+body {
     overflow: hidden;
 }
 
-body {
-    font-family: 'Montserrat', sans-serif;
+/* MOBILE: scroll attivo */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+    }
 }
 
-.container {
-    height: 100vh;
+#main {
+    min-height: 100vh;
+    padding: 4vh 5vw;
     display: flex;
     flex-direction: column;
-    padding: 4vh 5vw;
 }
 
+/* HEADER */
 #header {
-    text-align: center;
-    margin-bottom: 2vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2vw;
+    margin-bottom: 3vh;
 }
 
 #logo {
     max-height: 12vh;
-    margin-bottom: 1vh;
+    max-width: 20vw;
     display: none;
 }
 
-h1 {
-    margin: 0;
+#title {
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    letter-spacing: 4px;
+    margin: 0;
+    text-align: center;
 }
 
+/* MENU */
 #menu {
     flex: 1;
     display: grid;
-    gap: 3vh 6vw;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8vw;
+    row-gap: 3vh;
 }
 
 .category h2 {
-    margin: 0 0 1.5vh 0;
-    text-transform: uppercase;
+    margin: 0 0 1vh 0;
     border-bottom: 2px solid;
+    text-transform: uppercase;
 }
 
 .item-header {
@@ -67,48 +83,51 @@ h1 {
 
 .desc {
     font-style: italic;
+    opacity: 0.75;
 }
 
+/* PREZZO */
 #prezzo-box {
-    margin-top: 2vh;
     text-align: center;
-    font-weight: bold;
+    margin-top: 3vh;
     border: 3px solid;
-    border-radius: 15px;
+    border-radius: 16px;
+    font-weight: bold;
+    display: none;
 }
 
 /* SCALE DINAMICHE */
-.size-large h1 { font-size: 8vh; }
-.size-large h2 { font-size: 4.5vh; }
-.size-large .item-header { font-size: 3.5vh; }
-.size-large .desc { font-size: 2.2vh; }
-.size-large #prezzo-box { font-size: 5vh; padding: 2vh; }
+.size-large #title { font-size: 7vh; }
+.size-large .category h2 { font-size: 4vh; }
+.size-large .item-header { font-size: 3.2vh; }
+.size-large .desc { font-size: 2vh; }
+.size-large #prezzo-box { font-size: 4.5vh; padding: 2vh; }
 
-.size-medium h1 { font-size: 6vh; }
-.size-medium h2 { font-size: 3.5vh; }
-.size-medium .item-header { font-size: 2.8vh; }
-.size-medium .desc { font-size: 1.8vh; }
-.size-medium #prezzo-box { font-size: 4vh; padding: 1.5vh; }
+.size-medium #title { font-size: 6vh; }
+.size-medium .category h2 { font-size: 3.3vh; }
+.size-medium .item-header { font-size: 2.6vh; }
+.size-medium .desc { font-size: 1.7vh; }
+.size-medium #prezzo-box { font-size: 3.8vh; padding: 1.6vh; }
 
-.size-small h1 { font-size: 5vh; }
-.size-small h2 { font-size: 3vh; }
+.size-small #title { font-size: 5vh; }
+.size-small .category h2 { font-size: 2.8vh; }
 .size-small .item-header { font-size: 2.2vh; }
 .size-small .desc { font-size: 1.5vh; }
-.size-small #prezzo-box { font-size: 3.2vh; padding: 1vh; }
+.size-small #prezzo-box { font-size: 3.2vh; padding: 1.2vh; }
 </style>
 </head>
 
-<body class="size-large">
-<div class="container" id="main">
+<body>
+<div id="main" class="size-large">
 
     <div id="header">
         <img id="logo">
-        <h1 id="title">CARICAMENTO…</h1>
+        <h1 id="title">CARICAMENTO...</h1>
     </div>
 
     <div id="menu"></div>
-    <div id="prezzo-box"></div>
 
+    <div id="prezzo-box"></div>
 </div>
 
 <script>
@@ -131,30 +150,21 @@ async function update() {
             fetch(SETTINGS_URL).then(r => r.json())
         ]);
 
-        /* ===== IMPOSTAZIONI ===== */
+        /* === SETTINGS === */
         const S = {};
         settingsData.forEach(r => {
-            if (r.Proprietà) {
-                S[clean(r.Proprietà)] = clean(r.Valore);
-            }
+            if (r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore);
         });
 
         document.body.style.background = S["Colore Sfondo"] || "#111";
         document.body.style.color = S["Colore Testo"] || "#fff";
-
-        if (S["Font Testo"]) {
-            document.body.style.fontFamily = S["Font Testo"];
-        }
+        if (S["Font Testo"]) document.body.style.fontFamily = S["Font Testo"];
 
         const title = document.getElementById("title");
         title.innerText = S["Titolo Pagina"] || "MENU";
         title.style.color = S["Colore Titolo"] || "#d4af37";
+        if (S["Font Titolo"]) title.style.fontFamily = S["Font Titolo"];
 
-        if (S["Font Titolo"]) {
-            title.style.fontFamily = S["Font Titolo"];
-        }
-
-        /* LOGO */
         const logo = document.getElementById("logo");
         if (S["Logo URL"]) {
             logo.src = S["Logo URL"];
@@ -163,18 +173,16 @@ async function update() {
             logo.style.display = "none";
         }
 
-        /* ===== MENU ===== */
+        /* === MENU === */
         const menuDiv = document.getElementById("menu");
         menuDiv.innerHTML = "";
-
-        const grouped = {};
         let count = 0;
 
+        const grouped = {};
         menuData.forEach(r => {
             const disp = clean(r.Disponibile).toLowerCase();
             if (disp === "si" || disp === "sì") {
                 const cat = clean(r.Categoria) || "Altro";
-
                 if (!grouped[cat]) grouped[cat] = [];
                 grouped[cat].push({
                     piatto: capWords(r.Piatto),
@@ -189,9 +197,7 @@ async function update() {
             div.className = "category";
             div.innerHTML = `
                 <h2 style="color:${S["Colore Titolo"] || "#d4af37"};
-                           border-color:${S["Colore Titolo"] || "#d4af37"}">
-                    ${cat}
-                </h2>
+                           border-color:${S["Colore Titolo"] || "#d4af37"}">${cat}</h2>
                 ${grouped[cat].map(i => `
                     <div>
                         <div class="item-header">${i.piatto}</div>
@@ -202,13 +208,12 @@ async function update() {
             menuDiv.appendChild(div);
         });
 
-        /* ===== RESPONSIVE ===== */
+        /* RESPONSIVE */
         menuDiv.style.gridTemplateColumns =
             window.innerWidth > window.innerHeight ? "1fr 1fr" : "1fr";
 
         const main = document.getElementById("main");
         main.classList.remove("size-large","size-medium","size-small");
-
         if (count > 14) main.classList.add("size-small");
         else if (count > 7) main.classList.add("size-medium");
         else main.classList.add("size-large");
@@ -227,8 +232,6 @@ async function update() {
     } catch (e) {
         console.error("ERRORE MENU:", e);
     }
-@media (max-width: 768px) {
-    body { overflow-y: auto; }
 }
 
 update();
