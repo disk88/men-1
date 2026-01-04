@@ -83,32 +83,29 @@
         }
 
         /* MODALITÀ BAR - Layout a colonne (riempimento verticale intelligente) */
-        .mode-bar #menu {
-            columns: auto;               /* Numero colonne automatico */
-            column-count: auto;
-            column-width: 280px;         /* Larghezza minima per colonna */
-            column-gap: 3vw;
-            max-column-count: 6;         /* Limite massimo: 6 colonne */
-            column-fill: balance;        /* Bilancia il contenuto tra le colonne */
-            font-size: 2.2vh;
+.mode-bar #menu {
+            columns: auto;
+            column-width: 280px;
+            column-gap: 5vw;     /* Più spazio tra colonne: più elegante */
+            column-fill: balance;
+            font-size: 2.5vh;    /* Testi leggermente più grandi */
         }
         .mode-bar .category h2 {
-            font-size: 2.8vh;
-            margin-bottom: 0.8vh;
+            font-size: 3.2vh;    /* Titoli categoria più evidenti */
+            margin-bottom: 1vh;
         }
         .mode-bar .bar-item {
             display: flex;
             justify-content: space-between;
             font-weight: 600;
-            margin-bottom: 0.6vh;
-            line-height: 1.3;
+            margin-bottom: 1vh;  /* Più spazio tra righe */
+            line-height: 1.4;
         }
         .mode-bar .bar-item span:last-child {
             font-weight: 700;
             min-width: 6ch;
             text-align: right;
         }
-
         /* PREZZO */
         #prezzo-box {
             margin: 3vh auto 0;
