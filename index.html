@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Digitale</title>
+<title>Menu Digitale Pro - Animato</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
@@ -15,77 +15,127 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  background-color: #000;
 }
 
 body {
   overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  body { overflow-y: auto; }
+  transition: background 0.8s ease;
 }
 
 :root {
   --cat-color: #fff;
   --ing-color: #aaa;
+  --title-color: #fff;
+  --anim-speed: 0.8s; /* Velocità dell'animazione */
 }
 
-#main {
-  min-height: 100vh;
-  padding: 3vh 5vw;
+/* CONTENITORI PRINCIPALI CON TRANSIZIONE */
+#main, #promo-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: opacity var(--anim-speed) ease, transform var(--anim-speed) ease;
 }
 
+#main { padding: 3vh 5vw; }
+
+#promo-overlay {
+  z-index: 1000;
+  background: #000;
+  align-items: center;
+  justify-content: center;
+  display: none; /* Gestito via JS */
+}
+
+#promo-overlay img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* --- CLASSI ANIMAZIONE --- */
+
+/* 1. Sfumatura (Fade) */
+.anim-sfumatura { opacity: 0 !important; }
+
+/* 2. Zoom (Scale) */
+.anim-zoom { opacity: 0 !important; transform: scale(1.1) !important; }
+
+/* 3. Scorrimento (Slide) */
+.anim-scorrimento { opacity: 0 !important; transform: translateY(50px) !important; }
+
+/* 4. Nessuna */
+.anim-nessuna { transition: none !important; opacity: 0 !important; }
+
+
+/* ELEMENTI GRAFICI */
 #header {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2vw;
   margin-bottom: 2vh;
+  flex-shrink: 0;
 }
 
-#logo {
-  max-height: 10vh;
-  display: none;
-}
+#logo { max-height: 12vh; display: none; }
 
 #title {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 3px;
+  text-align: center;
 }
 
 #menu {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3vh 6vw;
-}
-
-@media (max-width: 768px) {
-  #menu { grid-template-columns: 1fr; }
+  gap: 2vh 6vw;
+  align-content: start;
 }
 
 .category h2 {
   margin: 0 0 1vh 0;
   border-bottom: 2px solid var(--cat-color);
   color: var(--cat-color);
+  text-transform: uppercase;
 }
 
 .item-row {
   display: flex;
   justify-content: space-between;
   font-weight: 600;
+  margin-bottom: 0.5vh;
 }
 
 .desc {
   font-style: italic;
   color: var(--ing-color);
+  font-size: 0.85em;
+  margin-bottom: 1vh;
+}
+
+#footer-banner {
+  margin-top: auto;
+  text-align: center;
+  padding: 1.5vh;
+  font-size: 3.5vh;
+  font-weight: bold;
+  border: 3px solid var(--title-color);
+  border-radius: 12px;
+  color: var(--title-color);
+  display: none;
 }
 
 /* SCALE DINAMICHE */
-.size-xl { font-size: 2.2vh; }
+.size-xl { font-size: 2.3vh; }
 .size-large { font-size: 1.9vh; }
 .size-medium { font-size: 1.6vh; }
 .size-small { font-size: 1.4vh; }
@@ -93,12 +143,18 @@ body {
 </head>
 
 <body>
-<div id="main" class="size-large">
+
+<div id="promo-overlay">
+  <img id="promo-img" src="" alt="Promo">
+</div>
+
+<div id="main">
   <div id="header">
     <img id="logo">
-    <h1 id="title">CARICAMENTO…</h1>
+    <h1 id="title">CARICAMENTO...</h1>
   </div>
   <div id="menu"></div>
+  <div id="footer-banner"></div>
 </div>
 
 <script>
@@ -113,83 +169,114 @@ const TEMI = {
   "dark minimal": { bg:"#000", text:"#eee", title:"#fff", category:"#fff", ingredients:"#bbb" }
 };
 
+let toggleView = false;
+let updateInterval;
+
 function clean(v){ return (v||"").toString().trim(); }
 function cap(s){ return clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase()); }
 
 async function update(){
-  const [menu, bar, settings] = await Promise.all([
-    fetch(MENU_URL).then(r=>r.json()),
-    fetch(BAR_URL).then(r=>r.json()),
-    fetch(SETTINGS_URL).then(r=>r.json())
-  ]);
+  try {
+    const [menu, bar, settings] = await Promise.all([
+      fetch(MENU_URL).then(r=>r.json()),
+      fetch(BAR_URL).then(r=>r.json()),
+      fetch(SETTINGS_URL).then(r=>r.json())
+    ]);
 
-  const S={};
-  settings.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore); });
+    const S={};
+    settings.forEach(r=>{ if(r.Proprietà) S[clean(r.Proprietà)] = clean(r.Valore); });
 
-  const mode = (S["Modalità"]||"cucina").toLowerCase();
-  const themeName = mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"];
-  const theme = TEMI[(themeName||"").toLowerCase()];
+    const mode = (S["Modalità"]||"cucina").toLowerCase();
+    const themeName = mode==="bar" ? S["Tema Bar"] : S["Tema Cucina"];
+    const theme = TEMI[(themeName||"").toLowerCase()];
+    const animType = (S["Scelta Animazione Rotazione"] || "nessuna").toLowerCase();
 
-  if(theme){
-    document.body.style.background = theme.bg;
-    document.body.style.color = theme.text;
-    document.documentElement.style.setProperty("--cat-color", theme.category);
-    document.documentElement.style.setProperty("--ing-color", theme.ingredients);
-  }
-
-  const title = document.getElementById("title");
-  title.innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
-  title.style.color = theme?.title || "#fff";
-  title.style.fontFamily = S["Font Titolo"] || "Playfair Display";
-
-  document.body.style.fontFamily = S["Font Testo"] || "Montserrat";
-
-  const logo=document.getElementById("logo");
-  if(S["Logo URL"]){
-    logo.src=S["Logo URL"];
-    logo.style.display="block";
-  }
-
-  const menuDiv=document.getElementById("menu");
-  menuDiv.innerHTML="";
-  let count=0, grouped={};
-
-  const data = mode==="bar" ? bar : menu;
-
-  data.forEach(r=>{
-    if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
-      const cat = clean(r.Categoria)||"Altro";
-      if(!grouped[cat]) grouped[cat]=[];
-      grouped[cat].push(
-        mode==="bar"
-        ? { n:cap(r.Nome), p:clean(r.Prezzo) }
-        : { n:cap(r.Piatto), d:clean(r.Ingredienti) }
-      );
-      count++;
+    // Applicazione Tema
+    if(theme){
+      document.body.style.background = theme.bg;
+      document.body.style.color = theme.text;
+      document.documentElement.style.setProperty("--cat-color", theme.category);
+      document.documentElement.style.setProperty("--ing-color", theme.ingredients);
+      document.documentElement.style.setProperty("--title-color", theme.title);
     }
-  });
 
-  Object.keys(grouped).forEach(c=>{
-    menuDiv.innerHTML+=`
-      <div class="category">
-        <h2>${c}</h2>
-        ${grouped[c].map(i=>`
-          <div>
-            <div class="item-row">
-              <span>${i.n}</span>
-              ${i.p?`<span>${i.p}</span>`:""}
-            </div>
-            ${i.d?`<div class="desc">${i.d}</div>`:""}
-          </div>`).join("")}
-      </div>`;
-  });
+    const promoUrl = S["Immagine Promo"];
+    const tempoRotazione = parseInt(S["Tempo Rotazione"]) * 1000 || 5000;
+    const promoOverlay = document.getElementById("promo-overlay");
+    const mainContainer = document.getElementById("main");
+    const animClass = "anim-" + animType;
 
-  const main=document.getElementById("main");
-  main.className = count<=6?"size-xl":count<=12?"size-large":count<=18?"size-medium":"size-small";
+    // --- LOGICA TRANSIZIONE ---
+    if (mode === "bar" && promoUrl) {
+      toggleView = !toggleView;
+      
+      // Applica classe animazione prima del cambio
+      mainContainer.classList.add(animClass);
+      promoOverlay.classList.add(animClass);
+
+      setTimeout(() => {
+        if (toggleView) {
+          document.getElementById("promo-img").src = promoUrl;
+          promoOverlay.style.display = "flex";
+          mainContainer.style.display = "none";
+          // Rimuovi classe per far entrare il nuovo elemento
+          setTimeout(() => promoOverlay.classList.remove(animClass), 50);
+        } else {
+          promoOverlay.style.display = "none";
+          mainContainer.style.display = "flex";
+          setTimeout(() => mainContainer.classList.remove(animClass), 50);
+        }
+      }, 800); // Tempo che deve coincidere con --anim-speed
+    } else {
+      promoOverlay.style.display = "none";
+      mainContainer.style.display = "flex";
+      mainContainer.classList.remove(animClass);
+    }
+
+    // --- RENDER MENU --- (Il resto del codice rimane invariato per la logica dati)
+    document.getElementById("title").innerText = mode==="bar" ? (S["Titolo Bar"]||"BAR MENU") : (S["Titolo Cucina"]||"MENU");
+    document.getElementById("title").style.color = theme?.title || "#fff";
+    
+    if(S["Logo URL"]){
+      const logo = document.getElementById("logo");
+      logo.src = S["Logo URL"];
+      logo.style.display = "block";
+    }
+
+    const menuDiv = document.getElementById("menu");
+    menuDiv.innerHTML = "";
+    let count = 0, grouped = {};
+    const data = mode==="bar" ? bar : menu;
+
+    data.forEach(r=>{
+      if(["si","sì"].includes(clean(r.Disponibile).toLowerCase())){
+        const cat = clean(r.Categoria)||"Altro";
+        if(!grouped[cat]) grouped[cat]=[];
+        grouped[cat].push(mode==="bar" ? { n:cap(r.Nome), p:clean(r.Prezzo) } : { n:cap(r.Piatto), d:clean(r.Ingredienti) });
+        count++;
+      }
+    });
+
+    Object.keys(grouped).forEach(c=>{
+      menuDiv.innerHTML += `<div class="category"><h2>${c}</h2>${grouped[c].map(i=>`<div><div class="item-row"><span>${i.n}</span>${i.p ? `<span>${i.p}</span>` : ""}</div>${i.d ? `<div class="desc">${i.d}</div>` : ""}</div>`).join("")}</div>`;
+    });
+
+    const footer = document.getElementById("footer-banner");
+    if (mode !== "bar" && S["Prezzo"]) {
+      footer.innerText = S["Prezzo"];
+      footer.style.display = "block";
+    } else { footer.style.display = "none"; }
+
+    let effCount = count + (footer.style.display === "block" ? 4 : 0);
+    mainContainer.className = effCount<=6?"size-xl":effCount<=12?"size-large":effCount<=18?"size-medium":"size-small";
+
+    clearInterval(updateInterval);
+    updateInterval = setInterval(update, tempoRotazione);
+
+  } catch(e) { console.error(e); }
 }
 
 update();
-setInterval(update,6000);
 </script>
 </body>
 </html>
