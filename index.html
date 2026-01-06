@@ -21,6 +21,7 @@ html, body {
     overflow: hidden;
 }
 
+/* MOBILE: scroll sempre */
 @media (max-width: 768px) {
     html, body {
         overflow-y: auto;
@@ -30,16 +31,21 @@ html, body {
     #menu { overflow-y: auto; }
 }
 
+/* MAIN */
 #main {
     min-height: 100vh;
+    min-height: 100svh;
     padding: 2vh 4vw;
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
-@media (max-width: 768px) {
-    #main { min-height: auto; }
+/* SAFE AREA TV (overscan) */
+@media (min-width: 1024px) {
+    #main {
+        padding: 4vh 6vw;
+    }
 }
 
 /* HEADER */
@@ -83,7 +89,7 @@ html, body {
     font-size: clamp(20px, 3vw, 42px);
 }
 
-/* CUCINA */
+/* ===== CUCINA ===== */
 .mode-cucina #menu {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
@@ -102,12 +108,13 @@ html, body {
     font-size: clamp(14px, 2vw, 26px);
 }
 
-/* BAR */
+/* ===== BAR (GRID, NON COLUMNS) ===== */
 .mode-bar #menu {
-    columns: auto;
-    column-width: 280px;
-    column-gap: 5vw;
-    column-fill: balance;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(280px, 1fr);
+    gap: 3vh 4vw;
+    align-content: start;
     font-size: clamp(14px, 2vw, 22px);
 }
 
@@ -143,11 +150,11 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 3vh 3vw;
     opacity: 0;
     pointer-events: none;
     transition: opacity 1s ease;
     z-index: 10;
-    padding: 3vh 3vw;
 }
 
 #promo.show {
@@ -178,6 +185,7 @@ html, body {
 </div>
 
 <script>
+/* FULLSCREEN SU TAP (TV / ANDROID) */
 document.addEventListener("click", () => {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(()=>{});
@@ -200,62 +208,62 @@ const THEMES = {
 const clean = v => (v||"").toString().trim();
 const capWords = s => clean(s).toLowerCase().replace(/\b\w/g,l=>l.toUpperCase());
 
-let promoTimer=null;
+let promoTimer = null;
 
-async function updateData(){
-try{
-    const settings=await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
-    const S={};
-    settings.forEach(r=>S[clean(r.Proprietà)]=clean(r.Valore));
+async function updateData() {
+try {
+    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
+    const S = {};
+    settings.forEach(r => S[clean(r.Proprietà)] = clean(r.Valore));
 
-    const MODE=(S["Modalità"]||"cucina").toLowerCase();
-    const ingredientOpacity=Math.min(1,Math.max(0,Number(S["Trasparenza Ingredienti"]||1)));
+    const MODE = (S["Modalità"] || "cucina").toLowerCase();
+    const ingredientOpacity = Math.min(1, Math.max(0, Number(S["Trasparenza Ingredienti"] || 1)));
 
-    const DATA_URL=MODE==="bar"
-        ?`https://opensheet.elk.sh/${SHEET_ID}/Bar`
-        :`https://opensheet.elk.sh/${SHEET_ID}/Menu`;
+    const DATA_URL = MODE === "bar"
+        ? `https://opensheet.elk.sh/${SHEET_ID}/Bar`
+        : `https://opensheet.elk.sh/${SHEET_ID}/Menu`;
 
-    const data=await fetch(DATA_URL).then(r=>r.json());
-    const theme=THEMES[(MODE==="bar"?S["Tema Bar"]:S["Tema Cucina"])]||THEMES.classic;
+    const data = await fetch(DATA_URL).then(r=>r.json());
+    const theme = THEMES[(MODE==="bar"?S["Tema Bar"]:S["Tema Cucina"])] || THEMES.classic;
 
-    document.body.style.background=theme.bg;
-    document.body.style.color=theme.text;
+    document.body.style.background = theme.bg;
+    document.body.style.color = theme.text;
 
-    const main=document.getElementById("main");
-    main.className=MODE==="bar"?"mode-bar":"mode-cucina";
+    const main = document.getElementById("main");
+    main.className = MODE === "bar" ? "mode-bar" : "mode-cucina";
 
-    const title=document.getElementById("title");
-    title.innerText=MODE==="bar"?S["Titolo Bar"]:S["Titolo Cucina"];
-    title.style.color=theme.accent;
+    const title = document.getElementById("title");
+    title.innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+    title.style.color = theme.accent;
 
-    const logo=document.getElementById("logo");
-    if(S["Logo URL"]){
-        logo.src=S["Logo URL"];
-        logo.style.display="block";
-    } else logo.style.display="none";
+    const logo = document.getElementById("logo");
+    if (S["Logo URL"]) {
+        logo.src = S["Logo URL"];
+        logo.style.display = "block";
+    } else logo.style.display = "none";
 
-    const menu=document.getElementById("menu");
-    menu.innerHTML="";
+    const menu = document.getElementById("menu");
+    menu.innerHTML = "";
 
     /* ===== CUCINA ===== */
-    if(MODE==="cucina"){
+    if (MODE === "cucina") {
         stopPromo();
-        const ORDER=["Antipasto","Primo","Secondo","Contorno","Dolce"];
-        const grouped={}; ORDER.forEach(c=>grouped[c]=[]);
+        const ORDER = ["Antipasto","Primo","Secondo","Contorno","Dolce"];
+        const grouped = {}; ORDER.forEach(c=>grouped[c]=[]);
 
         data.forEach(r=>{
-            if(clean(r.Disponibile).toLowerCase()!=="si")return;
-            const cat=capWords(r.Categoria);
-            if(grouped[cat]){
-                grouped[cat].push({p:capWords(r.Piatto),d:clean(r.Ingredienti)});
+            if (clean(r.Disponibile).toLowerCase() !== "si") return;
+            const cat = capWords(r.Categoria);
+            if (grouped[cat]) {
+                grouped[cat].push({p:capWords(r.Piatto), d:clean(r.Ingredienti)});
             }
         });
 
         ORDER.forEach(cat=>{
-            if(!grouped[cat].length)return;
-            const div=document.createElement("div");
-            div.className="category";
-            div.innerHTML=`
+            if (!grouped[cat].length) return;
+            const div = document.createElement("div");
+            div.className = "category";
+            div.innerHTML = `
                 <h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>
                 ${grouped[cat].map(i=>`
                     <div>
@@ -267,61 +275,60 @@ try{
             menu.appendChild(div);
         });
 
-        const box=document.getElementById("prezzo-box");
-        if(S["Prezzo"]){
-            box.innerText=S["Prezzo"];
-            box.style.display="block";
-            box.style.color=theme.accent;
-            box.style.borderColor=theme.accent;
-        } else box.style.display="none";
+        const box = document.getElementById("prezzo-box");
+        if (S["Prezzo"]) {
+            box.innerText = S["Prezzo"];
+            box.style.display = "block";
+            box.style.color = theme.accent;
+            box.style.borderColor = theme.accent;
+        } else box.style.display = "none";
     }
 
     /* ===== BAR ===== */
     else {
-        document.getElementById("prezzo-box").style.display="none";
+        document.getElementById("prezzo-box").style.display = "none";
 
-        const grouped={};
-        const firstAppearance={};
+        const grouped = {};
+        const firstAppearance = {};
 
         data.forEach((r,i)=>{
-            if(clean(r.Disponibile).toLowerCase()!=="si")return;
-            const cat=clean(r.Categoria).toUpperCase();
-            if(!grouped[cat]){
-                grouped[cat]=[];
-                firstAppearance[cat]=i;
+            if (clean(r.Disponibile).toLowerCase() !== "si") return;
+            const cat = clean(r.Categoria).toUpperCase();
+            if (!grouped[cat]) {
+                grouped[cat] = [];
+                firstAppearance[cat] = i;
             }
-            grouped[cat].push({n:capWords(r.Nome),p:clean(r.Prezzo)});
+            grouped[cat].push({n:capWords(r.Nome), p:clean(r.Prezzo)});
         });
 
-        let categoryOrder=Object.keys(grouped);
-        const ordine=clean(S["Ordine Categorie Bar"]||"alfabetico").toLowerCase();
+        let categoryOrder = Object.keys(grouped);
+        const ordine = clean(S["Ordine Categorie Bar"] || "alfabetico").toLowerCase();
 
-        if(ordine==="tabella"){
+        if (ordine === "tabella") {
             categoryOrder.sort((a,b)=>firstAppearance[a]-firstAppearance[b]);
-        }
-        else if(ordine!=="alfabetico" && ordine!==""){
-            const custom=ordine.split(",").map(c=>clean(c).toUpperCase());
-            const ordered=[];
+        } else if (ordine !== "alfabetico" && ordine !== "") {
+            const custom = ordine.split(",").map(c=>clean(c).toUpperCase());
+            const ordered = [];
             custom.forEach(c=>{
-                if(grouped[c]){
+                if (grouped[c]) {
                     ordered.push(c);
                     delete grouped[c];
                 }
             });
-            categoryOrder=ordered.concat(Object.keys(grouped).sort());
-        }
-        else {
+            categoryOrder = ordered.concat(Object.keys(grouped).sort());
+        } else {
             categoryOrder.sort();
         }
 
         categoryOrder.forEach(cat=>{
-            const div=document.createElement("div");
-            div.className="category";
-            div.innerHTML=`
+            const div = document.createElement("div");
+            div.className = "category";
+            div.innerHTML = `
                 <h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>
                 ${grouped[cat].map(i=>`
                     <div class="bar-item">
-                        <span>${i.n}</span><span>${i.p}</span>
+                        <span>${i.n}</span>
+                        <span>${i.p}</span>
                     </div>
                 `).join("")}
             `;
@@ -331,29 +338,31 @@ try{
         S["Immagine Promo"] ? startPromo(S) : stopPromo();
     }
 
-}catch(e){console.error(e);}
+} catch(e) {
+    console.error("Errore:", e);
+}
 }
 
-function startPromo(S){
+function startPromo(S) {
     stopPromo();
-    const promo=document.getElementById("promo");
-    const img=document.getElementById("promo-img");
-    img.src=S["Immagine Promo"];
-    let show=false;
-    promoTimer=setInterval(()=>{
-        show=!show;
-        promo.classList.toggle("show",show);
-    },(Number(S["Tempo Promo"]||8))*1000);
+    const promo = document.getElementById("promo");
+    const img = document.getElementById("promo-img");
+    img.src = S["Immagine Promo"];
+    let show = false;
+    promoTimer = setInterval(()=>{
+        show = !show;
+        promo.classList.toggle("show", show);
+    }, (Number(S["Tempo Promo"] || 8)) * 1000);
 }
 
-function stopPromo(){
+function stopPromo() {
     clearInterval(promoTimer);
-    promoTimer=null;
+    promoTimer = null;
     document.getElementById("promo").classList.remove("show");
 }
 
 updateData();
-setInterval(updateData, window.innerWidth<768 ? 30000 : 10000);
+setInterval(updateData, window.innerWidth < 768 ? 30000 : 10000);
 </script>
 </body>
 </html>
