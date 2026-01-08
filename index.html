@@ -4,187 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Menu Digitale</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-
 <style>
 /* ================= RESET & BASE ================= */
 * { box-sizing: border-box; }
-html, body {
-    margin: 0; padding: 0;
-    width: 100%; height: 100%;
-    font-family: 'Montserrat', sans-serif;
-    overflow-x: hidden;
-}
-body {
-    display: flex;
-    justify-content: center;
-    transition: background 0.3s, color 0.3s;
-}
+html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Montserrat', sans-serif; overflow-x:hidden; }
+body { display:flex; justify-content:center; transition: background 0.3s, color 0.3s; }
 
-/* ================= MAIN ================= */
-#main {
-    width: 100%;
-    max-width: 1400px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+#main { width:100%; max-width:1400px; min-height:100vh; display:flex; flex-direction:column; }
 
 /* ================= HEADER ================= */
 #header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 10px 0;
+    display:flex; align-items:center; justify-content:center; gap:20px;
+    position: sticky; top:0; background:inherit; z-index:10; padding:10px 0;
 }
-#logo {
-    max-height: 90px;
-    max-width: 180px;
-    display: none;
-}
+#logo { max-height:90px; max-width:180px; display:none; }
 #title {
-    font-family: 'Playfair Display', serif;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    margin: 0;
-    font-size: clamp(24px, 5vw, 52px);
-    line-height: 1.1;
-}
-
-/* ================= PREZZO ================= */
-#prezzo-box {
-    margin-top: auto; /* sempre in fondo */
-    padding: 15px 30px;
-    border: 3px solid;
-    border-radius: 12px;
-    font-weight: 700;
-    text-align: center;
-    font-size: clamp(20px, 3vh, 32px);
-    text-transform: uppercase;
-    display: none;
+    font-family:'Playfair Display', serif; text-transform:uppercase; letter-spacing:3px;
+    margin:0; font-size:clamp(24px,5vw,52px); line-height:1.1;
 }
 
 /* ================= MENU ================= */
-#menu {
-    flex: 1;
-    display: grid;
-    gap: 40px 30px;
-    overflow: hidden; /* scroll verticale solo se necessario */
-}
+#menu { flex:1; display:grid; gap:40px 30px; overflow:hidden; }
 
 /* ================= CATEGORY ================= */
-.category {
-    break-inside: avoid;
-}
-.category h2 {
-    margin: 0 0 15px;
-    border-bottom: 2px solid;
-    text-transform: uppercase;
-    font-size: 1.2em;
-    padding-bottom: 5px;
-}
+.category { break-inside: avoid; }
+.category h2 { margin:0 0 15px; border-bottom:2px solid; text-transform:uppercase; font-size:1.2em; padding-bottom:5px; }
 
 /* ================= CUCINA ================= */
-.item-box { margin-bottom: 16px; }
-.item-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 700;
-}
-.desc {
-    font-style: italic;
-    line-height: 1.4;
-}
+.item-box { margin-bottom:16px; }
+.item-header { display:flex; justify-content:space-between; font-weight:700; }
+.desc { font-style:italic; line-height:1.4; }
 
 /* ================= BAR ================= */
-.bar-item {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
-    margin-bottom: 10px;
-    border-bottom: 1px dotted rgba(255,255,255,0.15);
-    padding-bottom: 2px;
+.bar-item { display:flex; justify-content:space-between; font-weight:600; margin-bottom:10px; border-bottom:1px dotted rgba(255,255,255,0.15); padding-bottom:2px; }
+
+/* ================= PREZZO ================= */
+#prezzo-box {
+    margin-top:auto; padding:15px 30px; border:3px solid; border-radius:12px;
+    font-weight:700; text-align:center; font-size:clamp(20px,3vh,32px); text-transform:uppercase;
+    display:none;
 }
 
 /* ================= PROMO ================= */
 #promo {
-    position: fixed;
-    inset: 0;
-    background: #000 no-repeat center / contain;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s;
-    z-index: 999;
+    position:fixed; inset:0; background:#000 no-repeat center / contain; opacity:0; pointer-events:none; transition:opacity 0.5s; z-index:999;
 }
-#promo.show {
-    opacity: 1;
-    pointer-events: all;
-}
+#promo.show { opacity:1; pointer-events:all; }
 
-/* ================= MOBILE (INVARIATO) ================= */
-@media (max-width: 768px) {
-    body { overflow-y: auto; }
-    #menu { display: block; overflow: visible; }
-    #header { flex-direction: column; }
+/* ================= MOBILE ================= */
+@media (max-width:768px){
+    body{overflow-y:auto;}
+    #menu{display:block; overflow-y:auto;}
+    #header{flex-direction:column;}
 }
 </style>
 </head>
-
 <body>
 <div id="main">
     <div id="header">
         <img id="logo">
         <h1 id="title">CARICAMENTO...</h1>
     </div>
-
     <div id="menu"></div>
     <div id="prezzo-box"></div>
 </div>
-
 <div id="promo"></div>
 
 <script>
 /* ================= CONFIG ================= */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
-const THEMES = {
-    classic:{bg:"#111",text:"#fff",accent:"#d4af37"},
-    elegant:{bg:"#1c1c1c",text:"#eee",accent:"#bfa36f"},
-    modern:{bg:"#fff",text:"#222",accent:"#c0392b"},
-    minimal:{bg:"#f7f7f7",text:"#111",accent:"#000"},
-    dark:{bg:"#000",text:"#ddd",accent:"#00c896"},
-    neon:{bg:"#0b0b16",text:"#e0e0ff",accent:"#ff2fd2"},
-    pub:{bg:"#2a1f16",text:"#f5e6c8",accent:"#c89b3c"},
-    luxury:{bg:"#121212",text:"#f1f1f1",accent:"#c9a24d"}
-};
+const THEMES = { classic:{bg:"#111",text:"#fff",accent:"#d4af37"}, elegant:{bg:"#1c1c1c",text:"#eee",accent:"#bfa36f"}, modern:{bg:"#fff",text:"#222",accent:"#c0392b"}, minimal:{bg:"#f7f7f7",text:"#111",accent:"#000"}, dark:{bg:"#000",text:"#ddd",accent:"#00c896"}, neon:{bg:"#0b0b16",text:"#e0e0ff",accent:"#ff2fd2"}, pub:{bg:"#2a1f16",text:"#f5e6c8",accent:"#c89b3c"}, luxury:{bg:"#121212",text:"#f1f1f1",accent:"#c9a24d"} };
 
 /* ================= UTILS ================= */
 const getVal = (r,k)=>Object.keys(r).find(x=>x.toLowerCase().trim()==k.toLowerCase())?r[Object.keys(r).find(x=>x.toLowerCase().trim()==k.toLowerCase())]:"";
 const clean = v=>(v||"").toString().trim();
-const formatSmartTitle = s => {
-    const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o"];
-    return clean(s).toLowerCase().split(" ").map((w,i)=>i>0&&exc.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(" ");
-};
+const formatSmartTitle = s => { const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o"]; return clean(s).toLowerCase().split(" ").map((w,i)=>i>0&&exc.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(" "); };
 
 /* ================= PROMO ================= */
 let promoTimer=null;
 function startPromo(url, sec) {
     stopPromo();
-    const el = document.getElementById("promo");
-    el.style.backgroundImage = `url(${url})`;
-    const t = (Number(sec)||8)*1000;
-    const cycle = () => { el.classList.add("show"); setTimeout(()=>el.classList.remove("show"), t); };
-    cycle();
-    promoTimer=setInterval(cycle, t*2);
-}
-function stopPromo(){
-    if(promoTimer) clearInterval(promoTimer);
-    promoTimer=null;
     const el=document.getElementById("promo");
-    el.classList.remove("show");
-    el.style.backgroundImage="";
+    el.style.backgroundImage=`url(${url})`;
+    const t=(Number(sec)||8)*1000;
+    const cycle=()=>{ el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),t); };
+    cycle();
+    promoTimer=setInterval(cycle,t*2);
 }
+function stopPromo(){ if(promoTimer) clearInterval(promoTimer); promoTimer=null; const el=document.getElementById("promo"); el.classList.remove("show"); el.style.backgroundImage=""; }
 
 /* ================= GRID CATEGORIES ================= */
 function layoutCategories(mode){
@@ -195,28 +103,34 @@ function layoutCategories(mode){
     const availableHeight=(window.innerHeight-header.offsetHeight-prezzo.offsetHeight)*0.9;
     menu.style.height=availableHeight+"px";
 
-    const catCount = menu.querySelectorAll(".category").length;
-    let cols=1, rows=1;
+    const catElems=menu.querySelectorAll(".category");
+    const catCount=catElems.length;
+    if(catCount===0) return;
 
-    // logica fissa come da tabella
-    if(catCount===1){cols=1; rows=1;}
-    else if(catCount===2){cols=2; rows=1;}
-    else if(catCount===3||catCount===4){cols=2; rows=2;}
-    else if(catCount===5){cols=3; rows=2;}
-    else if(catCount===6){cols=3; rows=3;}
-    else if(catCount===7||catCount===8){cols=4; rows=2;}
-    else if(catCount===10){cols=5; rows=2;}
-    else if(catCount===11){cols=5; rows=3;}
-    else {cols=Math.min(6,catCount); rows=Math.ceil(catCount/cols);}
+    // logica fissa cucina
+    let cols=1;
+    if(mode==="cucina"){
+        if(catCount===1) cols=1;
+        else if(catCount===2) cols=2;
+        else if(catCount===3||catCount===4) cols=2;
+        else if(catCount===5) cols=3;
+        else if(catCount===6) cols=3;
+        else if(catCount===7||catCount===8) cols=4;
+        else if(catCount===10) cols=5;
+        else if(catCount===11) cols=5;
+        else cols=Math.min(6,catCount);
+    } else { // bar logica variabile
+        cols=Math.min(5,catCount);
+    }
 
     menu.style.gridTemplateColumns=`repeat(${cols},1fr)`;
 
-    // font adattivo verticale
-    let font = mode==="bar"?20:18;
-    let guard=30;
+    // font adattivo verticale e orizzontale
+    let font=mode==="bar"?20:18;
+    let guard=40;
     while(guard--){
         menu.style.fontSize=font+"px";
-        if(menu.scrollHeight<=availableHeight) break;
+        if(menu.scrollHeight<=availableHeight && menu.scrollWidth<=window.innerWidth) break;
         font-=0.5;
     }
 }
@@ -255,44 +169,58 @@ try{
             prezzo.style.borderColor=theme.accent;
         }
 
-        const g={};
+        const fixedOrder=["ANTIPASTO","PRIMO","SECONDO","CONTORNO","DOLCE"];
+        const grouped={};
+        fixedOrder.forEach(c=>grouped[c]=[]);
         data.forEach(r=>{
             if(clean(getVal(r,"Disponibile")).toLowerCase()!=="si")return;
-            const c=clean(getVal(r,"Categoria")).toUpperCase(); if(!c)return;
-            g[c]??=[];
-            g[c].push({
-                n:formatSmartTitle(getVal(r,"Piatto")||getVal(r,"Nome")),
-                p:getVal(r,"Prezzo"),
-                i:formatSmartTitle(getVal(r,"Ingredienti"))
-            });
+            const cat=clean(getVal(r,"Categoria")).toUpperCase(); if(!cat) return;
+            if(!(cat in grouped)) return;
+            grouped[cat].push({n:formatSmartTitle(getVal(r,"Piatto")||getVal(r,"Nome")), i:formatSmartTitle(getVal(r,"Ingredienti")), p:getVal(r,"Prezzo")});
         });
 
-        for(const c in g){
-            menu.innerHTML+=`<div class="category"><h2 style="color:${theme.accent};border-color:${theme.accent}">${c}</h2>
-                ${g[c].map(i=>`<div class="item-box"><div class="item-header"><span>${i.n}</span><span style="color:${theme.accent}">${i.p}</span></div>${i.i?`<div class="desc" ${op}>${i.i}</div>`:""}</div>`).join("")}</div>`;
-        }
+        fixedOrder.forEach(c=>{
+            if(grouped[c].length===0) return;
+            let section=document.createElement("div");
+            section.className="category";
+            section.innerHTML=`<h2 style="color:${theme.accent};border-color:${theme.accent}">${c}</h2>`+
+                grouped[c].map(i=>`<div class="item-box"><div class="item-header"><span>${i.n}</span><span style="color:${theme.accent}">${i.p}</span></div>${i.i?`<div class="desc" ${op}>${i.i}</div>`:""}</div>`).join("");
+            menu.appendChild(section);
+        });
         setTimeout(()=>layoutCategories("cucina"),50);
     }
 
     if(MODE==="bar"){
         const data=await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
-        const g={};
+        const grouped={};
         data.forEach(r=>{
             if(clean(getVal(r,"Disponibile")).toLowerCase()!=="si")return;
-            const c=clean(getVal(r,"Categoria")).toUpperCase(); if(!c)return;
-            g[c]??=[];
-            g[c].push({n:formatSmartTitle(getVal(r,"Nome")),p:getVal(r,"Prezzo")});
+            const cat=clean(getVal(r,"Categoria")).toUpperCase(); if(!cat) return;
+            grouped[cat]??=[];
+            grouped[cat].push({n:formatSmartTitle(getVal(r,"Nome")),p:getVal(r,"Prezzo")});
         });
 
-        for(const c in g){
-            menu.innerHTML+=`<div class="category"><h2 style="color:${theme.accent};border-color:${theme.accent}">${c}</h2>
-                ${g[c].map(i=>`<div class="bar-item"><span>${i.n}</span><span style="color:${theme.accent}">${i.p}</span></div>`).join("")}</div>`;
+        // Ordine categorie bar
+        let keys=Object.keys(grouped);
+        const orderMode=(S["Ordine Categorie Bar"]||"alfabetico").toLowerCase();
+        if(orderMode==="alfabetico"){ keys.sort(); }
+        else if(orderMode==="tabella"){ keys.sort((a,b)=>keys.indexOf(a)-keys.indexOf(b)); }
+        else if(orderMode==="personalizzato" && S["Ordine Categorie Bar"]){
+            const custom=S["Ordine Categorie Bar"].split(",").map(x=>x.trim().toUpperCase());
+            keys=custom.filter(k=>grouped[k]).concat(keys.filter(k=>!custom.includes(k)));
         }
+
+        keys.forEach(c=>{
+            let section=document.createElement("div");
+            section.className="category";
+            section.innerHTML=`<h2 style="color:${theme.accent};border-color:${theme.accent}">${c}</h2>`+
+                grouped[c].map(i=>`<div class="bar-item"><span>${i.n}</span><span style="color:${theme.accent}">${i.p}</span></div>`).join("");
+            menu.appendChild(section);
+        });
 
         if(S["Immagine Promo"]) startPromo(S["Immagine Promo"],S["Tempo Promo"]);
         setTimeout(()=>layoutCategories("bar"),50);
     }
-
 }catch(e){console.error(e);}
 }
 
