@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Pro - Layout Stabile</title>
+<title>Menu Digitale Pro - Stable TV</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -20,7 +20,7 @@ body {
     font-family: 'Montserrat', sans-serif; 
     background-color: var(--bg); color: var(--text);
     display: flex; flex-direction: column; overflow: hidden;
-    padding-bottom: 3vh; /* Sicurezza per TV */
+    padding-bottom: 5vh; /* Margine di sicurezza fondamentale per TV */
 }
 
 /* ================= HEADER DINAMICO ================= */
@@ -31,63 +31,72 @@ body {
 #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
 #title { 
     font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
-    font-size: 4vw; /* Si adatta alla larghezza dello schermo */
-    color: var(--accent); letter-spacing: 1px; line-height: 1;
+    font-size: clamp(20px, 4.5vw, 55px); color: var(--accent); letter-spacing: 1px;
+    line-height: 1; text-align: center;
 }
 
-/* ================= GRIGLIA E CATEGORIE ================= */
-#scroll-container { flex-grow: 1; padding: 2vh; overflow: hidden; display: flex; }
-#menu { display: grid; width: 100%; height: 100%; gap: 20px; }
+/* ================= GRIGLIA ANTI-TAGLIO ================= */
+#scroll-container { flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; }
+#menu { 
+    display: grid; width: 100%; height: 100%; gap: 15px;
+    /* Usiamo minmax per evitare che le celle diventino troppo piccole tagliando il testo */
+    grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
+}
 
 .category { 
     border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
     border-radius: 12px; display: flex; flex-direction: column;
-    background: rgba(255,255,255,0.02); height: 100%; overflow: hidden;
+    background: rgba(255,255,255,0.03); overflow: hidden;
 }
 .category h2 { 
-    margin: 0 0 1.5vh 0; font-family: 'Oswald', sans-serif; 
+    margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
     color: var(--accent); border-bottom: 2px solid var(--accent); 
-    font-size: 1.5rem; text-transform: uppercase; flex-shrink: 0;
+    font-size: 1.25rem; text-transform: uppercase; flex-shrink: 0;
+    padding-bottom: 2px;
 }
 
-/* LOGICA MULTI-COLONNA: Se il testo è tanto, spezza in 2 colonne */
 .items-list { 
-    flex-grow: 1; 
-    column-count: 1; /* Default 1 colonna */
-    column-gap: 30px;
-    column-rule: 1px solid rgba(255,255,255,0.05);
-    font-size: 1.15rem; /* Dimensione fissa e leggibile */
+    flex-grow: 1; column-gap: 20px; font-size: 1.1rem;
+    overflow: hidden; /* Evita sovrapposizioni visive su Android TV */
 }
 
-/* Forza 2 colonne se ci sono molti elementi (gestito via JS o CSS) */
+/* Se molti elementi (es. Spritz nell'immagine), usa 2 colonne */
 .category.voluminous .items-list { column-count: 2; }
 
-.item-box { break-inside: avoid; margin-bottom: 1.2vh; width: 100%; }
-.item-header { display: flex; justify-content: space-between; font-weight: 700; }
-.price { color: var(--accent); font-family: monospace; }
-.desc { font-style: italic; opacity: 0.8; font-size: 0.9rem; margin-top: 2px; }
+.item-box { break-inside: avoid; margin-bottom: 0.8vh; width: 100%; }
+.item-header { display: flex; justify-content: space-between; font-weight: 700; line-height: 1.1; }
+.price { color: var(--accent); font-family: monospace; margin-left: 10px; }
+.desc { font-style: italic; opacity: 0.7; font-size: 0.85rem; margin-top: 1px; line-height: 1.2; }
 
-/* ================= EXTRA ================= */
+/* ================= BANNER E PROMO ================= */
 #prezzo-cucina-box {
-    margin: 1vh auto; padding: 12px 30px; border: 3px solid var(--accent);
+    margin: 10px auto; padding: 10px 30px; border: 3px solid var(--accent);
     border-radius: 10px; color: var(--accent); font-weight: 800;
-    font-size: 1.5rem; text-align: center; display: none;
+    font-size: 1.5rem; text-align: center; display: none; width: fit-content;
 }
+
 #banner {
     flex-shrink: 0; background: var(--accent); color: var(--bg);
     padding: 12px 0; font-weight: 900; text-transform: uppercase;
     overflow: hidden; white-space: nowrap; display: none; font-size: 1.2rem;
 }
-.marquee { display: inline-block; padding-left: 100%; animation: scroll 30s linear infinite; }
+.marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
 @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+#promo { 
+    position: fixed; inset: 0; background: black center/contain no-repeat; 
+    opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; 
+}
+#promo.show { opacity: 1; }
 
 /* ================= MOBILE ================= */
 @media (max-width: 950px) {
-    #title { font-size: 6vw; }
+    #header { padding: 10px; }
+    #logo { height: 40px; }
     #scroll-container { overflow-y: auto; display: block; }
     #menu { display: flex !important; flex-direction: column; height: auto; gap: 20px; }
-    .category { height: auto; }
-    .items-list { column-count: 1 !important; } /* No multi-colonna su mobile */
+    .category { height: auto; min-height: 100px; }
+    .items-list { column-count: 1 !important; }
 }
 </style>
 </head>
@@ -104,12 +113,11 @@ body {
 </div>
 
 <div id="banner"><div class="marquee" id="banner-text"></div></div>
-<div id="promo" style="position:fixed;inset:0;background:black center/contain no-repeat;opacity:0;transition:1s;z-index:9999;pointer-events:none;"></div>
+<div id="promo"></div>
 
 <script>
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-// Utility Formattazione
 function smartTitle(str) {
     if (!str) return "";
     const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
@@ -122,11 +130,23 @@ const getVal = (r, k) => {
     return key ? r[key] : ""; 
 };
 
+// Logica Promo
+let promoInterval = null;
+function handlePromo(url, time) {
+    if(!url || promoInterval) return;
+    const p = document.getElementById("promo");
+    p.style.backgroundImage = `url(${url})`;
+    const t = (parseInt(time) || 10) * 1000;
+    const cycle = () => { 
+        p.classList.add("show"); 
+        setTimeout(() => p.classList.remove("show"), t); 
+    };
+    cycle(); 
+    promoInterval = setInterval(cycle, t * 5);
+}
+
 async function updateData() {
     try {
-        const menuEl = document.getElementById("menu");
-        menuEl.classList.add("updating");
-
         const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
         const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
@@ -134,11 +154,7 @@ async function updateData() {
         document.body.className = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
         document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
         
-        // Logo
-        const l = document.getElementById("logo");
-        if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
-
-        // Banner & Prezzo
+        // Banner e Prezzo
         const b = document.getElementById("banner");
         if (MODE === "bar" && S["Messaggio"]) { document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; } 
         else { b.style.display = "none"; }
@@ -147,7 +163,11 @@ async function updateData() {
         if (MODE === "cucina" && S["Prezzo"]) { pC.innerText = S["Prezzo"]; pC.style.display = "block"; } 
         else { pC.style.display = "none"; }
 
-        // Recupero Dati
+        // Logo
+        const l = document.getElementById("logo");
+        if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
+
+        // Dati Piatti
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
         const grouped = {}; const catTable = [];
         data.forEach(r => {
@@ -159,36 +179,36 @@ async function updateData() {
         });
 
         let categories = Object.keys(grouped);
-        // ... Logica ordinamento (omessa per brevità, resta uguale a v5) ...
-        const ot = (S["Ordine Categorie Bar"] || "").toLowerCase();
         if (MODE === "cucina") {
             const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
             categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
-        } else if (ot === "tabella") categories = catTable;
+        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") {
+            categories = catTable;
+        }
 
-        setTimeout(() => {
-            menuEl.innerHTML = categories.map((cat, idx) => {
-                const itemCount = grouped[cat].length;
-                // Se ci sono più di 8 elementi, aggiungiamo la classe "voluminous" per le 2 colonne
-                const colClass = itemCount > 8 ? 'voluminous' : '';
-                
-                return `
-                <div class="category ${colClass}" id="cat-${idx+1}">
-                    <h2>${cat}</h2>
-                    <div class="items-list">
-                        ${grouped[cat].map(x => `
-                            <div class="item-box">
-                                <div class="item-header"><span>${x.n}</span><span class="price">${x.p}</span></div>
-                                ${x.i ? `<div class="desc" style="opacity:${(S["Trasparenza Ingredienti"]||"0.8").replace(',','.')}">${x.i}</div>` : ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
-            }).join('');
+        document.getElementById("menu").innerHTML = categories.map((cat, idx) => {
+            const itemCount = grouped[cat].length;
+            // Se ci sono molti elementi (come gli Spritz in foto), dividi in due colonne
+            const colClass = itemCount > 6 ? 'voluminous' : ''; 
+            return `
+            <div class="category ${colClass}" id="cat-${idx+1}">
+                <h2>${cat}</h2>
+                <div class="items-list">
+                    ${grouped[cat].map(x => `
+                        <div class="item-box">
+                            <div class="item-header"><span>${x.n}</span><span class="price">${x.p}</span></div>
+                            ${x.i ? `<div class="desc">${x.i}</div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }).join('');
 
-            if(window.innerWidth > 950) applyGrid(categories.length);
-            menuEl.classList.remove("updating");
-        }, 600);
+        if(window.innerWidth > 950) applyGrid(categories.length);
+
+        // Gestione Promo (Solo Bar)
+        if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
+        else { clearInterval(promoInterval); promoInterval = null; document.getElementById("promo").classList.remove("show"); }
 
     } catch (e) { console.error(e); }
 }
