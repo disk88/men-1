@@ -19,7 +19,7 @@ body {
     transition: background 0.3s, color 0.3s;
 }
 
-/* ================= HEADER (Centrato) ================= */
+/* ================= HEADER (Mobile/Standard) ================= */
 #header {
     flex-shrink: 0;
     display: flex; 
@@ -42,14 +42,14 @@ body {
     font-family: 'Playfair Display', serif;
     text-transform: uppercase; letter-spacing: 2px;
     margin: 0; 
-    font-size: clamp(26px, 6vw, 55px); /* Molto più grande su schermi grandi */
+    font-size: clamp(26px, 6vw, 55px);
     line-height: 1.1;
 }
 
-/* ================= CONTAINER PRINCIPALE ================= */
+/* ================= CONTAINER PRINCIPALE (Mobile/Standard) ================= */
 #scroll-container {
     flex-grow: 1;
-    overflow-y: auto; /* Scroll abilitato di base per Mobile */
+    overflow-y: auto; 
     padding: 10px 20px;
     width: 100%;
     display: flex; flex-direction: column;
@@ -92,33 +92,66 @@ body {
     display: none;
 }
 
-/* ================= DESKTOP & TV (LOGICA NO-SCROLL) ================= */
+/* ================= DESKTOP & TV (SOLO QUI LE MODIFICHE) ================= */
 @media (min-width: 1024px) {
-    body { overflow: hidden; }
-    #scroll-container { overflow: hidden; justify-content: center; } /* Niente scroll su TV */
+    body { overflow: hidden; height: 100vh; }
     
+    /* 1. Logo a sinistra e Titolo affiancato */
     #header {
-        flex-direction: row; /* Logo a fianco */
-        padding: 20px;
+        flex-direction: row; 
+        justify-content: flex-start; /* Allinea a sinistra */
+        text-align: left;
+        padding: 30px 50px;
+        gap: 30px;
     }
-    #logo { margin-right: 25px; height: 110px; }
+    
+    #logo { 
+        display: block; 
+        height: 120px; /* Dimensione fissa per TV */
+        margin-right: 0; 
+    }
+
+    #title { 
+        text-align: left;
+        flex: 1; /* Prende lo spazio rimanente */
+        font-size: 4.5vw; /* Font grande e proporzionale */
+    }
+
+    /* 2. Menu su una sola pagina senza scroll */
+    #scroll-container { 
+        overflow: hidden; 
+        justify-content: flex-start; 
+        padding: 10px 50px 40px 50px;
+        display: block; /* Necessario per il sistema a colonne */
+    }
 
     #menu {
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Colonne più larghe */
-        gap: 30px 60px;
+        display: block; 
+        /* Divide il contenuto in 3 colonne che si riempiono in verticale */
+        column-count: 3; 
+        column-gap: 60px;
+        column-fill: auto;
+        height: 85vh; /* Altezza massima per forzare il cambio colonna */
+        max-width: 100%;
     }
 
-    /* Ingrandimento testi per TV */
-    .category h2 { font-size: 2em; }
-    .item-header, .bar-item { font-size: 1.6em; }
-    .desc { font-size: 1.2em; }
+    /* Evita che un piatto o una categoria vengano tagliati a metà tra due colonne */
+    .category { 
+        break-inside: avoid-column; 
+        margin-bottom: 40px; 
+    }
+
+    /* Ingrandimento testi per visibilità TV */
+    .category h2 { font-size: 2.2em; }
+    .item-header, .bar-item { font-size: 1.7em; }
+    .desc { font-size: 1.3em; }
 }
 
 /* MOBILE ORIZZONTALE */
 @media (max-height: 500px) and (orientation: landscape) {
     #header { flex-direction: row; padding: 5px; }
     #logo { height: 50px; margin-right: 15px; }
-    #scroll-container { overflow-y: auto; } /* Permetti lo scroll se il telefono è piatto */
+    #scroll-container { overflow-y: auto; }
 }
 
 /* ================= PROMO ================= */
@@ -164,7 +197,7 @@ const clean = v => (v || "").toString().trim();
 const formatSmartTitle = s => {
     const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o","al","allo","alla","ai","agli","alle","del","dello","della","dei","degli","delle"];
     return clean(s).toLowerCase().split(' ').map((w,i)=>{
-        if(i>0 && exc.includes(w)) return word = w;
+        if(i>0 && exc.includes(w)) return w;
         return w.charAt(0).toUpperCase()+w.slice(1);
     }).join(' ');
 };
