@@ -7,94 +7,123 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ================= STRUTTURA PRINCIPALE (Mobile-First) ================= */
+/* ================= STRUTTURA BASE ================= */
 * { box-sizing: border-box; }
 html { height: 100%; }
 body { 
     margin: 0; padding: 0; 
-    width: 100%; 
-    height: 100dvh; /* Altezza dinamica per mobile */
+    width: 100%; height: 100dvh; 
     font-family: 'Montserrat', sans-serif; 
-    overflow: hidden; /* Blocca lo scroll del body intero */
-    display: flex; 
-    flex-direction: column; 
+    overflow: hidden; 
+    display: flex; flex-direction: column; 
     transition: background 0.3s, color 0.3s;
 }
 
-/* ================= HEADER FISSO ================= */
+/* ================= HEADER (Adattivo) ================= */
 #header {
-    flex-shrink: 0; /* Non si rimpicciolisce mai */
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 15px 10px;
-    background: inherit; /* Prende il colore del tema */
+    flex-shrink: 0;
+    display: flex; 
+    align-items: center; justify-content: center;
+    padding: 15px 20px;
     z-index: 10;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Ombra leggera per stacco */
+    /* Default Mobile Verticale: Colonna */
+    flex-direction: column; 
+    gap: 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
+
 #logo { 
-    max-height: 80px; max-width: 200px; 
-    display: none; margin-bottom: 10px; 
+    height: 70px; width: auto; 
+    display: none; 
     object-fit: contain;
 }
+
 #title {
     font-family: 'Playfair Display', serif;
     text-transform: uppercase; letter-spacing: 2px;
-    margin: 0; font-size: clamp(22px, 4vw, 40px); line-height: 1.1; text-align: center;
+    margin: 0; font-size: clamp(24px, 5vw, 42px); line-height: 1.1;
 }
 
-/* ================= AREA MENU SCROLLABILE ================= */
-#menu-container {
-    flex-grow: 1; /* Occupa tutto lo spazio rimanente */
-    overflow-y: auto; /* Abilita lo scroll verticale QUI */
+/* ================= CONTENUTO SCROLLABILE ================= */
+#scroll-container {
+    flex-grow: 1;
+    overflow-y: auto; 
     padding: 20px 15px;
     width: 100%;
-    max-width: 1600px; /* Limite per schermi giganti */
-    margin: 0 auto;
+    display: flex; flex-direction: column; /* Per mettere il prezzo in fondo */
 }
 
-/* GRIGLIA RESPONSIVE */
 #menu {
+    width: 100%; max-width: 1600px; margin: 0 auto;
     display: grid;
-    /* Automagic: crea colonne da minimo 320px l'una. 
-       Su mobile (schermo < 320) ne fa 1. Su TV ne fa 3 o 4. */
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-    gap: 40px 30px;
+    /* Griglia intelligente */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 40px 50px; /* Più spazio orizzontale tra colonne */
     align-items: start;
 }
 
-/* Categorie */
+/* ================= CATEGORIE (Pulite senza box) ================= */
 .category { 
     break-inside: avoid; page-break-inside: avoid; 
-    background: rgba(255,255,255,0.03); /* Leggerissimo box per ordine visivo */
-    padding: 15px; border-radius: 8px;
+    /* Rimosso background e padding per look pulito */
+    margin-bottom: 10px;
 }
 .category h2 {
-    margin: 0 0 15px 0; border-bottom: 2px solid;
-    text-transform: uppercase; font-size: 1.3em; padding-bottom: 5px;
+    margin: 0 0 18px 0; border-bottom: 2px solid;
+    text-transform: uppercase; font-size: 1.4em; padding-bottom: 5px;
 }
 
-/* Elementi Cucina */
+/* Items Cucina */
 .item-box { margin-bottom: 18px; }
 .item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1em; margin-bottom: 2px; }
-.desc { font-style: italic; font-size: 0.9em; line-height: 1.3; opacity: 0.8; }
+.desc { font-style: italic; font-size: 0.95em; line-height: 1.35; opacity: 0.85; }
 
-/* Elementi Bar */
+/* Items Bar */
 .bar-item { 
     display: flex; justify-content: space-between; 
-    font-weight: 600; font-size: 1.05em; margin-bottom: 8px; 
-    border-bottom: 1px dotted rgba(255,255,255,0.15); 
-    padding-bottom: 2px; 
+    font-weight: 600; font-size: 1.1em; margin-bottom: 8px; 
+    border-bottom: 1px dotted rgba(255,255,255,0.2); 
+    padding-bottom: 4px; 
 }
 
-/* ================= FOOTER / PREZZO ================= */
+/* ================= PREZZO (Scrolla col menu) ================= */
 #prezzo-box {
-    flex-shrink: 0;
-    margin: 10px; padding: 15px; 
-    border: 3px solid; border-radius: 12px;
+    margin: 40px auto 20px auto; /* Spazio sopra e sotto */
+    padding: 10px 20px; /* Più compatto */
+    border: 2px solid; border-radius: 8px; /* Bordo più sottile */
     font-weight: 700; text-align: center; 
-    font-size: clamp(18px, 2.5vh, 28px); 
+    font-size: clamp(16px, 2.5vh, 22px); /* Font leggermente ridotto */
     text-transform: uppercase;
-    background: inherit;
     display: none;
+    max-width: 400px; width: 100%;
+}
+
+/* ================= MEDIA QUERIES (Monitor, TV, Mobile Orizzontale) ================= */
+
+/* Quando lo schermo è largo (Landscape Mobile o Desktop) */
+@media (min-width: 768px) {
+    #header {
+        flex-direction: row; /* Logo a fianco del titolo */
+        padding: 20px 40px;
+        text-align: left;
+    }
+    #logo { margin-right: 20px; height: 80px; }
+}
+
+/* Quando lo schermo è molto grande (TV / Monitor Full HD) */
+@media (min-width: 1200px) {
+    /* Aumentiamo la grandezza generale per riempire lo schermo */
+    #menu {
+        gap: 60px 80px; /* Molto più spazio tra le colonne */
+    }
+    .category h2 { font-size: 1.8em; } /* Titoli categorie più grandi */
+    .item-header, .bar-item { font-size: 1.4em; } /* Nomi piatti più grandi */
+    .desc { font-size: 1.1em; } /* Descrizioni più grandi */
+    
+    /* Titolo Principale Enorme */
+    #title { font-size: 56px; }
+    #logo { height: 100px; }
 }
 
 /* ================= PROMO ================= */
@@ -114,11 +143,10 @@ body {
     <h1 id="title">CARICAMENTO...</h1>
 </div>
 
-<div id="menu-container">
+<div id="scroll-container">
     <div id="menu"></div>
+    <div id="prezzo-box"></div>
 </div>
-
-<div id="prezzo-box"></div>
 
 <div id="promo"></div>
 
@@ -138,28 +166,21 @@ const THEMES = {
 };
 
 /* ================= UTILS ================= */
-const getVal = (row, key) => {
-    // Cerca la chiave ignorando maiuscole/minuscole e spazi
-    const k = Object.keys(row).find(k => k.toLowerCase().trim() === key.toLowerCase().trim());
-    return k ? row[k] : "";
-};
+const getVal = (r, k) => { const x=Object.keys(r).find(y=>y.toLowerCase().trim()===k.toLowerCase().trim()); return x?r[x]:""; };
 const clean = v => (v || "").toString().trim();
-
-// Formattazione Smart (Maiuscole tranne articoli)
 const formatSmartTitle = s => {
-    const eccezioni = ["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o","al","allo","alla","ai","agli","alle","del","dello","della","dei","degli","delle"];
-    return clean(s).toLowerCase().split(' ').map((word, index) => {
-        if (index > 0 && eccezioni.includes(word)) return word;
-        return word.charAt(0).toUpperCase() + word.slice(1);
+    const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o","al","allo","alla","ai","agli","alle","del","dello","della","dei","degli","delle"];
+    return clean(s).toLowerCase().split(' ').map((w,i)=>{
+        if(i>0 && exc.includes(w)) return w;
+        return w.charAt(0).toUpperCase()+w.slice(1);
     }).join(' ');
 };
 
-/* ================= APP LOGIC ================= */
+/* ================= LOGIC ================= */
 async function updateData() {
 try {
     const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
-    const S = {};
-    settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
+    const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
     const MODE = (S["Modalità"] || "bar").toLowerCase();
     document.body.className = "mode-" + MODE;
@@ -168,23 +189,19 @@ try {
     document.body.style.backgroundColor = theme.bg;
     document.body.style.color = theme.text;
 
-    document.getElementById("title").innerText = MODE==="bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
-    document.getElementById("title").style.color = theme.accent;
+    const tEl = document.getElementById("title");
+    tEl.innerText = MODE==="bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+    tEl.style.color = theme.accent;
 
-    const logo = document.getElementById("logo");
-    if (S["Logo URL"]) { 
-        logo.src = S["Logo URL"]; 
-        logo.style.display = "block"; 
-    } else { 
-        logo.style.display = "none"; 
-    }
+    const lEl = document.getElementById("logo");
+    if (S["Logo URL"]) { lEl.src = S["Logo URL"]; lEl.style.display = "block"; } else { lEl.style.display = "none"; }
 
     const menu = document.getElementById("menu");
     const pBox = document.getElementById("prezzo-box");
     menu.innerHTML = "";
     pBox.style.display = "none";
 
-    // --- LOGICA CUCINA ---
+    /* CUCINA */
     if (MODE === "cucina") {
         stopPromo();
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
@@ -193,10 +210,8 @@ try {
         if(opacityVal) opacityVal = opacityVal.replace(',', '.');
         const opacityStyle = opacityVal !== "" ? `style="opacity:${opacityVal}"` : "";
 
-        // Prezzo Box
-        const prezzoBanner = S["Prezzo"];
-        if (prezzoBanner) {
-            pBox.innerHTML = prezzoBanner;
+        if (S["Prezzo"]) {
+            pBox.innerHTML = S["Prezzo"];
             pBox.style.display = "block";
             pBox.style.borderColor = theme.accent;
             pBox.style.color = theme.accent;
@@ -204,106 +219,79 @@ try {
 
         const grouped = {};
         const firstIndex = {};
-
-        data.forEach((r, idx) => {
+        data.forEach((r, i) => {
             if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
-            const cat = clean(getVal(r, "Categoria")).toUpperCase();
-            if(!cat) return;
-            
-            if (firstIndex[cat] === undefined) firstIndex[cat] = idx;
+            const cat = clean(getVal(r, "Categoria")).toUpperCase(); if(!cat) return;
+            if (firstIndex[cat] === undefined) firstIndex[cat] = i;
             grouped[cat] ??= [];
-            const nomePiatto = getVal(r, "Piatto") || getVal(r, "Nome"); // Cerca Piatto, se no Nome
-            
             grouped[cat].push({
-                n: formatSmartTitle(nomePiatto),
-                ing: formatSmartTitle(getVal(r, "Ingredienti")),
-                p: getVal(r, "Prezzo")
+                n: formatSmartTitle(getVal(r,"Piatto")||getVal(r,"Nome")),
+                ing: formatSmartTitle(getVal(r,"Ingredienti")),
+                p: getVal(r,"Prezzo")
             });
         });
 
-        // Ordinamento Cucina
         let keys = Object.keys(grouped);
-        const orderMode = clean(S["Ordine Categorie Cucina"] || "tabella").toLowerCase(); // Default tabella
-        
-        if (orderMode === "tabella") {
-            keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
-        } else if (orderMode !== "alfabetico" && orderMode.length > 0) {
-            const customList = clean(S["Ordine Categorie Cucina"]).split(",").map(s => s.trim().toUpperCase());
-            keys = customList.filter(k => grouped[k]).concat(keys.filter(k => !customList.includes(k)));
-        } else {
-            keys.sort();
-        }
+        const orderMode = clean(S["Ordine Categorie Cucina"] || "tabella").toLowerCase();
+        if (orderMode === "tabella") keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
+        else if (orderMode !== "alfabetico") {
+            const cList = clean(S["Ordine Categorie Cucina"]).split(",").map(s=>s.trim().toUpperCase());
+            keys = cList.filter(k=>grouped[k]).concat(keys.filter(k=>!cList.includes(k)));
+        } else keys.sort();
 
         keys.forEach(cat => {
-            const section = document.createElement("div");
-            section.className = "category";
-            section.innerHTML = `
+            const sec = document.createElement("div"); sec.className = "category";
+            sec.innerHTML = `
                 <h2 style="color:${theme.accent}; border-color:${theme.accent}">${cat}</h2>
-                ${grouped[cat].map(i => `
+                ${grouped[cat].map(x => `
                     <div class="item-box">
-                        <div class="item-header">
-                            <span>${i.n}</span>
-                            <span style="color:${theme.accent}">${i.p}</span>
-                        </div>
-                        ${i.ing ? `<div class="desc" ${opacityStyle}>${i.ing}</div>` : ``}
+                        <div class="item-header"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>
+                        ${x.ing ? `<div class="desc" ${opacityStyle}>${x.ing}</div>` : ``}
                     </div>
                 `).join("")}
             `;
-            menu.appendChild(section);
+            menu.appendChild(sec);
         });
     }
 
-    // --- LOGICA BAR ---
+    /* BAR */
     if (MODE === "bar") {
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
         const grouped = {};
         const firstIndex = {};
-
-        data.forEach((r, idx) => {
+        data.forEach((r, i) => {
             if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
-            const cat = clean(getVal(r, "Categoria")).toUpperCase();
-            if(!cat) return;
-
-            if (firstIndex[cat] === undefined) firstIndex[cat] = idx;
+            const cat = clean(getVal(r, "Categoria")).toUpperCase(); if(!cat) return;
+            if (firstIndex[cat] === undefined) firstIndex[cat] = i;
             grouped[cat] ??= [];
-            grouped[cat].push({ n: formatSmartTitle(getVal(r, "Nome")), p: getVal(r, "Prezzo") });
+            grouped[cat].push({ n: formatSmartTitle(getVal(r,"Nome")), p: getVal(r,"Prezzo") });
         });
 
-        // Ordinamento Bar
         let keys = Object.keys(grouped);
         const orderMode = clean(S["Ordine Categorie Bar"] || "alfabetico").toLowerCase();
-
-        if (orderMode === "tabella") {
-            keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
-        } else if (orderMode !== "alfabetico" && orderMode.length > 0) {
-            const customList = clean(S["Ordine Categorie Bar"]).split(",").map(s => s.trim().toUpperCase());
-            keys = customList.filter(k => grouped[k]).concat(keys.filter(k => !customList.includes(k)));
-        } else {
-            keys.sort();
-        }
+        if (orderMode === "tabella") keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
+        else if (orderMode !== "alfabetico") {
+            const cList = clean(S["Ordine Categorie Bar"]).split(",").map(s=>s.trim().toUpperCase());
+            keys = cList.filter(k=>grouped[k]).concat(keys.filter(k=>!cList.includes(k)));
+        } else keys.sort();
 
         keys.forEach(cat => {
-            const section = document.createElement("div");
-            section.className = "category";
-            section.innerHTML = `
+            const sec = document.createElement("div"); sec.className = "category";
+            sec.innerHTML = `
                 <h2 style="color:${theme.accent}; border-color:${theme.accent}">${cat}</h2>
-                ${grouped[cat].map(i => `
-                    <div class="bar-item">
-                        <span>${i.n}</span>
-                        <span style="color:${theme.accent}">${i.p}</span>
-                    </div>
+                ${grouped[cat].map(x => `
+                    <div class="bar-item"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>
                 `).join("")}
             `;
-            menu.appendChild(section);
+            menu.appendChild(sec);
         });
-
         if(S["Immagine Promo"]) startPromo(S["Immagine Promo"], S["Tempo Promo"]);
     }
 
-} catch(e) { console.error("Errore updateData:", e); }
+} catch(e) { console.error(e); }
 }
 
-/* ================= PROMO TIMER ================= */
+/* PROMO */
 let promoTimer = null;
 function startPromo(url, sec) {
     if (document.getElementById("promo").style.backgroundImage.includes(url) && promoTimer) return;
@@ -311,22 +299,12 @@ function startPromo(url, sec) {
     const el = document.getElementById("promo");
     el.style.backgroundImage = `url(${url})`;
     const interval = (sec ? Number(sec) : 8) * 1000;
-    const cycle = () => {
-        el.classList.add("show");
-        setTimeout(() => el.classList.remove("show"), interval);
-    };
-    // Primo avvio
+    const cycle = () => { el.classList.add("show"); setTimeout(() => el.classList.remove("show"), interval); };
     cycle(); 
     promoTimer = setInterval(cycle, interval * 2);
 }
-function stopPromo() {
-    if (promoTimer) { clearInterval(promoTimer); promoTimer = null; }
-    const el = document.getElementById("promo");
-    el.classList.remove("show");
-    el.style.backgroundImage = "";
-}
+function stopPromo() { if(promoTimer){clearInterval(promoTimer); promoTimer=null;} const el=document.getElementById("promo"); el.classList.remove("show"); el.style.backgroundImage=""; }
 
-// Avvio
 updateData();
 setInterval(updateData, 30000);
 </script>
