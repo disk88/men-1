@@ -7,33 +7,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ================= STRUTTURA BASE ================= */
+/* ================= RESET & BASE ================= */
 * { box-sizing: border-box; }
 html { height: 100%; }
 body { 
     margin: 0; padding: 0; 
     width: 100%; height: 100dvh; 
     font-family: 'Montserrat', sans-serif; 
-    overflow: hidden; /* Blocca scroll generale */
+    overflow: hidden; 
     display: flex; flex-direction: column; 
     transition: background 0.3s, color 0.3s;
 }
 
-/* ================= HEADER ================= */
+/* ================= HEADER (Centrato) ================= */
 #header {
     flex-shrink: 0;
     display: flex; 
     align-items: center; justify-content: center;
-    padding: 10px 20px;
+    padding: 15px 20px;
     z-index: 10;
     flex-direction: column; 
-    gap: 10px;
+    gap: 15px;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 #logo { 
-    height: 70px; width: auto; 
+    height: clamp(60px, 10vh, 100px); 
+    width: auto; 
     display: none; 
     object-fit: contain;
 }
@@ -41,91 +41,84 @@ body {
 #title {
     font-family: 'Playfair Display', serif;
     text-transform: uppercase; letter-spacing: 2px;
-    margin: 0; font-size: clamp(24px, 5vw, 42px); line-height: 1.1;
+    margin: 0; 
+    font-size: clamp(26px, 6vw, 55px); /* Molto più grande su schermi grandi */
+    line-height: 1.1;
 }
 
-/* ================= CORPO CENTRALE ================= */
+/* ================= CONTAINER PRINCIPALE ================= */
 #scroll-container {
     flex-grow: 1;
-    overflow-y: auto; /* Abilita scroll SOLO su mobile */
-    padding: 15px;
+    overflow-y: auto; /* Scroll abilitato di base per Mobile */
+    padding: 10px 20px;
     width: 100%;
     display: flex; flex-direction: column;
 }
 
 #menu {
-    width: 100%; max-width: 1800px; margin: 0 auto;
+    width: 100%; max-width: 1900px; margin: 0 auto;
     display: grid;
-    /* Mobile: colonne automatiche */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 30px;
-    align-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 25px 40px;
 }
 
-/* ================= ELEMENTI MENU ================= */
-.category { 
-    break-inside: avoid; page-break-inside: avoid; 
-    margin-bottom: 10px;
-}
+/* ================= CATEGORIE & ITEMS ================= */
+.category { break-inside: avoid; margin-bottom: 5px; }
 .category h2 {
-    margin: 0 0 15px 0; border-bottom: 2px solid;
-    text-transform: uppercase; font-size: 1.3em; padding-bottom: 5px;
+    margin: 0 0 12px 0; border-bottom: 2px solid;
+    text-transform: uppercase; font-size: 1.4em; padding-bottom: 5px;
 }
 
 .item-box { margin-bottom: 15px; }
-.item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1em; margin-bottom: 2px; }
-.desc { font-style: italic; font-size: 0.9em; line-height: 1.3; opacity: 0.85; }
+.item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2em; }
+.desc { font-style: italic; font-size: 1em; line-height: 1.3; opacity: 0.85; }
 
 .bar-item { 
     display: flex; justify-content: space-between; 
-    font-weight: 600; font-size: 1.1em; margin-bottom: 8px; 
+    font-weight: 600; font-size: 1.15em; margin-bottom: 8px; 
     border-bottom: 1px dotted rgba(255,255,255,0.2); 
     padding-bottom: 4px; 
 }
 
-/* ================= PREZZO (Full Width) ================= */
+/* ================= PREZZO BANNER ================= */
 #prezzo-box {
-    margin-top: auto; /* Spinge in fondo */
-    margin-bottom: 10px;
-    padding: 10px 0;
-    width: 98%; /* Quasi totale */
-    margin-left: auto; margin-right: auto;
+    margin: 20px auto;
+    padding: 12px 0;
+    width: 100%;
     border: 2px solid; border-radius: 8px;
     font-weight: 700; text-align: center; 
-    font-size: clamp(18px, 2.5vh, 26px);
+    font-size: clamp(18px, 3vh, 32px);
     text-transform: uppercase;
     display: none;
-    flex-shrink: 0;
 }
 
-/* ================= TV / MONITOR (NO SCROLL) ================= */
+/* ================= DESKTOP & TV (LOGICA NO-SCROLL) ================= */
 @media (min-width: 1024px) {
-    /* Blocchiamo tutto lo scroll per effetto "Pagina Fissa" */
-    #scroll-container { 
-        overflow: hidden; 
-        padding: 20px 40px;
-    }
-
+    body { overflow: hidden; }
+    #scroll-container { overflow: hidden; justify-content: center; } /* Niente scroll su TV */
+    
     #header {
-        flex-direction: row; 
-        padding: 15px 40px;
-        text-align: left;
-        justify-content: flex-start; /* Logo e titolo a sinistra */
+        flex-direction: row; /* Logo a fianco */
+        padding: 20px;
     }
-    #logo { margin-right: 30px; height: 90px; }
-    #title { font-size: 48px; }
+    #logo { margin-right: 25px; height: 110px; }
 
     #menu {
-        /* Creiamo colonne dense per far stare tutto in una schermata */
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-        gap: 40px 60px;
-        height: 100%;
-        align-content: start; /* Allinea in alto */
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Colonne più larghe */
+        gap: 30px 60px;
     }
 
-    /* Ottimizziamo lo spazio verticale */
-    .category { margin-bottom: 20px; }
-    .item-box { margin-bottom: 12px; }
+    /* Ingrandimento testi per TV */
+    .category h2 { font-size: 2em; }
+    .item-header, .bar-item { font-size: 1.6em; }
+    .desc { font-size: 1.2em; }
+}
+
+/* MOBILE ORIZZONTALE */
+@media (max-height: 500px) and (orientation: landscape) {
+    #header { flex-direction: row; padding: 5px; }
+    #logo { height: 50px; margin-right: 15px; }
+    #scroll-container { overflow-y: auto; } /* Permetti lo scroll se il telefono è piatto */
 }
 
 /* ================= PROMO ================= */
@@ -135,7 +128,6 @@ body {
     opacity: 0; pointer-events: none; transition: opacity 0.5s; z-index: 9999;
 }
 #promo.show { opacity: 1; pointer-events: all; }
-
 </style>
 </head>
 <body>
@@ -168,10 +160,11 @@ const THEMES = {
 
 const getVal = (r, k) => { const x=Object.keys(r).find(y=>y.toLowerCase().trim()===k.toLowerCase().trim()); return x?r[x]:""; };
 const clean = v => (v || "").toString().trim();
+
 const formatSmartTitle = s => {
     const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o","al","allo","alla","ai","agli","alle","del","dello","della","dei","degli","delle"];
     return clean(s).toLowerCase().split(' ').map((w,i)=>{
-        if(i>0 && exc.includes(w)) return w;
+        if(i>0 && exc.includes(w)) return word = w;
         return w.charAt(0).toUpperCase()+w.slice(1);
     }).join(' ');
 };
@@ -193,20 +186,12 @@ try {
     const lEl = document.getElementById("logo");
     if (S["Logo URL"]) { lEl.src = S["Logo URL"]; lEl.style.display = "block"; } else { lEl.style.display = "none"; }
 
+    if(S["Immagine Promo"]) startPromo(S["Immagine Promo"], S["Tempo Promo"]); else stopPromo();
+
     const menu = document.getElementById("menu");
     const pBox = document.getElementById("prezzo-box");
-    
-    /* Nota: Non puliamo il menu subito per evitare "sfarfallio" visivo, 
-       ma in questo codice semplice lo rigeneriamo. */
     menu.innerHTML = "";
     pBox.style.display = "none";
-
-    // GESTIONE PROMO (Logica Corretta)
-    if(S["Immagine Promo"]) {
-        startPromo(S["Immagine Promo"], S["Tempo Promo"]);
-    } else {
-        stopPromo(); // Se il campo è vuoto, spegni subito
-    }
 
     if (MODE === "cucina") {
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
@@ -292,23 +277,18 @@ try {
 let promoTimer = null;
 function startPromo(url, sec) {
     if (document.getElementById("promo").style.backgroundImage.includes(url) && promoTimer) return;
-    stopPromo(); // Resetta se cambia URL
+    stopPromo();
     const el = document.getElementById("promo");
     el.style.backgroundImage = `url(${url})`;
     const interval = (sec ? Number(sec) : 8) * 1000;
     const cycle = () => { el.classList.add("show"); setTimeout(() => el.classList.remove("show"), interval); };
-    cycle(); // Avvia subito
+    cycle(); 
     promoTimer = setInterval(cycle, interval * 2);
 }
-function stopPromo() { 
-    if(promoTimer){clearInterval(promoTimer); promoTimer=null;} 
-    const el=document.getElementById("promo"); 
-    el.classList.remove("show"); 
-    el.style.backgroundImage=""; // Rimuove immagine fisicamente
-}
+function stopPromo() { if(promoTimer){clearInterval(promoTimer); promoTimer=null;} const el=document.getElementById("promo"); el.classList.remove("show"); el.style.backgroundImage=""; }
 
 updateData();
-setInterval(updateData, 10000); // REFRESH OGNI 10 SECONDI
+setInterval(updateData, 10000);
 </script>
 </body>
 </html>
