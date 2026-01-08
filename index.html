@@ -99,33 +99,59 @@ body {
 }
 
 /* ================= TV / MONITOR (NO SCROLL) ================= */
+/* ================= TV / MONITOR (DIGITAL SIGNAGE) ================= */
 @media (min-width: 1024px) {
-    /* Blocchiamo tutto lo scroll per effetto "Pagina Fissa" */
-    #scroll-container { 
-        overflow: hidden; 
+
+    body {
+        overflow: hidden;
+    }
+
+    /* HEADER ORIZZONTALE */
+    #header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 16px 40px;
+    }
+
+    #logo {
+        display: block;
+        height: 90px;
+        margin-right: 30px;
+    }
+
+    #title {
+        font-size: 48px;
+    }
+
+    /* AREA CONTENUTO FISSA */
+    #scroll-container {
+        overflow: hidden;
         padding: 20px 40px;
     }
 
-    #header {
-        flex-direction: row; 
-        padding: 15px 40px;
-        text-align: left;
-        justify-content: flex-start; /* Logo e titolo a sinistra */
-    }
-    #logo { margin-right: 30px; height: 90px; }
-    #title { font-size: 48px; }
-
+    /* ==== CUORE DEL SISTEMA ==== */
     #menu {
-        /* Creiamo colonne dense per far stare tutto in una schermata */
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-        gap: 40px 60px;
-        height: 100%;
-        align-content: start; /* Allinea in alto */
+        display: block;               /* DISATTIVA GRID */
+        height: calc(100vh - 180px);  /* header + margini */
+        column-width: 420px;          /* larghezza ideale colonna */
+        column-gap: 60px;
     }
 
-    /* Ottimizziamo lo spazio verticale */
-    .category { margin-bottom: 20px; }
-    .item-box { margin-bottom: 12px; }
+    /* EVITA SPEZZATURE */
+    .category {
+        break-inside: avoid;
+        margin-bottom: 24px;
+    }
+
+    /* SPAZIATURE OTTIMIZZATE */
+    .item-box {
+        margin-bottom: 12px;
+    }
+
+    .bar-item {
+        margin-bottom: 8px;
+    }
 }
 
 /* ================= PROMO ================= */
