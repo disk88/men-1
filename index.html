@@ -18,7 +18,7 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     font-family: 'Montserrat', sans-serif;
     overflow-x: hidden;
 }
@@ -30,13 +30,13 @@ body {
 }
 
 /* =====================================================
-   MAIN CONTAINER
+   MAIN
 ===================================================== */
 #main {
     width: 100%;
-    max-width: 1400px;
-    min-height: 100vh;
-    padding: 20px 15px;
+    max-width: 1500px;
+    height: 100vh;
+    padding: 20px 20px;
     display: flex;
     flex-direction: column;
 }
@@ -46,10 +46,10 @@ body {
 ===================================================== */
 #header {
     display: flex;
-    flex-direction: column;           /* MOBILE */
+    flex-direction: column; /* mobile */
     align-items: center;
     gap: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -68,16 +68,14 @@ body {
     line-height: 1.2;
 }
 
-/* DESKTOP / TV */
+/* desktop / TV */
 @media (min-width: 768px) {
     #header {
         flex-direction: row;
         justify-content: center;
         text-align: left;
     }
-    #logo {
-        margin-right: 25px;
-    }
+    #logo { margin-right: 25px; }
 }
 
 /* =====================================================
@@ -88,7 +86,7 @@ body {
 }
 
 .category {
-    margin-bottom: 35px;
+    margin-bottom: 30px;
     break-inside: avoid;
 }
 
@@ -101,21 +99,15 @@ body {
 }
 
 /* =====================================================
-   CUCINA ITEMS
+   ITEMS
 ===================================================== */
 .item-box { margin-bottom: 15px; }
 
 .item-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
     font-weight: 700;
     font-size: clamp(18px, 2.2vh, 22px);
-}
-
-.item-header span:last-child {
-    white-space: nowrap;
-    margin-left: 10px;
 }
 
 .desc {
@@ -124,9 +116,6 @@ body {
     line-height: 1.4;
 }
 
-/* =====================================================
-   BAR ITEMS
-===================================================== */
 .bar-item {
     display: flex;
     justify-content: space-between;
@@ -134,7 +123,6 @@ body {
     margin-bottom: 8px;
     font-size: clamp(16px, 2vh, 20px);
     border-bottom: 1px dotted rgba(255,255,255,0.15);
-    padding-bottom: 2px;
 }
 
 /* =====================================================
@@ -154,37 +142,35 @@ body {
 }
 
 /* =====================================================
-   DESKTOP / TV — NO SCROLL
+   DESKTOP / TV (SIGNAGE)
 ===================================================== */
 @media (min-width: 1024px) {
 
     .mode-cucina #menu {
         column-count: 3;
         column-gap: 50px;
-        height: calc(100vh - 240px);
+        height: calc(100vh - 230px);
         overflow: hidden;
     }
 
     .mode-bar #menu {
         column-count: 4;
         column-gap: 50px;
-        height: calc(100vh - 220px);
+        height: calc(100vh - 210px);
         overflow: hidden;
     }
 }
 
-/* TV GRANDI */
 @media (min-width: 1600px) {
-
     .mode-cucina #menu { column-count: 4; }
     .mode-bar #menu { column-count: 5; }
 }
 
 /* =====================================================
-   PREZZO BOX (CUCINA)
+   PREZZO BOX
 ===================================================== */
 #prezzo-box {
-    margin-top: 20px;
+    margin-top: 15px;
     padding: 18px;
     border: 3px solid;
     border-radius: 12px;
@@ -196,7 +182,7 @@ body {
 }
 
 /* =====================================================
-   PROMO BAR (PRIORITÀ ASSOLUTA)
+   PROMO (LAYER SEPARATO)
 ===================================================== */
 #promo {
     position: fixed;
@@ -205,7 +191,7 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s;
-    z-index: 9999; /* sopra a tutto */
+    z-index: 10000;
 }
 
 #promo.show {
@@ -237,17 +223,6 @@ body {
 ===================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-const THEMES = {
-    classic:{ bg:"#111", text:"#fff", accent:"#d4af37" },
-    elegant:{ bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
-    modern:{ bg:"#fff", text:"#222", accent:"#c0392b" },
-    minimal:{ bg:"#f7f7f7", text:"#111", accent:"#000" },
-    dark:{ bg:"#000", text:"#ddd", accent:"#00c896" },
-    neon:{ bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
-    pub:{ bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
-    luxury:{ bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
-};
-
 /* =====================================================
    UTILS
 ===================================================== */
@@ -267,9 +242,40 @@ const formatSmartTitle = s => {
 };
 
 let promoTimer = null;
+let promoVisible = false;
 
 /* =====================================================
-   LOGICA PRINCIPALE
+   PROMO LOGIC (TEMPI CORRETTI)
+===================================================== */
+function startPromo(url, sec) {
+    stopPromo();
+
+    const el = document.getElementById("promo");
+    el.style.backgroundImage = `url(${url})`;
+
+    const interval = (Number(sec) || 8) * 1000;
+
+    promoVisible = false;
+
+    promoTimer = setInterval(() => {
+        promoVisible = !promoVisible;
+        el.classList.toggle("show", promoVisible);
+    }, interval);
+}
+
+function stopPromo() {
+    if (promoTimer) {
+        clearInterval(promoTimer);
+        promoTimer = null;
+    }
+    promoVisible = false;
+    const el = document.getElementById("promo");
+    el.classList.remove("show");
+    el.style.backgroundImage = "";
+}
+
+/* =====================================================
+   MAIN LOGIC
 ===================================================== */
 async function updateData() {
 try {
@@ -279,6 +285,17 @@ try {
 
     const MODE = (S["Modalità"] || "bar").toLowerCase();
     document.getElementById("main").className = MODE === "bar" ? "mode-bar" : "mode-cucina";
+
+    const THEMES = {
+        classic:{ bg:"#111", text:"#fff", accent:"#d4af37" },
+        elegant:{ bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
+        modern:{ bg:"#fff", text:"#222", accent:"#c0392b" },
+        minimal:{ bg:"#f7f7f7", text:"#111", accent:"#000" },
+        dark:{ bg:"#000", text:"#ddd", accent:"#00c896" },
+        neon:{ bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
+        pub:{ bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
+        luxury:{ bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
+    };
 
     const themeKey = (MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"]) || "classic";
     const theme = THEMES[themeKey] || THEMES.classic;
@@ -301,11 +318,9 @@ try {
     menu.innerHTML = "";
     pBox.style.display = "none";
 
-    /* ================= CUCINA ================= */
+    /* CUCINA */
     if (MODE === "cucina") {
         stopPromo();
-
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
 
         let opacityVal = S["Trasparenza Ingredienti"];
         if (opacityVal) opacityVal = opacityVal.replace(",", ".");
@@ -318,7 +333,9 @@ try {
             pBox.style.color = theme.accent;
         }
 
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
         const grouped = {};
+
         data.forEach(r => {
             if (clean(getVal(r,"Disponibile")).toLowerCase() !== "si") return;
             const cat = clean(getVal(r,"Categoria")).toUpperCase();
@@ -350,7 +367,7 @@ try {
         });
     }
 
-    /* ================= BAR ================= */
+    /* BAR */
     if (MODE === "bar") {
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
         const grouped = {};
@@ -387,34 +404,6 @@ try {
 } catch(e) {
     console.error(e);
 }
-}
-
-/* =====================================================
-   PROMO TIMER
-===================================================== */
-function startPromo(url, sec) {
-    stopPromo();
-    const el = document.getElementById("promo");
-    el.style.backgroundImage = `url(${url})`;
-    const interval = (sec ? Number(sec) : 8) * 1000;
-
-    const cycle = () => {
-        el.classList.add("show");
-        setTimeout(() => el.classList.remove("show"), interval);
-    };
-
-    cycle();
-    promoTimer = setInterval(cycle, interval * 2);
-}
-
-function stopPromo() {
-    if (promoTimer) {
-        clearInterval(promoTimer);
-        promoTimer = null;
-    }
-    const el = document.getElementById("promo");
-    el.classList.remove("show");
-    el.style.backgroundImage = "";
 }
 
 updateData();
