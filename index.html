@@ -2,53 +2,52 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Menu Digitale</title>
 
-<!-- ======================================================
-     FONT
-====================================================== -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ======================================================
-   RESET BASE
-====================================================== */
+/* ================= RESET ================= */
 * { box-sizing: border-box; }
-
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    font-family: Montserrat, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     overflow-x: hidden;
 }
 
-/* ======================================================
-   CONTENITORE PRINCIPALE
-   (safe area TV)
-====================================================== */
+/* ================= BASE ================= */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
 #main {
-    min-height: 100svh;
-    padding: 4vh 6vw;
+    width: 100%;
+    min-height: 100vh;
+    padding: clamp(12px, 3vh, 32px) clamp(12px, 5vw, 48px);
     display: flex;
     flex-direction: column;
 }
 
-/* ======================================================
-   HEADER
-====================================================== */
+/* ================= HEADER ================= */
 #header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3vw;
-    margin-bottom: 3vh;
+    gap: 2vw;
+    margin-bottom: 2vh;
+    flex-shrink: 0;
 }
 
 #logo {
     max-height: 10vh;
+    max-width: 18vw;
     display: none;
 }
 
@@ -56,48 +55,79 @@ html, body {
     font-family: 'Playfair Display', serif;
     text-transform: uppercase;
     letter-spacing: 4px;
-    font-size: clamp(28px, 5vh, 64px);
     margin: 0;
+    text-align: center;
+    font-size: clamp(28px, 5vw, 64px);
 }
 
-/* ======================================================
-   MENU (comune)
-====================================================== */
-#menu { flex: 1; }
+/* ================= MENU ================= */
+#menu {
+    flex: 1;
+}
 
-/* ======================================================
-   CATEGORIA (comune)
-====================================================== */
+/* ================= CATEGORIE ================= */
+.category {
+    break-inside: avoid;
+    margin-bottom: 3vh;
+}
+
 .category h2 {
     margin: 0 0 1vh 0;
-    padding-bottom: .5vh;
     border-bottom: 2px solid;
     text-transform: uppercase;
-    text-align: center;
 }
 
-/* ======================================================
-   MODALITÀ CUCINA
-====================================================== */
+/* ================= CUCINA ================= */
 .mode-cucina #menu {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 3vh 3vw;
 }
 
-.mode-cucina .item-header {
+.mode-cucina .category h2 {
+    font-size: clamp(22px, 3.5vh, 36px);
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
     font-weight: 700;
-    font-size: clamp(18px, 2.5vh, 28px);
+    font-size: clamp(18px, 2.6vh, 28px);
 }
 
-.mode-cucina .desc {
+.desc {
     font-style: italic;
+    line-height: 1.4;
     margin-bottom: 2vh;
+    font-size: clamp(14px, 2.1vh, 22px);
 }
 
-/* ======================================================
-   PREZZO MENU CUCINA
-====================================================== */
+/* ================= BAR ================= */
+.mode-bar #menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 3vh 3vw;
+}
+
+.mode-bar .category h2 {
+    font-size: clamp(18px, 2.6vh, 30px);
+}
+
+.bar-item {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 1vh;
+    font-size: clamp(16px, 2.2vh, 24px);
+}
+
+.bar-item span:last-child {
+    font-weight: 700;
+    min-width: 5ch;
+    text-align: right;
+}
+
+/* ================= PREZZO BOX ================= */
 #prezzo-box {
     margin: 3vh auto 0;
     padding: 1.5vh 4vw;
@@ -108,60 +138,27 @@ html, body {
     display: none;
 }
 
-/* ======================================================
-   MODALITÀ BAR – TV
-   (pagina chiusa)
-====================================================== */
-.mode-bar.tv #menu {
-    display: grid;
-    width: 100%;
-    height: 100%;
-    gap: 3vh 3vw;
-}
-
-.mode-bar.tv .category {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.mode-bar.tv .category-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
-
-.bar-item {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
-}
-
-/* ======================================================
-   PROMO
-====================================================== */
+/* ================= PROMO ================= */
 #promo {
     position: fixed;
     inset: 0;
-    background-size: contain;
+    background-color: #000;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: black;
+    background-size: contain;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 1s ease;
-    z-index: 50;
+    transition: opacity 0.8s ease;
+    z-index: 999;
 }
 
-#promo.show { opacity: 1; }
+#promo.show {
+    opacity: 1;
+}
 
-/* ======================================================
-   MOBILE
-====================================================== */
+/* ================= MOBILE ================= */
 @media (max-width: 768px) {
-    html, body { overflow-y: auto; }
-    .mode-bar.tv #menu { display: block; }
+    body { overflow-y: auto; }
 }
 </style>
 </head>
@@ -170,70 +167,48 @@ html, body {
 <div id="main">
     <div id="header">
         <img id="logo">
-        <h1 id="title">CARICAMENTO...</h1>
+        <h1 id="title">CARICAMENTO…</h1>
     </div>
 
     <div id="menu"></div>
     <div id="prezzo-box"></div>
-    <div id="promo"></div>
 </div>
 
+<div id="promo"></div>
+
 <script>
-/* ======================================================
-   CONFIGURAZIONE
-====================================================== */
+/* ================= CONFIG ================= */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-/* ======================================================
-   TEMI (CUCINA + BAR)
-====================================================== */
 const THEMES = {
-    // cucina
     classic: { bg:"#111", text:"#fff", accent:"#d4af37" },
-    elegant: { bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
-    modern:  { bg:"#fff", text:"#222", accent:"#c0392b" },
-    minimal: { bg:"#f7f7f7", text:"#111", accent:"#000" },
+    elegant:{ bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
+    modern: { bg:"#fff", text:"#222", accent:"#c0392b" },
+    minimal:{ bg:"#f7f7f7", text:"#111", accent:"#000" },
 
-    // bar
-    dark:    { bg:"#000", text:"#ddd", accent:"#00c896" },
-    neon:    { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
-    pub:     { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
-    luxury:  { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
+    dark:   { bg:"#000", text:"#ddd", accent:"#00c896" },
+    neon:   { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
+    pub:    { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
+    luxury: { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
 };
 
-/* ======================================================
-   UTILITÀ
-====================================================== */
+/* ================= UTILS ================= */
 const clean = v => (v || "").toString().trim();
-const capWords = s => clean(s).toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+const cap = s => clean(s).toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
-/* ======================================================
-   FONT DINAMICO (BAR TV)
-====================================================== */
-function fitText(el) {
-    let size = 2.6;
-    el.style.fontSize = size + "vh";
-    while (el.scrollHeight > el.clientHeight && size > 1.2) {
-        size -= 0.1;
-        el.style.fontSize = size + "vh";
-    }
-}
-
-/* ======================================================
-   PROMO
-====================================================== */
 let promoTimer = null;
 
-function startPromo(S) {
+/* ================= PROMO ================= */
+function startPromo(url, seconds = 8) {
     stopPromo();
-    if (!S["Immagine Promo"]) return;
-    const p = document.getElementById("promo");
-    p.style.backgroundImage = `url(${S["Immagine Promo"]})`;
-    let v = false;
+    if (!url) return;
+    const promo = document.getElementById("promo");
+    promo.style.backgroundImage = `url(${url})`;
+    let show = false;
     promoTimer = setInterval(() => {
-        v = !v;
-        p.classList.toggle("show", v);
-    }, (Number(S["Tempo Promo"]) || 8) * 1000);
+        show = !show;
+        promo.classList.toggle("show", show);
+    }, seconds * 1000);
 }
 
 function stopPromo() {
@@ -242,17 +217,15 @@ function stopPromo() {
     document.getElementById("promo").classList.remove("show");
 }
 
-/* ======================================================
-   AGGIORNAMENTO DATI
-====================================================== */
+/* ================= MAIN UPDATE ================= */
 async function updateData() {
 try {
-    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
+    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
     const S = {};
     settings.forEach(r => S[clean(r.Proprietà)] = clean(r.Valore));
 
     const MODE = (S["Modalità"] || "bar").toLowerCase();
-    const ORIENT = (S["Orientamento"] || "orizzontale").toLowerCase();
+    document.getElementById("main").className = MODE === "bar" ? "mode-bar" : "mode-cucina";
 
     const themeKey = MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"];
     const theme = THEMES[themeKey] || THEMES.classic;
@@ -260,68 +233,96 @@ try {
     document.body.style.background = theme.bg;
     document.body.style.color = theme.text;
 
-    const main = document.getElementById("main");
-    main.className = MODE;
+    const title = document.getElementById("title");
+    title.innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+    title.style.color = theme.accent;
 
-    if (MODE === "bar" && window.innerWidth >= 1024) {
-        main.classList.add("tv");
-        document.body.style.overflow = "hidden";
-    }
-
-    document.getElementById("title").innerText =
-        MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
-    document.getElementById("title").style.color = theme.accent;
-
+    const logo = document.getElementById("logo");
     if (S["Logo URL"]) {
-        const l = document.getElementById("logo");
-        l.src = S["Logo URL"];
-        l.style.display = "block";
-    }
+        logo.src = S["Logo URL"];
+        logo.style.display = "block";
+    } else logo.style.display = "none";
 
     const menu = document.getElementById("menu");
     menu.innerHTML = "";
 
-    /* ================= BAR ================= */
-    if (MODE === "bar") {
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r => r.json());
-        const g = {};
-        data.forEach(r => {
+    /* ================= CUCINA ================= */
+    if (MODE === "cucina") {
+        stopPromo();
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
+        const showIng = (S["Trasparenza Ingredienti"] || "si").toLowerCase() === "si";
+        const grouped = {};
+
+        data.forEach(r=>{
             if (clean(r.Disponibile).toLowerCase() !== "si") return;
-            const c = clean(r.Categoria).toUpperCase();
-            g[c] ??= [];
-            g[c].push({ n: capWords(r.Nome), p: clean(r.Prezzo) });
+            const c = cap(r.Categoria);
+            grouped[c] ??= [];
+            grouped[c].push({
+                n: cap(r.Nome),
+                d: clean(r.Descrizione),
+                p: clean(r.Prezzo)
+            });
         });
 
-        const cats = Object.keys(g);
-        let cols = Math.ceil(Math.sqrt(cats.length));
-        let rows = Math.ceil(cats.length / cols);
-        if (ORIENT === "verticale") [rows, cols] = [cols, rows];
-
-        menu.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-        menu.style.gridTemplateRows = `repeat(${rows},1fr)`;
-
-        cats.forEach(cat => {
+        Object.keys(grouped).forEach(cat=>{
             const d = document.createElement("div");
             d.className = "category";
             d.innerHTML = `
                 <h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>
-                <div class="category-content">
-                    ${g[cat].map(i => `
-                        <div class="bar-item">
+                ${grouped[cat].map(i=>`
+                    <div>
+                        <div class="item-header">
                             <span>${i.n}</span><span>${i.p}</span>
                         </div>
-                    `).join("")}
-                </div>`;
+                        ${showIng && i.d ? `<div class="desc">${i.d}</div>` : ``}
+                    </div>
+                `).join("")}
+            `;
             menu.appendChild(d);
-            if (main.classList.contains("tv")) fitText(d);
         });
-
-        S["Immagine Promo"] ? startPromo(S) : stopPromo();
     }
 
-} catch (e) {
-    console.error("Errore:", e);
-}
+    /* ================= BAR ================= */
+    if (MODE === "bar") {
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
+        const grouped = {};
+        const first = {};
+
+        data.forEach((r,i)=>{
+            if (clean(r.Disponibile).toLowerCase() !== "si") return;
+            const c = clean(r.Categoria).toUpperCase();
+            if (!grouped[c]) first[c] = i;
+            grouped[c] ??= [];
+            grouped[c].push({ n: cap(r.Nome), p: clean(r.Prezzo) });
+        });
+
+        let order = Object.keys(grouped);
+        const ord = clean(S["Ordine Categorie Bar"]).toLowerCase();
+
+        if (ord === "tabella") order.sort((a,b)=>first[a]-first[b]);
+        else if (ord && ord !== "alfabetico") {
+            const custom = ord.split(",").map(c=>c.trim().toUpperCase());
+            order = [...custom.filter(c=>grouped[c]), ...order.filter(c=>!custom.includes(c))];
+        } else order.sort();
+
+        order.forEach(cat=>{
+            const d = document.createElement("div");
+            d.className = "category";
+            d.innerHTML = `
+                <h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>
+                ${grouped[cat].map(i=>`
+                    <div class="bar-item">
+                        <span>${i.n}</span><span>${i.p}</span>
+                    </div>
+                `).join("")}
+            `;
+            menu.appendChild(d);
+        });
+
+        startPromo(S["Immagine Promo"], Number(S["Tempo Promo"] || 8));
+    }
+
+} catch(e){ console.error(e); }
 }
 
 updateData();
