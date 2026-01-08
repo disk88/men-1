@@ -3,35 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Menu Digitale</title>
 
-<!-- =========================
-     GOOGLE FONTS
-========================= -->
+<!-- ======================================================
+     FONT
+====================================================== -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ==========================================================
-   RESET BASE + COMPORTAMENTO GENERALE
-========================================================== */
-* {
-    box-sizing: border-box;
-}
+/* ======================================================
+   RESET BASE
+====================================================== */
+* { box-sizing: border-box; }
 
 html, body {
     margin: 0;
     padding: 0;
-    font-family: Montserrat, sans-serif;
     width: 100%;
     height: 100%;
+    font-family: Montserrat, sans-serif;
     overflow-x: hidden;
 }
 
-/* ==========================================================
+/* ======================================================
    CONTENITORE PRINCIPALE
-   - safe area per TV (overscan)
-========================================================== */
+   (safe area TV)
+====================================================== */
 #main {
     min-height: 100svh;
     padding: 4vh 6vw;
@@ -39,9 +36,9 @@ html, body {
     flex-direction: column;
 }
 
-/* ==========================================================
+/* ======================================================
    HEADER
-========================================================== */
+====================================================== */
 #header {
     display: flex;
     align-items: center;
@@ -63,20 +60,14 @@ html, body {
     margin: 0;
 }
 
-/* ==========================================================
-   AREA MENU (comune)
-========================================================== */
-#menu {
-    flex: 1;
-}
+/* ======================================================
+   MENU (comune)
+====================================================== */
+#menu { flex: 1; }
 
-/* ==========================================================
-   CATEGORIE (comune)
-========================================================== */
-.category {
-    border: 0;
-}
-
+/* ======================================================
+   CATEGORIA (comune)
+====================================================== */
 .category h2 {
     margin: 0 0 1vh 0;
     padding-bottom: .5vh;
@@ -85,43 +76,28 @@ html, body {
     text-align: center;
 }
 
-/* ==========================================================
-   MODALITÀ BAR - TV / MONITOR
-   - pagina chiusa
-   - griglia dinamica
-========================================================== */
-.mode-bar.tv #menu {
+/* ======================================================
+   MODALITÀ CUCINA
+====================================================== */
+.mode-cucina #menu {
     display: grid;
-    width: 100%;
-    height: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 3vh 3vw;
 }
 
-/* ogni categoria riempie la sua cella */
-.mode-bar.tv .category {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+.mode-cucina .item-header {
+    font-weight: 700;
+    font-size: clamp(18px, 2.5vh, 28px);
 }
 
-/* contenuto interno distribuito */
-.mode-bar.tv .category-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+.mode-cucina .desc {
+    font-style: italic;
+    margin-bottom: 2vh;
 }
 
-/* singola voce bar */
-.bar-item {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
-}
-
-/* ==========================================================
-   PREZZO MENU (modalità cucina)
-========================================================== */
+/* ======================================================
+   PREZZO MENU CUCINA
+====================================================== */
 #prezzo-box {
     margin: 3vh auto 0;
     padding: 1.5vh 4vw;
@@ -132,9 +108,39 @@ html, body {
     display: none;
 }
 
-/* ==========================================================
-   PROMO FULLSCREEN
-========================================================== */
+/* ======================================================
+   MODALITÀ BAR – TV
+   (pagina chiusa)
+====================================================== */
+.mode-bar.tv #menu {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    gap: 3vh 3vw;
+}
+
+.mode-bar.tv .category {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mode-bar.tv .category-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.bar-item {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+/* ======================================================
+   PROMO
+====================================================== */
 #promo {
     position: fixed;
     inset: 0;
@@ -148,22 +154,14 @@ html, body {
     z-index: 50;
 }
 
-#promo.show {
-    opacity: 1;
-}
+#promo.show { opacity: 1; }
 
-/* ==========================================================
+/* ======================================================
    MOBILE
-   - scroll abilitato
-========================================================== */
+====================================================== */
 @media (max-width: 768px) {
-    html, body {
-        overflow-y: auto;
-    }
-
-    .mode-bar.tv #menu {
-        display: block;
-    }
+    html, body { overflow-y: auto; }
+    .mode-bar.tv #menu { display: block; }
 }
 </style>
 </head>
@@ -181,57 +179,61 @@ html, body {
 </div>
 
 <script>
-/* ==========================================================
+/* ======================================================
    CONFIGURAZIONE
-========================================================== */
+====================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-/* temi colore */
+/* ======================================================
+   TEMI (CUCINA + BAR)
+====================================================== */
 const THEMES = {
+    // cucina
     classic: { bg:"#111", text:"#fff", accent:"#d4af37" },
+    elegant: { bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
+    modern:  { bg:"#fff", text:"#222", accent:"#c0392b" },
+    minimal: { bg:"#f7f7f7", text:"#111", accent:"#000" },
+
+    // bar
     dark:    { bg:"#000", text:"#ddd", accent:"#00c896" },
-    modern:  { bg:"#fff", text:"#222", accent:"#c0392b" }
+    neon:    { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
+    pub:     { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
+    luxury:  { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
 };
 
-/* ==========================================================
+/* ======================================================
    UTILITÀ
-========================================================== */
+====================================================== */
 const clean = v => (v || "").toString().trim();
 const capWords = s => clean(s).toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
-/* ==========================================================
-   FONT DINAMICO (MAGIA)
-   - riduce finché tutto entra
-========================================================== */
-function fitText(container) {
-    let size = 2.5; // vh
-    container.style.fontSize = size + "vh";
-
-    while (container.scrollHeight > container.clientHeight && size > 1) {
+/* ======================================================
+   FONT DINAMICO (BAR TV)
+====================================================== */
+function fitText(el) {
+    let size = 2.6;
+    el.style.fontSize = size + "vh";
+    while (el.scrollHeight > el.clientHeight && size > 1.2) {
         size -= 0.1;
-        container.style.fontSize = size + "vh";
+        el.style.fontSize = size + "vh";
     }
 }
 
-/* ==========================================================
+/* ======================================================
    PROMO
-========================================================== */
+====================================================== */
 let promoTimer = null;
 
 function startPromo(S) {
     stopPromo();
     if (!S["Immagine Promo"]) return;
-
-    const promo = document.getElementById("promo");
-    promo.style.backgroundImage = `url(${S["Immagine Promo"]})`;
-
-    let visible = false;
-    const interval = Number(S["Tempo Promo"] || 8) * 1000;
-
+    const p = document.getElementById("promo");
+    p.style.backgroundImage = `url(${S["Immagine Promo"]})`;
+    let v = false;
     promoTimer = setInterval(() => {
-        visible = !visible;
-        promo.classList.toggle("show", visible);
-    }, interval);
+        v = !v;
+        p.classList.toggle("show", v);
+    }, (Number(S["Tempo Promo"]) || 8) * 1000);
 }
 
 function stopPromo() {
@@ -240,20 +242,20 @@ function stopPromo() {
     document.getElementById("promo").classList.remove("show");
 }
 
-/* ==========================================================
-   CARICAMENTO DATI
-========================================================== */
+/* ======================================================
+   AGGIORNAMENTO DATI
+====================================================== */
 async function updateData() {
 try {
-    /* ---- Impostazioni ---- */
-    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
+    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
     const S = {};
     settings.forEach(r => S[clean(r.Proprietà)] = clean(r.Valore));
 
     const MODE = (S["Modalità"] || "bar").toLowerCase();
-    const ORIENTATION = (S["Orientamento"] || "orizzontale").toLowerCase();
+    const ORIENT = (S["Orientamento"] || "orizzontale").toLowerCase();
 
-    const theme = THEMES[S["Tema Bar"]] || THEMES.dark;
+    const themeKey = MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"];
+    const theme = THEMES[themeKey] || THEMES.classic;
 
     document.body.style.background = theme.bg;
     document.body.style.color = theme.text;
@@ -266,74 +268,62 @@ try {
         document.body.style.overflow = "hidden";
     }
 
-    /* ---- Titolo & Logo ---- */
-    document.getElementById("title").innerText = S["Titolo Bar"] || "MENU";
+    document.getElementById("title").innerText =
+        MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
     document.getElementById("title").style.color = theme.accent;
 
     if (S["Logo URL"]) {
-        const logo = document.getElementById("logo");
-        logo.src = S["Logo URL"];
-        logo.style.display = "block";
+        const l = document.getElementById("logo");
+        l.src = S["Logo URL"];
+        l.style.display = "block";
     }
 
-    /* ---- Dati Bar ---- */
-    const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
-    const grouped = {};
-
-    data.forEach(r => {
-        if (clean(r.Disponibile).toLowerCase() !== "si") return;
-        const cat = clean(r.Categoria).toUpperCase();
-        grouped[cat] ??= [];
-        grouped[cat].push({ n: capWords(r.Nome), p: clean(r.Prezzo) });
-    });
-
-    const categories = Object.keys(grouped);
     const menu = document.getElementById("menu");
     menu.innerHTML = "";
 
-    /* ---- Calcolo griglia ---- */
-    let cols = Math.ceil(Math.sqrt(categories.length));
-    let rows = Math.ceil(categories.length / cols);
+    /* ================= BAR ================= */
+    if (MODE === "bar") {
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r => r.json());
+        const g = {};
+        data.forEach(r => {
+            if (clean(r.Disponibile).toLowerCase() !== "si") return;
+            const c = clean(r.Categoria).toUpperCase();
+            g[c] ??= [];
+            g[c].push({ n: capWords(r.Nome), p: clean(r.Prezzo) });
+        });
 
-    if (ORIENTATION === "verticale") {
-        [rows, cols] = [cols, rows];
+        const cats = Object.keys(g);
+        let cols = Math.ceil(Math.sqrt(cats.length));
+        let rows = Math.ceil(cats.length / cols);
+        if (ORIENT === "verticale") [rows, cols] = [cols, rows];
+
+        menu.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+        menu.style.gridTemplateRows = `repeat(${rows},1fr)`;
+
+        cats.forEach(cat => {
+            const d = document.createElement("div");
+            d.className = "category";
+            d.innerHTML = `
+                <h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>
+                <div class="category-content">
+                    ${g[cat].map(i => `
+                        <div class="bar-item">
+                            <span>${i.n}</span><span>${i.p}</span>
+                        </div>
+                    `).join("")}
+                </div>`;
+            menu.appendChild(d);
+            if (main.classList.contains("tv")) fitText(d);
+        });
+
+        S["Immagine Promo"] ? startPromo(S) : stopPromo();
     }
-
-    menu.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    menu.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-    /* ---- Render ---- */
-    categories.forEach(cat => {
-        const div = document.createElement("div");
-        div.className = "category";
-        div.innerHTML = `
-            <h2 style="color:${theme.accent};border-color:${theme.accent}">
-                ${cat}
-            </h2>
-            <div class="category-content">
-                ${grouped[cat].map(i=>`
-                    <div class="bar-item">
-                        <span>${i.n}</span>
-                        <span>${i.p}</span>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-        menu.appendChild(div);
-        fitText(div);
-    });
-
-    /* ---- Promo ---- */
-    S["Immagine Promo"] ? startPromo(S) : stopPromo();
 
 } catch (e) {
     console.error("Errore:", e);
 }
 }
 
-/* ==========================================================
-   AVVIO
-========================================================== */
 updateData();
 setInterval(updateData, 10000);
 </script>
