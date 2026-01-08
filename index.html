@@ -165,43 +165,65 @@ body {
 /* ========================================================= */
 /* ========== UNICA MIGLIORIA AGGIUNTA (TV/MONITOR) ========= */
 /* ========================================================= */
-/*
-   PROBLEMA:
-   - CSS Grid va a capo in verticale
-   - l'altezza totale supera lo schermo
-   - compare scroll (indesiderato)
-
-   SOLUZIONE:
-   - su schermi >= 1024px
-   - riempiamo le colonne in ORIZZONTALE
-   - nessuna nuova riga verticale
-   - tutto resta in una schermata
 */
 @media (min-width: 1024px) {
+
+    body {
+        overflow: hidden;
+    }
+
+    /* HEADER */
+    #header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;           /* Centra verticalmente logo e titolo */
+        justify-content: center;       /* Centra l'header orizzontalmente */
+        padding: 20px 60px;
+        gap: 30px;
+    }
+
+    #logo {
+        display: block;
+        height: 90px;
+    }
+
+    #title {
+        font-size: 48px;
+        text-align: left;
+    }
+
+    /* CONTENITORE MENU */
+    #scroll-container {
+        overflow: hidden;
+        flex-grow: 1;
+        padding: 10px 40px 20px;
+    }
+
     #menu {
-        grid-auto-flow: column;
-        grid-template-rows: repeat(12, auto);
-        grid-auto-columns: minmax(350px, 1fr);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-auto-rows: 1fr;          /* Righe scalano automaticamente */
+        gap: 30px 40px;
+        height: calc(100vh - 140px);  /* 140px = header + margini */
+        align-content: stretch;       /* Riempie tutto lo spazio verticale */
+    }
+
+    .category {
+        break-inside: avoid;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;      /* Centro verticalmente categoria nella cella */
+        margin-bottom: 0;
+    }
+
+    .item-box {
+        margin-bottom: 12px;
+    }
+
+    .bar-item {
+        margin-bottom: 8px;
     }
 }
-</style>
-</head>
-<body>
-
-<div id="header">
-    <img id="logo">
-    <h1 id="title">CARICAMENTO...</h1>
-</div>
-
-<div id="scroll-container">
-    <div id="menu"></div>
-    <div id="prezzo-box"></div>
-</div>
-
-<div id="promo"></div>
-
-<script>
-/* === JS ORIGINALE, NON MODIFICATO === */
 
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
