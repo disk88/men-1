@@ -3,170 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Menu Digitale Smart</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 
 <style>
+/* ================= TEMI E VARIABILI ================= */
+:root { --bg: #111; --text: #fff; --accent: #d4af37; --fade-speed: 0.8s; }
+
+/* Nomi Temi utilizzabili nello Sheet: 
+   Classic, Dark, Elegant, Midnight, Amber, Minimal, Neon, Pub */
+.theme-classic  { --bg: #0f0f0f; --text: #ffffff; --accent: #d4af37; }
+.theme-dark     { --bg: #000000; --text: #e0e0e0; --accent: #00ff88; }
+.theme-elegant  { --bg: #1a1a1a; --text: #f5f5f5; --accent: #e5c07b; }
+.theme-midnight { --bg: #00040d; --text: #e0e0ff; --accent: #4cc9f0; }
+.theme-amber    { --bg: #12100e; --text: #fff4e0; --accent: #ffb703; }
+.theme-minimal  { --bg: #ffffff; --text: #1a1a1a; --accent: #000000; }
+.theme-neon     { --bg: #050505; --text: #fff;    --accent: #f72585; }
+.theme-pub      { --bg: #1c140d; --text: #f3e9dc; --accent: #e29578; }
+
 /* ================= STRUTTURA BASE ================= */
 * { box-sizing: border-box; }
-html { height: 100%; }
 body { 
-    margin: 0; padding: 0; 
-    width: 100%; height: 100dvh; 
+    margin: 0; padding: 0; width: 100%; height: 100dvh; 
     font-family: 'Montserrat', sans-serif; 
-    overflow: hidden; /* Blocca scroll generale */
-    display: flex; flex-direction: column; 
-    transition: background 0.3s, color 0.3s;
+    background-color: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; overflow: hidden;
+    transition: background 0.5s ease;
+}
+
+/* Effetto Fade-In per aggiornamento dati */
+#menu.updating { opacity: 0; transform: translateY(10px); }
+#menu { 
+    opacity: 1; transform: translateY(0); 
+    transition: opacity var(--fade-speed) ease, transform var(--fade-speed) ease; 
 }
 
 /* ================= HEADER ================= */
 #header {
-    flex-shrink: 0;
-    display: flex; 
-    align-items: center; justify-content: center;
-    padding: 10px 20px;
-    z-index: 10;
-    flex-direction: column; 
-    gap: 10px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    padding: 1.5vh 3vw; gap: 2vw; z-index: 10;
 }
-
-#logo { 
-    height: 70px; width: auto; 
-    display: none; 
-    object-fit: contain;
-}
-
+#logo { height: 10vh; width: auto; object-fit: contain; display: none; }
 #title {
-    font-family: 'Playfair Display', serif;
-    text-transform: uppercase; letter-spacing: 2px;
-    margin: 0; font-size: clamp(24px, 5vw, 42px); line-height: 1.1;
+    font-family: 'Playfair Display', serif; text-transform: uppercase;
+    margin: 0; font-size: clamp(24px, 6vh, 60px); color: var(--accent);
 }
 
 /* ================= CORPO CENTRALE ================= */
 #scroll-container {
-    flex-grow: 1;
-    overflow-y: auto; /* Abilita scroll SOLO su mobile */
-    padding: 15px;
-    width: 100%;
-    display: flex; flex-direction: column;
+    flex-grow: 1; overflow-y: auto; padding: 2vh 4vw;
 }
 
+/* Layout adattivo: Colonne su TV/PC, Lista su Mobile */
 #menu {
-    width: 100%; max-width: 1800px; margin: 0 auto;
-    display: grid;
-    /* Mobile: colonne automatiche */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 30px;
-    align-items: start;
+    width: 100%; max-width: 2200px; margin: 0 auto;
+    column-width: 400px; column-gap: 5vw; column-rule: 1px solid rgba(255,255,255,0.05);
 }
 
-/* ================= ELEMENTI MENU ================= */
+/* Categorie */
 .category { 
-    break-inside: avoid; page-break-inside: avoid; 
-    margin-bottom: 10px;
+    break-inside: avoid; margin-bottom: 4vh; 
+    display: inline-block; width: 100%; 
 }
 .category h2 {
-    margin: 0 0 15px 0; border-bottom: 2px solid;
-    text-transform: uppercase; font-size: 1.3em; padding-bottom: 5px;
+    margin: 0 0 2vh 0; border-bottom: 3px solid var(--accent);
+    text-transform: uppercase; font-size: 1.8rem; padding-bottom: 5px;
+    color: var(--accent); font-family: 'Oswald', sans-serif;
 }
 
-.item-box { margin-bottom: 15px; }
-.item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1em; margin-bottom: 2px; }
-.desc { font-style: italic; font-size: 0.9em; line-height: 1.3; opacity: 0.85; }
-
-.bar-item { 
-    display: flex; justify-content: space-between; 
-    font-weight: 600; font-size: 1.1em; margin-bottom: 8px; 
-    border-bottom: 1px dotted rgba(255,255,255,0.2); 
-    padding-bottom: 4px; 
+/* Piatti e Drink */
+.item-box { margin-bottom: 2.5vh; }
+.item-header { 
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-weight: 700; font-size: 1.3rem; gap: 10px;
 }
+.price { color: var(--accent); font-family: 'Roboto Mono', monospace; }
+.desc { font-style: italic; font-size: 0.95rem; opacity: 0.8; line-height: 1.4; margin-top: 4px; }
 
-/* ================= PREZZO (Full Width) ================= */
+/* Prezzo Full Width in fondo */
 #prezzo-box {
-    margin-top: auto; /* Spinge in fondo */
-    margin-bottom: 10px;
-    padding: 10px 0;
-    width: 98%; /* Quasi totale */
-    margin-left: auto; margin-right: auto;
-    border: 2px solid; border-radius: 8px;
-    font-weight: 700; text-align: center; 
-    font-size: clamp(18px, 2.5vh, 26px);
-    text-transform: uppercase;
-    display: none;
-    flex-shrink: 0;
+    margin: 2vh auto; padding: 15px; width: 90%;
+    border: 2px solid var(--accent); border-radius: 12px;
+    text-align: center; font-size: 1.5rem; font-weight: 800;
+    color: var(--accent); display: none;
 }
 
-/* ================= TV / MONITOR ================= */
-@media (min-width: 1024px) {
-
-    body { overflow: hidden; }
-
-    /* HEADER */
-    #header {
-        flex-direction: row;
-        align-items: center;        /* Logo e titolo centrati verticalmente */
-        justify-content: center;    /* Header centrato orizzontalmente */
-        padding: 20px 60px;
-        gap: 30px;
-    }
-
-    #logo {
-        display: block;
-        height: 90px;
-    }
-
-    #title {
-        font-size: 48px;
-        text-align: left;
-    }
-
-    /* CONTENITORE SCROLL */
-    #scroll-container {
-        overflow: hidden;
-        flex-grow: 1;
-        padding: 10px 40px 20px;
-    }
-
-    /* MENU FULL-SCREEN ADATTIVO */
-    #menu {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* colonne flessibili */
-        grid-auto-rows: 1fr;       /* righe scalano automaticamente */
-        gap: 30px 40px;
-        height: calc(100vh - 140px); /* header + margini */
-        align-content: stretch;      /* riempie verticalmente tutto lo spazio */
-    }
-
-    /* CATEGORIE SCALABILI */
-    .category {
-        break-inside: avoid;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin-bottom: 0;
-    }
-
-    .item-box { margin-bottom: 12px; }
-    .bar-item { margin-bottom: 8px; }
+/* ================= MOBILE OPTIMIZATION ================= */
+@media (max-width: 768px) {
+    #menu { column-count: 1; column-width: auto; }
+    #header { flex-direction: column; text-align: center; }
+    #logo { height: 8vh; }
+    #title { font-size: 8vw; }
+    .item-header { font-size: 1.1rem; }
 }
 
 /* ================= PROMO ================= */
 #promo {
-    position: fixed; inset: 0; 
-    background-color: #000; background-position: center; background-repeat: no-repeat; background-size: contain;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s; z-index: 9999;
+    position: fixed; inset: 0; background-color: #000; 
+    background-position: center; background-repeat: no-repeat; background-size: contain;
+    opacity: 0; pointer-events: none; transition: opacity 0.8s ease; z-index: 9999;
 }
-#promo.show { opacity: 1; pointer-events: all; }
+#promo.show { opacity: 1; }
 
 </style>
 </head>
-<body>
+<body class="theme-classic">
 
 <div id="header">
-    <img id="logo">
-    <h1 id="title">CARICAMENTO...</h1>
+    <img id="logo" alt="Logo">
+    <h1 id="title">...</h1>
 </div>
 
 <div id="scroll-container">
@@ -177,198 +122,129 @@ body {
 <div id="promo"></div>
 
 <script>
-/* === JS ORIGINALE + SCALING DINAMICO === */
-
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-const THEMES = {
-    classic: { bg:"#111", text:"#fff", accent:"#d4af37" },
-    elegant: { bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
-    modern:  { bg:"#fff", text:"#222", accent:"#c0392b" },
-    minimal: { bg:"#f7f7f7", text:"#111", accent:"#000" },
-    dark:    { bg:"#000", text:"#ddd", accent:"#00c896" },
-    neon:    { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
-    pub:     { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
-    luxury:  { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
+// Utility per pulizia dati
+const getVal = (r, k) => { 
+    const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
+    return key ? r[key] : ""; 
 };
-
-const getVal = (r, k) => { const x=Object.keys(r).find(y=>y.toLowerCase().trim()===k.toLowerCase().trim()); return x?r[x]:""; };
 const clean = v => (v || "").toString().trim();
-const formatSmartTitle = s => {
-    const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o","al","allo","alla","ai","agli","alle","del","dello","della","dei","degli","delle"];
-    return clean(s).toLowerCase().split(' ').map((w,i)=>{
-        if(i>0 && exc.includes(w)) return w;
-        return w.charAt(0).toUpperCase()+w.slice(1);
-    }).join(' ');
-};
 
 async function updateData() {
-try {
-    const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
-    const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
+    try {
+        const menuEl = document.getElementById("menu");
+        menuEl.classList.add("updating"); // Inizia fade-out
 
-    const MODE = (S["Modalità"] || "bar").toLowerCase();
-    document.body.className = "mode-" + MODE;
-    const theme = THEMES[(MODE==="bar"?S["Tema Bar"]:S["Tema Cucina"])] || THEMES.classic;
-    
-    document.body.style.backgroundColor = theme.bg;
-    document.body.style.color = theme.text;
-    document.getElementById("title").innerText = MODE==="bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
-    document.getElementById("title").style.color = theme.accent;
+        const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
+        const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
-    const lEl = document.getElementById("logo");
-    if (S["Logo URL"]) { lEl.src = S["Logo URL"]; lEl.style.display = "block"; } else { lEl.style.display = "none"; }
+        const MODE = clean(S["Modalità"]).toLowerCase();
+        const themeName = (MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"]) || "Classic";
+        document.body.className = `theme-${themeName.toLowerCase()}`;
 
-    const menu = document.getElementById("menu");
-    const pBox = document.getElementById("prezzo-box");
-    
-    menu.innerHTML = "";
-    pBox.style.display = "none";
+        // Personalizzazione Font se specificati
+        if(S["Font Titolo"]) document.getElementById("title").style.fontFamily = S["Font Titolo"];
+        if(S["Font Testo"]) document.body.style.fontFamily = S["Font Testo"];
 
-    if(S["Immagine Promo"]) startPromo(S["Immagine Promo"], S["Tempo Promo"]);
-    else stopPromo();
+        document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+        
+        const logoEl = document.getElementById("logo");
+        if (S["Logo URL"]) { logoEl.src = S["Logo URL"]; logoEl.style.display = "block"; }
 
-    if (MODE === "cucina") {
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
-        let op = S["Trasparenza Ingredienti"] ? `style="opacity:${S["Trasparenza Ingredienti"].replace(',', '.')}"` : "";
-
-        if (S["Prezzo"]) {
-            pBox.innerHTML = S["Prezzo"];
-            pBox.style.display = "block";
-            pBox.style.borderColor = theme.accent;
-            pBox.style.color = theme.accent;
+        // Gestione Promo (Solo se modalità è Bar)
+        if (MODE === "bar" && S["Immagine Promo"]) {
+            startPromo(S["Immagine Promo"], S["Tempo Promo"]);
+        } else {
+            stopPromo();
         }
 
+        // Recupero Dati Menu
+        const sheetName = MODE === "cucina" ? "Menu" : "Bar";
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${sheetName}`).then(r => r.json());
+
+        // Raggruppamento categorie
         const grouped = {};
         data.forEach(r => {
             if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
-            const cat = clean(getVal(r, "Categoria")).toUpperCase(); if(!cat) return;
+            const cat = clean(getVal(r, "Categoria")).toUpperCase();
+            if (!cat) return;
             grouped[cat] ??= [];
             grouped[cat].push({
-                n: formatSmartTitle(getVal(r,"Piatto")||getVal(r,"Nome")),
-                ing: formatSmartTitle(getVal(r,"Ingredienti")),
-                p: getVal(r,"Prezzo")
+                n: getVal(r, "Piatto") || getVal(r, "Nome"),
+                ing: getVal(r, "Ingredienti") || "",
+                p: getVal(r, "Prezzo")
             });
         });
 
-        Object.keys(grouped).forEach(cat => {
-            const sec = document.createElement("div"); sec.className = "category";
-            sec.innerHTML = `
-                <h2 style="color:${theme.accent}; border-color:${theme.accent}">${cat}</h2>
-                ${grouped[cat].map(x => `
-                    <div class="item-box">
-                        <div class="item-header"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>
-                        ${x.ing ? `<div class="desc" ${op}>${x.ing}</div>` : ``}
-                    </div>
-                `).join("")}
-            `;
-            menu.appendChild(sec);
-        });
-    }
+        // Ordinamento Categorie (se specificato per il Bar)
+        let categories = Object.keys(grouped);
+        if (MODE === "bar" && S["Ordine Categorie Bar"]) {
+            const order = S["Ordine Categorie Bar"].split(',').map(s => s.trim().toUpperCase());
+            categories.sort((a, b) => {
+                let idxA = order.indexOf(a);
+                let idxB = order.indexOf(b);
+                return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+            });
+        }
 
-    if (MODE === "bar") {
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
-        const grouped = {};
-        data.forEach(r => {
-            if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
-            const cat = clean(getVal(r, "Categoria")).toUpperCase(); if(!cat) return;
-            grouped[cat] ??= [];
-            grouped[cat].push({ n: formatSmartTitle(getVal(r,"Nome")), p: getVal(r,"Prezzo") });
-        });
+        // Rendering HTML
+        setTimeout(() => {
+            menuEl.innerHTML = categories.map(cat => `
+                <div class="category">
+                    <h2>${cat}</h2>
+                    ${grouped[cat].map(x => `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span>${x.n}</span>
+                                <span class="price">${x.p}</span>
+                            </div>
+                            ${x.ing ? `<div class="desc" style="opacity:${(S["Trasparenza Ingredienti"] || "0.8").replace(',','.')}">${x.ing}</div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
 
-        Object.keys(grouped).forEach(cat => {
-            const sec = document.createElement("div"); sec.className = "category";
-            sec.innerHTML = `
-                <h2 style="color:${theme.accent}; border-color:${theme.accent}">${cat}</h2>
-                ${grouped[cat].map(x => `
-                    <div class="bar-item"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>
-                `).join("")}
-            `;
-            menu.appendChild(sec);
-        });
-    }
+            const pBox = document.getElementById("prezzo-box");
+            if (MODE === "cucina" && S["Prezzo"]) {
+                pBox.innerHTML = S["Prezzo"];
+                pBox.style.display = "block";
+            } else {
+                pBox.style.display = "none";
+            }
 
-    // SCALING DINAMICO
-    scaleMenu();
+            menuEl.classList.remove("updating"); // Fine fade-in
+        }, 800);
 
-} catch(e) { console.error(e); }
+    } catch (e) { console.error("Errore aggiornamento:", e); }
 }
 
-/* ===================== SCALING DINAMICO ===================== */
-function isMobileDevice() {
-    return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-function scaleMenu() {
-    const container = document.getElementById('scroll-container');
-    const menu = document.getElementById('menu');
-    if (!menu || !container) return;
-
-    const categories = menu.querySelectorAll('.category').length;
-
-    // MOBILE
-    if (isMobileDevice()) {
-        menu.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
-        menu.style.height = 'auto';
-        menu.style.overflowY = 'auto';
-        menu.style.alignContent = 'start';
-        menu.querySelectorAll('.category h2, .item-header, .bar-item, .desc').forEach(el => el.style.fontSize = '');
-        return;
-    }
-
-    // DESKTOP / MONITOR / TV
-    const headerHeight = document.getElementById('header').offsetHeight + 20;
-    const availableHeight = container.clientHeight;
-
-    // TV vs desktop/monitor: larghezza > 1800px → consideriamo TV
-    const isTV = window.innerWidth >= 1800;
-
-    if (isTV) {
-        menu.style.gridTemplateColumns = 'repeat(2, 1fr)';
-        menu.style.height = 'auto';
-        menu.style.overflowY = 'hidden'; // niente scroll
-        menu.style.alignContent = 'stretch';
-    } else {
-        menu.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
-        menu.style.height = `calc(100vh - ${headerHeight}px)`;
-        menu.style.overflowY = 'hidden';
-        menu.style.alignContent = 'stretch';
-    }
-
-    // FONT SCALING (solo desktop / monitor, non TV)
-    if (categories > 0 && !isTV) {
-        const menuHeight = menu.clientHeight || availableHeight;
-        const size = Math.floor(menuHeight / categories * 0.25);
-        menu.querySelectorAll('.category h2').forEach(h => h.style.fontSize = `${size}px`);
-        menu.querySelectorAll('.item-header, .bar-item').forEach(item => item.style.fontSize = `${size * 0.8}px`);
-        menu.querySelectorAll('.desc').forEach(d => d.style.fontSize = `${size * 0.6}px`);
-    }
-}
-
-/* ===================== PROMO ===================== */
-let promoTimer = null;
-function startPromo(url, sec) {
-    if (document.getElementById("promo").style.backgroundImage.includes(url) && promoTimer) return;
-    stopPromo();
+/* ===================== PROMO LOGIC ===================== */
+let promoInterval = null;
+function startPromo(url, duration) {
     const el = document.getElementById("promo");
+    if (el.style.backgroundImage.includes(url)) return;
+    
+    clearInterval(promoInterval);
     el.style.backgroundImage = `url(${url})`;
-    const interval = (sec ? Number(sec) : 8) * 1000;
-    const cycle = () => { el.classList.add("show"); setTimeout(() => el.classList.remove("show"), interval); };
-    cycle();
-    promoTimer = setInterval(cycle, interval * 2);
+    const sec = (parseInt(duration) || 10) * 1000;
+
+    const run = () => {
+        el.classList.add("show");
+        setTimeout(() => el.classList.remove("show"), sec);
+    };
+    run();
+    promoInterval = setInterval(run, sec * 3); // Mostra ogni 3 intervalli
 }
-function stopPromo() { 
-    if(promoTimer){clearInterval(promoTimer); promoTimer=null;} 
-    const el=document.getElementById("promo"); 
-    el.classList.remove("show"); 
-    el.style.backgroundImage="";
+
+function stopPromo() {
+    clearInterval(promoInterval);
+    document.getElementById("promo").classList.remove("show");
 }
 
 /* ===================== INIT ===================== */
 updateData();
-setInterval(updateData, 10000);
-window.addEventListener('resize', scaleMenu);
-
+setInterval(updateData, 15000); // Aggiorna ogni 15 secondi
 </script>
 </body>
 </html>
