@@ -310,6 +310,53 @@ function stopPromo() {
 }
 
 updateData();
+function scaleMenu() {
+    const container = document.getElementById('scroll-container');
+    const menu = document.getElementById('menu');
+    if (!menu) return;
+
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    const categories = menu.querySelectorAll('.category').length;
+
+    // Mobile: niente scaling dinamico
+    if (window.innerWidth < 1024) return;
+
+    // TV: forziamo due colonne
+    const isTV = window.innerWidth >= 1920; // approssimazione
+    if (isTV) {
+        menu.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        menu.style.height = 'auto';
+        menu.style.overflowY = 'auto';
+        menu.style.alignContent = 'start';
+    } else {
+        // Monitor: colonne auto-fit
+        menu.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+        menu.style.height = `calc(100vh - ${document.getElementById('header').offsetHeight + 20}px)`;
+        menu.style.overflowY = 'hidden';
+        menu.style.alignContent = 'stretch';
+    }
+
+    // Font-size dinamico: dividiamo altezza disponibile per numero categorie
+    if (categories > 0 && !isTV) {
+        const availableHeight = menu.clientHeight;
+        const size = Math.floor(availableHeight / categories * 0.25); // 25% della cella per font
+        menu.querySelectorAll('.category h2').forEach(h => {
+            h.style.fontSize = `${size}px`;
+        });
+        menu.querySelectorAll('.item-header, .bar-item').forEach(item => {
+            item.style.fontSize = `${size * 0.8}px`;
+        });
+        menu.querySelectorAll('.desc').forEach(d => {
+            d.style.fontSize = `${size * 0.6}px`;
+        });
+    }
+}
+
+// Richiamiamo dopo ogni update
+updateData().then(scaleMenu);
+window.addEventListener('resize', scaleMenu);
+
 setInterval(updateData, 10000);
 </script>
 </body>
