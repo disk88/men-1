@@ -4,140 +4,175 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Menu Digitale</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ================= STRUTTURA BASE ================= */
+
+/* ================= BASE ================= */
 * { box-sizing: border-box; }
 html { height: 100%; }
-body { 
-    margin: 0; padding: 0; 
-    width: 100%; height: 100dvh; 
-    font-family: 'Montserrat', sans-serif; 
-    overflow: hidden; /* Blocca scroll generale */
-    display: flex; flex-direction: column; 
+body {
+    margin: 0;
+    height: 100dvh;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     transition: background 0.3s, color 0.3s;
 }
 
 /* ================= HEADER ================= */
 #header {
-    flex-shrink: 0;
-    display: flex; 
-    align-items: center; justify-content: center;
-    padding: 10px 20px;
-    z-index: 10;
-    flex-direction: column; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 10px;
-    text-align: center;
+    padding: 10px 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 10;
 }
 
-#logo { 
-    height: 70px; width: auto; 
-    display: none; 
-    object-fit: contain;
+#logo {
+    display: none;
+    height: 70px;
 }
 
 #title {
     font-family: 'Playfair Display', serif;
-    text-transform: uppercase; letter-spacing: 2px;
-    margin: 0; font-size: clamp(24px, 5vw, 42px); line-height: 1.1;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: clamp(24px, 5vw, 42px);
 }
 
-/* ================= CORPO CENTRALE ================= */
+/* ================= CONTENUTO ================= */
 #scroll-container {
-    flex-grow: 1;
-    overflow-y: auto; /* Abilita scroll SOLO su mobile */
+    flex: 1;
+    overflow-y: auto;
     padding: 15px;
-    width: 100%;
-    display: flex; flex-direction: column;
 }
 
 #menu {
-    width: 100%; max-width: 1800px; margin: 0 auto;
+    max-width: 1800px;
+    margin: 0 auto;
     display: grid;
-    /* Mobile: colonne automatiche */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    align-items: start;
 }
 
-/* ================= ELEMENTI MENU ================= */
-.category { 
-    break-inside: avoid; page-break-inside: avoid; 
-    margin-bottom: 10px;
+/* ================= MENU ================= */
+.category {
+    break-inside: avoid;
 }
+
 .category h2 {
-    margin: 0 0 15px 0; border-bottom: 2px solid;
-    text-transform: uppercase; font-size: 1.3em; padding-bottom: 5px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid;
+    text-transform: uppercase;
 }
 
 .item-box { margin-bottom: 15px; }
-.item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1em; margin-bottom: 2px; }
-.desc { font-style: italic; font-size: 0.9em; line-height: 1.3; opacity: 0.85; }
 
-.bar-item { 
-    display: flex; justify-content: space-between; 
-    font-weight: 600; font-size: 1.1em; margin-bottom: 8px; 
-    border-bottom: 1px dotted rgba(255,255,255,0.2); 
-    padding-bottom: 4px; 
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
 }
 
-/* ================= PREZZO (Full Width) ================= */
+.desc {
+    font-style: italic;
+    font-size: 0.9em;
+    opacity: 0.85;
+}
+
+.bar-item {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    border-bottom: 1px dotted rgba(255,255,255,0.2);
+    margin-bottom: 8px;
+}
+
+/* ================= PREZZO ================= */
 #prezzo-box {
-    margin-top: auto; /* Spinge in fondo */
-    margin-bottom: 10px;
-    padding: 10px 0;
-    width: 98%; /* Quasi totale */
-    margin-left: auto; margin-right: auto;
-    border: 2px solid; border-radius: 8px;
-    font-weight: 700; text-align: center; 
-    font-size: clamp(18px, 2.5vh, 26px);
-    text-transform: uppercase;
     display: none;
-    flex-shrink: 0;
-}
-
-/* ================= TV / MONITOR (NO SCROLL) ================= */
-@media (min-width: 1024px) {
-    /* Blocchiamo tutto lo scroll per effetto "Pagina Fissa" */
-    #scroll-container { 
-        overflow: hidden; 
-        padding: 20px 40px;
-    }
-
-    #header {
-        flex-direction: row; 
-        padding: 15px 40px;
-        text-align: left;
-        justify-content: flex-start; /* Logo e titolo a sinistra */
-    }
-    #logo { margin-right: 30px; height: 90px; }
-    #title { font-size: 48px; }
-
-    #menu {
-        /* Creiamo colonne dense per far stare tutto in una schermata */
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-        gap: 40px 60px;
-        height: 100%;
-        align-content: start; /* Allinea in alto */
-    }
-
-    /* Ottimizziamo lo spazio verticale */
-    .category { margin-bottom: 20px; }
-    .item-box { margin-bottom: 12px; }
+    margin: 10px auto;
+    padding: 10px;
+    width: 98%;
+    border: 2px solid;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 /* ================= PROMO ================= */
 #promo {
-    position: fixed; inset: 0; 
-    background-color: #000; background-position: center; background-repeat: no-repeat; background-size: contain;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s; z-index: 9999;
+    position: fixed;
+    inset: 0;
+    background: #000 center / contain no-repeat;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+    z-index: 9999;
 }
-#promo.show { opacity: 1; pointer-events: all; }
+#promo.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ========================================================= */
+/* ======================= TV MODE ========================= */
+/* ========================================================= */
+
+@media (min-width: 1280px) and (min-aspect-ratio: 16/9) and (hover: none) {
+
+    body {
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #header {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 25px;
+        padding: 15px 40px;
+    }
+
+    #logo {
+        display: block;
+        height: 90px;
+    }
+
+    #title {
+        font-size: 48px;
+    }
+
+    #scroll-container {
+        height: calc(100vh - 120px);
+        overflow: hidden;
+        padding: 20px 40px;
+    }
+
+    #menu {
+        height: 100%;
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(12, auto);
+        grid-auto-columns: minmax(320px, 1fr);
+        gap: 30px 50px;
+    }
+
+    .category {
+        max-width: 360px;
+    }
+}
 
 </style>
 </head>
+
 <body>
 
 <div id="header">
@@ -156,159 +191,57 @@ body {
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
 const THEMES = {
-    classic: { bg:"#111", text:"#fff", accent:"#d4af37" },
-    elegant: { bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
-    modern:  { bg:"#fff", text:"#222", accent:"#c0392b" },
-    minimal: { bg:"#f7f7f7", text:"#111", accent:"#000" },
-    dark:    { bg:"#000", text:"#ddd", accent:"#00c896" },
-    neon:    { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
-    pub:     { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
-    luxury:  { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
+    classic:{bg:"#111",text:"#fff",accent:"#d4af37"},
+    modern:{bg:"#fff",text:"#222",accent:"#c0392b"},
+    dark:{bg:"#000",text:"#ddd",accent:"#00c896"}
 };
 
-const getVal = (r, k) => { const x=Object.keys(r).find(y=>y.toLowerCase().trim()===k.toLowerCase().trim()); return x?r[x]:""; };
-const clean = v => (v || "").toString().trim();
-const formatSmartTitle = s => {
-    const exc=["il","lo","la","i","gli","le","un","una","uno","di","a","da","in","con","su","per","tra","fra","e","ed","o","al","allo","alla","ai","agli","alle","del","dello","della","dei","degli","delle"];
-    return clean(s).toLowerCase().split(' ').map((w,i)=>{
-        if(i>0 && exc.includes(w)) return w;
-        return w.charAt(0).toUpperCase()+w.slice(1);
-    }).join(' ');
-};
+const clean = v => (v||"").toString().trim();
+const getVal = (r,k)=>r[Object.keys(r).find(x=>x.toLowerCase()==k.toLowerCase())]||"";
 
 async function updateData() {
 try {
-    const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
-    const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
+    const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r=>r.json());
+    const S={}; settings.forEach(r=>S[getVal(r,"Proprietà")]=getVal(r,"Valore"));
 
-    const MODE = (S["Modalità"] || "bar").toLowerCase();
-    document.body.className = "mode-" + MODE;
-    const theme = THEMES[(MODE==="bar"?S["Tema Bar"]:S["Tema Cucina"])] || THEMES.classic;
-    
-    document.body.style.backgroundColor = theme.bg;
-    document.body.style.color = theme.text;
-    document.getElementById("title").innerText = MODE==="bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
-    document.getElementById("title").style.color = theme.accent;
+    const MODE=(S["Modalità"]||"bar").toLowerCase();
+    const theme=THEMES[S["Tema Bar"]]||THEMES.classic;
 
-    const lEl = document.getElementById("logo");
-    if (S["Logo URL"]) { lEl.src = S["Logo URL"]; lEl.style.display = "block"; } else { lEl.style.display = "none"; }
+    document.body.style.background=theme.bg;
+    document.body.style.color=theme.text;
+    document.getElementById("title").innerText=S["Titolo Bar"]||"MENU";
+    document.getElementById("title").style.color=theme.accent;
 
-    const menu = document.getElementById("menu");
-    const pBox = document.getElementById("prezzo-box");
-    
-    /* Nota: Non puliamo il menu subito per evitare "sfarfallio" visivo, 
-       ma in questo codice semplice lo rigeneriamo. */
-    menu.innerHTML = "";
-    pBox.style.display = "none";
+    const logo=document.getElementById("logo");
+    if(S["Logo URL"]){logo.src=S["Logo URL"];}
 
-    // GESTIONE PROMO (Logica Corretta)
-    if(S["Immagine Promo"]) {
-        startPromo(S["Immagine Promo"], S["Tempo Promo"]);
-    } else {
-        stopPromo(); // Se il campo è vuoto, spegni subito
-    }
+    const menu=document.getElementById("menu");
+    menu.innerHTML="";
 
-    if (MODE === "cucina") {
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
-        let op = S["Trasparenza Ingredienti"] ? `style="opacity:${S["Trasparenza Ingredienti"].replace(',', '.')}"` : "";
+    const data=await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
+    const grouped={};
 
-        if (S["Prezzo"]) {
-            pBox.innerHTML = S["Prezzo"];
-            pBox.style.display = "block";
-            pBox.style.borderColor = theme.accent;
-            pBox.style.color = theme.accent;
-        }
+    data.forEach(r=>{
+        if(clean(getVal(r,"Disponibile")).toLowerCase()!=="si")return;
+        const cat=clean(getVal(r,"Categoria")).toUpperCase();
+        grouped[cat]??=[];
+        grouped[cat].push({n:getVal(r,"Nome"),p:getVal(r,"Prezzo")});
+    });
 
-        const grouped = {}; const firstIndex = {};
-        data.forEach((r, i) => {
-            if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
-            const cat = clean(getVal(r, "Categoria")).toUpperCase(); if(!cat) return;
-            if (firstIndex[cat] === undefined) firstIndex[cat] = i;
-            grouped[cat] ??= [];
-            grouped[cat].push({
-                n: formatSmartTitle(getVal(r,"Piatto")||getVal(r,"Nome")),
-                ing: formatSmartTitle(getVal(r,"Ingredienti")),
-                p: getVal(r,"Prezzo")
-            });
-        });
+    Object.keys(grouped).forEach(cat=>{
+        const sec=document.createElement("div");
+        sec.className="category";
+        sec.innerHTML=`<h2 style="color:${theme.accent};border-color:${theme.accent}">${cat}</h2>`+
+            grouped[cat].map(x=>`<div class="bar-item"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>`).join("");
+        menu.appendChild(sec);
+    });
 
-        let keys = Object.keys(grouped);
-        const orderMode = clean(S["Ordine Categorie Cucina"] || "tabella").toLowerCase();
-        if (orderMode === "tabella") keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
-        else if (orderMode !== "alfabetico") {
-            const cList = clean(S["Ordine Categorie Cucina"]).split(",").map(s=>s.trim().toUpperCase());
-            keys = cList.filter(k=>grouped[k]).concat(keys.filter(k=>!cList.includes(k)));
-        } else keys.sort();
-
-        keys.forEach(cat => {
-            const sec = document.createElement("div"); sec.className = "category";
-            sec.innerHTML = `
-                <h2 style="color:${theme.accent}; border-color:${theme.accent}">${cat}</h2>
-                ${grouped[cat].map(x => `
-                    <div class="item-box">
-                        <div class="item-header"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>
-                        ${x.ing ? `<div class="desc" ${op}>${x.ing}</div>` : ``}
-                    </div>
-                `).join("")}
-            `;
-            menu.appendChild(sec);
-        });
-    }
-
-    if (MODE === "bar") {
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
-        const grouped = {}; const firstIndex = {};
-        data.forEach((r, i) => {
-            if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
-            const cat = clean(getVal(r, "Categoria")).toUpperCase(); if(!cat) return;
-            if (firstIndex[cat] === undefined) firstIndex[cat] = i;
-            grouped[cat] ??= [];
-            grouped[cat].push({ n: formatSmartTitle(getVal(r,"Nome")), p: getVal(r,"Prezzo") });
-        });
-
-        let keys = Object.keys(grouped);
-        const orderMode = clean(S["Ordine Categorie Bar"] || "alfabetico").toLowerCase();
-        if (orderMode === "tabella") keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
-        else if (orderMode !== "alfabetico") {
-            const cList = clean(S["Ordine Categorie Bar"]).split(",").map(s=>s.trim().toUpperCase());
-            keys = cList.filter(k=>grouped[k]).concat(keys.filter(k=>!cList.includes(k)));
-        } else keys.sort();
-
-        keys.forEach(cat => {
-            const sec = document.createElement("div"); sec.className = "category";
-            sec.innerHTML = `
-                <h2 style="color:${theme.accent}; border-color:${theme.accent}">${cat}</h2>
-                ${grouped[cat].map(x => `
-                    <div class="bar-item"><span>${x.n}</span><span style="color:${theme.accent}">${x.p}</span></div>
-                `).join("")}
-            `;
-            menu.appendChild(sec);
-        });
-    }
-
-} catch(e) { console.error(e); }
-}
-
-let promoTimer = null;
-function startPromo(url, sec) {
-    if (document.getElementById("promo").style.backgroundImage.includes(url) && promoTimer) return;
-    stopPromo(); // Resetta se cambia URL
-    const el = document.getElementById("promo");
-    el.style.backgroundImage = `url(${url})`;
-    const interval = (sec ? Number(sec) : 8) * 1000;
-    const cycle = () => { el.classList.add("show"); setTimeout(() => el.classList.remove("show"), interval); };
-    cycle(); // Avvia subito
-    promoTimer = setInterval(cycle, interval * 2);
-}
-function stopPromo() { 
-    if(promoTimer){clearInterval(promoTimer); promoTimer=null;} 
-    const el=document.getElementById("promo"); 
-    el.classList.remove("show"); 
-    el.style.backgroundImage=""; // Rimuove immagine fisicamente
+} catch(e){console.error(e);}
 }
 
 updateData();
-setInterval(updateData, 10000); // REFRESH OGNI 10 SECONDI
+setInterval(updateData,10000);
 </script>
+
 </body>
 </html>
