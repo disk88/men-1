@@ -43,13 +43,11 @@ body { display: flex; justify-content: center; transition: background 0.3s, colo
 /* ================= MODALITÀ CUCINA ================= */
 .mode-cucina #menu {
     display: grid;
-    /* Desktop: griglia. Mobile: colonna singola */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 40px 30px;
 }
-/* Mobile specifico per cucina */
 @media (max-width: 600px) {
-    .mode-cucina #menu { display: block; } /* Forza lista verticale su schermi piccoli */
+    .mode-cucina #menu { display: block; }
 }
 
 .item-box { margin-bottom: 20px; }
@@ -62,7 +60,6 @@ body { display: flex; justify-content: center; transition: background 0.3s, colo
     font-style: italic; 
     font-size: clamp(14px, 2vh, 16px); 
     line-height: 1.4; 
-    /* L'opacità viene gestita via JS */
 }
 
 /* ================= MODALITÀ BAR ================= */
@@ -76,6 +73,19 @@ body { display: flex; justify-content: center; transition: background 0.3s, colo
     font-weight: 600; margin-bottom: 10px; font-size: clamp(16px, 2.2vh, 20px);
     border-bottom: 1px dotted rgba(255,255,255,0.15);
     padding-bottom: 2px;
+}
+
+/* ================= PREZZO BOX (CUCINA) ================= */
+#prezzo-box {
+    margin-top: 40px;
+    padding: 20px;
+    border: 3px solid;
+    border-radius: 12px;
+    font-weight: 700;
+    text-align: center;
+    font-size: clamp(20px, 3vh, 32px);
+    text-transform: uppercase;
+    display: none; /* Nascosto di default */
 }
 
 /* ================= PROMO ================= */
@@ -94,35 +104,36 @@ body { display: flex; justify-content: center; transition: background 0.3s, colo
         <h1 id="title">CARICAMENTO...</h1>
     </div>
     <div id="menu"></div>
+    <div id="prezzo-box"></div>
 </div>
 <div id="promo"></div>
 
 <script>
 /* ================= CONFIGURAZIONE ================= */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
-    
+
 const THEMES = {
-    // TEMI CUCINA
+    // CUCINA
     classic: { bg:"#111", text:"#fff", accent:"#d4af37" },
     elegant: { bg:"#1c1c1c", text:"#eee", accent:"#bfa36f" },
     modern:  { bg:"#fff", text:"#222", accent:"#c0392b" },
     minimal: { bg:"#f7f7f7", text:"#111", accent:"#000" },
-
-    // TEMI BAR
-    dark:   { bg:"#000", text:"#ddd", accent:"#00c896" },
-    neon:   { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
-    pub:    { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
-    luxury: { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
+    // BAR
+    dark:    { bg:"#000", text:"#ddd", accent:"#00c896" },
+    neon:    { bg:"#0b0b16", text:"#e0e0ff", accent:"#ff2fd2" },
+    pub:     { bg:"#2a1f16", text:"#f5e6c8", accent:"#c89b3c" },
+    luxury:  { bg:"#121212", text:"#f1f1f1", accent:"#c9a24d" }
 };
 
 /* ================= UTILITÀ ================= */
-// Cerca colonne ignorando maiuscole/minuscole
 const getVal = (row, key) => {
     const k = Object.keys(row).find(k => k.toLowerCase().trim() === key.toLowerCase());
     return k ? row[k] : "";
 };
 const clean = v => (v || "").toString().trim();
 const cap = s => clean(s).charAt(0).toUpperCase() + clean(s).slice(1).toLowerCase();
+
+let promoTimer = null;
 
 /* ================= LOGICA ================= */
 async function updateData() {
@@ -137,27 +148,40 @@ try {
     const themeKey = (MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"]) || "classic";
     const theme = THEMES[themeKey] || THEMES.classic;
 
+    // Applica stili base
     document.body.style.backgroundColor = theme.bg;
     document.body.style.color = theme.text;
-    
     const titleEl = document.getElementById("title");
     titleEl.innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
     titleEl.style.color = theme.accent;
 
     const logo = document.getElementById("logo");
-    if (S["Logo URL"]) { logo.src = S["Logo URL"]; logo.style.display = "block"; }
+    if (S["Logo URL"]) { logo.src = S["Logo URL"]; logo.style.display = "block"; } else { logo.style.display = "none"; }
 
     const menu = document.getElementById("menu");
+    const pBox = document.getElementById("prezzo-box");
     menu.innerHTML = "";
+    pBox.style.display = "none";
 
-    /* --- CUCINA --- */
+    /* ================= CUCINA ================= */
     if (MODE === "cucina") {
+        stopPromo(); // Assicura che la promo sia spenta
+        
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Menu`).then(r=>r.json());
         
-        // Gestione Trasparenza (converte "0,5" o "0.5" in numero)
+        // Gestione Opacità Ingredienti (0-1)
         let opacityVal = S["Trasparenza Ingredienti"];
         if(opacityVal) opacityVal = opacityVal.replace(',', '.');
         const opacityStyle = opacityVal !== "" ? `style="opacity:${opacityVal}"` : "";
+
+        // Gestione Prezzo Box in basso
+        const prezzoText = S["Testo Prezzo"];
+        if (prezzoText) {
+            pBox.innerHTML = prezzoText;
+            pBox.style.display = "block";
+            pBox.style.borderColor = theme.accent;
+            pBox.style.color = theme.accent;
+        }
 
         const grouped = {};
         data.forEach(r => {
@@ -166,9 +190,12 @@ try {
             if(!cat) return;
             
             grouped[cat] ??= [];
+            // Usa "Piatto" se esiste, altrimenti "Nome"
+            const nomePiatto = getVal(r, "Piatto") || getVal(r, "Nome");
+            
             grouped[cat].push({
-                n: getVal(r, "Nome"),
-                ing: getVal(r, "Ingredienti"), // Prende la colonna Ingredienti
+                n: nomePiatto,
+                ing: getVal(r, "Ingredienti"),
                 p: getVal(r, "Prezzo")
             });
         });
@@ -192,23 +219,36 @@ try {
         });
     }
 
-    /* --- BAR --- */
+    /* ================= BAR ================= */
     if (MODE === "bar") {
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Bar`).then(r=>r.json());
         const grouped = {};
-        data.forEach(r => {
+        const firstIndex = {}; // Per ordinamento "tabella"
+
+        data.forEach((r, idx) => {
             if (clean(getVal(r, "Disponibile")).toLowerCase() !== "si") return;
             const cat = getVal(r, "Categoria").toUpperCase();
             if(!cat) return;
+
+            if (firstIndex[cat] === undefined) firstIndex[cat] = idx; // Memorizza la prima volta che appare
             grouped[cat] ??= [];
             grouped[cat].push({ n: cap(getVal(r, "Nome")), p: getVal(r, "Prezzo") });
         });
 
-        let keys = Object.keys(grouped).sort();
-        const customOrder = clean(S["Ordine Categorie Bar"]);
-        if (customOrder && customOrder.toLowerCase() !== "alfabetico") {
-            const orderArr = customOrder.split(",").map(s => s.trim().toUpperCase());
-            keys = orderArr.filter(k => grouped[k]).concat(keys.filter(k => !orderArr.includes(k)));
+        // Logica Ordinamento Bar
+        let keys = Object.keys(grouped);
+        const orderMode = clean(S["Ordine Categorie Bar"]).toLowerCase();
+
+        if (orderMode === "tabella") {
+            keys.sort((a,b) => firstIndex[a] - firstIndex[b]);
+        } else if (orderMode !== "alfabetico" && orderMode.length > 0) {
+            // Ordinamento manuale (lista separata da virgola)
+            const customList = S["Ordine Categorie Bar"].split(",").map(s => s.trim().toUpperCase());
+            // Prima quelli della lista, poi gli altri
+            keys = customList.filter(k => grouped[k]).concat(keys.filter(k => !customList.includes(k)));
+        } else {
+            // Default: Alfabetico
+            keys.sort();
         }
 
         keys.forEach(cat => {
@@ -226,31 +266,46 @@ try {
             menu.appendChild(section);
         });
 
+        // Avvia promo solo se in Bar e se c'è immagine
         if(S["Immagine Promo"]) startPromo(S["Immagine Promo"], S["Tempo Promo"]);
     }
 
 } catch(e) { console.error(e); }
 }
 
-let promoTimer;
+/* ================= PROMO TIMER ================= */
 function startPromo(url, sec) {
-    if(!url) return;
+    // Se il timer sta già girando con lo stesso URL, non fare nulla (evita sfarfallii)
+    if (document.getElementById("promo").style.backgroundImage.includes(url) && promoTimer) return;
+
+    stopPromo(); // Resetta per sicurezza
+    
     const el = document.getElementById("promo");
     el.style.backgroundImage = `url(${url})`;
-    // Reset timer se esiste per evitare sovrapposizioni
-    if(promoTimer) clearInterval(promoTimer);
     
     const interval = (sec ? Number(sec) : 8) * 1000;
     
-    // Ciclo: mostra -> aspetta -> nascondi -> aspetta
-    promoTimer = setInterval(() => {
+    // Funzione interna per il ciclo
+    const cycle = () => {
         el.classList.add("show");
         setTimeout(() => el.classList.remove("show"), interval);
-    }, interval * 2);
+    };
+
+    // Primo avvio dopo un delay uguale all'intervallo
+    promoTimer = setInterval(cycle, interval * 2);
+}
+
+function stopPromo() {
+    if (promoTimer) {
+        clearInterval(promoTimer);
+        promoTimer = null;
+    }
+    document.getElementById("promo").classList.remove("show");
+    document.getElementById("promo").style.backgroundImage = "";
 }
 
 updateData();
-setInterval(updateData, 10000); // Aggiorna ogni 10 sec
+setInterval(updateData, 10000); // Check ogni 10s
 </script>
 </body>
 </html>
