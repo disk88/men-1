@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale Pro v2</title>
+<title>Menu Digitale Pro v3</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -11,126 +11,122 @@
    1. VARIABILI E TEMI
    ========================================================================== */
 :root { --bg: #0f0f0f; --text: #fff; --accent: #d4af37; --fade: 0.8s; }
-
 .theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
 .theme-modern   { --bg: #0a0e14; --text: #e0e6ed; --accent: #00f2ff; }
 .theme-elegant  { --bg: #121412; --text: #f1ede4; --accent: #8e9e82; }
 .theme-minimal  { --bg: #1a1a1a; --text: #ffffff; --accent: #ffffff; }
 .theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
 
-/* ==========================================================================
-   2. STRUTTURA BASE
-   ========================================================================== */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
 body { 
     margin: 0; padding: 0; width: 100vw; height: 100dvh; 
     font-family: 'Montserrat', sans-serif; 
     background-color: var(--bg); color: var(--text);
     display: flex; flex-direction: column; overflow: hidden;
-    transition: background 0.5s ease;
 }
 
 /* ==========================================================================
-   3. HEADER E LOGO
+   2. HEADER (Fix per Mobile)
    ========================================================================== */
-#header { flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 2vh 4vw; gap: 30px; }
-#logo { height: clamp(40px, 9vh, 100px); display: none; object-fit: contain; }
-#title { font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; font-size: clamp(22px, 5.5vh, 60px); color: var(--accent); letter-spacing: 2px; }
+#header { 
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
+    padding: 1.5vh 2vw; gap: 2vw; min-height: 10vh;
+}
+#logo { height: 8vh; max-width: 25vw; display: none; object-fit: contain; }
+#title { 
+    font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
+    font-size: clamp(18px, 5vh, 55px); color: var(--accent); letter-spacing: 1px;
+    text-align: center; line-height: 1.1;
+}
 
 /* ==========================================================================
-   4. AREA MENU E GRIGLIA SMART
+   3. AREA CONTENUTI
    ========================================================================== */
-#scroll-container { flex-grow: 1; padding: 2vh; overflow: hidden; display: flex; flex-direction: column; }
+#scroll-container { flex-grow: 1; padding: 1.5vh; overflow: hidden; display: flex; flex-direction: column; position: relative; }
 #menu { 
-    display: grid; width: 100%; height: 100%; gap: 20px;
+    display: grid; width: 100%; height: 100%; gap: 15px;
     opacity: 1; transition: opacity var(--fade) ease-in-out; 
 }
 #menu.updating { opacity: 0; }
 
 .category { 
-    border: 2px solid rgba(255,255,255,0.08); padding: 2vh; 
-    border-radius: 15px; display: flex; flex-direction: column;
+    border: 2px solid rgba(255,255,255,0.08); padding: 1.5vh; 
+    border-radius: 12px; display: flex; flex-direction: column;
     background: rgba(255,255,255,0.02); overflow: hidden;
+    height: 100%; /* Essenziale per il calcolo dell'overflow */
 }
 .category h2 { 
-    margin: 0 0 1.5vh 0; font-family: 'Oswald', sans-serif; 
-    color: var(--accent); border-bottom: 3px solid var(--accent); 
-    font-size: clamp(1.2rem, 3vh, 2rem); text-transform: uppercase;
+    margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
+    color: var(--accent); border-bottom: 2px solid var(--accent); 
+    font-size: 1.5rem; text-transform: uppercase; flex-shrink: 0;
 }
 
-.items-list { flex-grow: 1; display: flex; flex-direction: column; gap: 0.8vh; }
-.item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: clamp(1rem, 2.2vh, 1.4rem); }
-.price { color: var(--accent); font-family: monospace; margin-left: 10px; }
-.desc { font-style: italic; font-size: clamp(0.8rem, 1.6vh, 1rem); opacity: 0.8; margin-top: 3px; }
+.items-list { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; gap: 0.5vh; }
+.item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; }
+.price { color: var(--accent); font-family: monospace; margin-left: 8px; }
+.desc { font-style: italic; font-size: 0.85rem; opacity: 0.8; line-height: 1.2; }
 
 /* ==========================================================================
-   5. BANNER MESSAGGIO (PIE PAGINA)
+   4. BANNER PREZZO CUCINA & MESSAGGIO
    ========================================================================== */
+#prezzo-cucina-box {
+    margin: 10px auto; padding: 10px 20px; border: 2px solid var(--accent);
+    border-radius: 8px; color: var(--accent); font-weight: 800;
+    font-size: 1.3rem; text-align: center; display: none; width: fit-content;
+}
+
 #banner {
     flex-shrink: 0; background: var(--accent); color: var(--bg);
-    padding: 10px 0; font-weight: 700; text-transform: uppercase;
+    padding: 8px 0; font-weight: 700; text-transform: uppercase;
     overflow: hidden; white-space: nowrap; display: none;
 }
-.marquee { display: inline-block; padding-left: 100%; animation: scroll 20s linear infinite; }
+.marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
 @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
 /* ==========================================================================
-   6. PROMO E ANIMAZIONI
+   5. MOBILE & PROMO
    ========================================================================== */
-#promo { 
-    position: fixed; inset: 0; background: black center/contain no-repeat; 
-    opacity: 0; transform: scale(1.1);
-    transition: opacity 1s ease, transform 1.2s cubic-bezier(0.2, 0, 0.2, 1); 
-    pointer-events: none; z-index: 9999; 
-}
-#promo.show { opacity: 1; transform: scale(1); }
-
-/* MOBILE */
 @media (max-width: 768px) {
+    #header { flex-direction: row; flex-wrap: wrap; padding: 10px; }
+    #logo { height: 40px; }
     #scroll-container { overflow-y: auto; display: block; }
     #menu { display: flex !important; flex-direction: column; height: auto; }
+    .category { height: auto; margin-bottom: 15px; }
 }
+
+#promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
+#promo.show { opacity: 1; }
 </style>
 </head>
 <body class="theme-classic">
 
 <div id="header">
-    <img id="logo" alt="Logo">
+    <img id="logo">
     <h1 id="title">...</h1>
 </div>
 
 <div id="scroll-container">
     <div id="menu"></div>
+    <div id="prezzo-cucina-box"></div>
 </div>
 
 <div id="banner"><div class="marquee" id="banner-text"></div></div>
 <div id="promo"></div>
 
 <script>
-/* ==========================================================================
-   LOGICA JAVASCRIPT
-   ========================================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-// --- FORMATTAZIONE TESTO (Casing intelligente) ---
+// --- FORMATTAZIONE TESTO ---
 function smartTitle(str) {
     if (!str) return "";
     const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
     let words = str.toLowerCase().split(' ');
-    return words.map((w, i) => {
-        if (i > 0 && articoli.includes(w)) return w;
-        return w.charAt(0).toUpperCase() + w.slice(1);
-    }).join(' ');
+    return words.map((w, i) => (i > 0 && articoli.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
-// --- GESTIONE FULLSCREEN (Tocco singolo entra, doppio esce) ---
-let lastClick = 0;
-document.body.addEventListener('click', () => {
-    let now = Date.now();
-    if (now - lastClick < 300) { if (document.fullscreenElement) document.exitFullscreen(); }
-    else { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e => {}); }
-    lastClick = now;
+// --- FULLSCREEN ---
+document.body.addEventListener('click', function(e) {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
 });
 
 const getVal = (r, k) => { 
@@ -138,73 +134,75 @@ const getVal = (r, k) => {
     return key ? r[key] : ""; 
 };
 
-// --- FUNZIONE PRINCIPALE AGGIORNAMENTO ---
+// --- FUNZIONE PER AUTO-RIDIMENSIONAMENTO FONT ---
+function autoShrinkFont() {
+    if (window.innerWidth <= 768) return; // Non serve su mobile scrollabile
+    const categories = document.querySelectorAll('.category');
+    categories.forEach(cat => {
+        const list = cat.querySelector('.items-list');
+        let fontSize = 1.1; // Partiamo da 1.1rem
+        
+        // Se il contenuto (scrollita) è più alto del contenitore (clientita)
+        while (list.scrollHeight > list.clientHeight && fontSize > 0.6) {
+            fontSize -= 0.05;
+            list.style.fontSize = fontSize + "rem";
+        }
+    });
+}
+
 async function updateData() {
     try {
         const menuEl = document.getElementById("menu");
         menuEl.classList.add("updating");
 
-        // Lettura Impostazioni
         const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
         const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
-        // Setup Generale
         const MODE = (S["Modalità"] || "Bar").toLowerCase();
-        const theme = (MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"]) || "classic";
-        document.body.className = `theme-${theme.toLowerCase()}`;
+        document.body.className = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
         document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
         
+        // Prezzo Cucina
+        const pCucina = document.getElementById("prezzo-cucina-box");
+        if (MODE === "cucina" && S["Prezzo"]) { pCucina.innerText = S["Prezzo"]; pCucina.style.display = "block"; } 
+        else { pCucina.style.display = "none"; }
+
         // Messaggio Banner
-        const banner = document.getElementById("banner");
-        if (S["Messaggio"]) {
-            document.getElementById("banner-text").innerText = S["Messaggio"];
-            banner.style.display = "block";
-        } else { banner.style.display = "none"; }
+        if (S["Messaggio"]) { document.getElementById("banner-text").innerText = S["Messaggio"]; document.getElementById("banner").style.display = "block"; } 
+        else { document.getElementById("banner").style.display = "none"; }
 
         // Logo
         const l = document.getElementById("logo");
         if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
 
-        // Recupero Dati Tabella
         const sheetName = MODE === "cucina" ? "Menu" : "Bar";
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${sheetName}`).then(r => r.json());
         
         const grouped = {};
-        const catOrderInTable = []; // Per ordine "Tabella"
+        const catOrderInTable = [];
 
         data.forEach(r => {
             if (getVal(r, "Disponibile").toLowerCase() !== "si") return;
             const cat = getVal(r, "Categoria").toUpperCase();
             if (!cat) return;
-            if (!grouped[cat]) {
-                grouped[cat] = [];
-                catOrderInTable.push(cat);
-            }
-            grouped[cat].push({ 
-                n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), 
-                p: getVal(r, "Prezzo"), 
-                i: smartTitle(getVal(r, "Ingredienti")) 
-            });
+            if (!grouped[cat]) { grouped[cat] = []; catOrderInTable.push(cat); }
+            grouped[cat].push({ n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), p: getVal(r, "Prezzo"), i: smartTitle(getVal(r, "Ingredienti")) });
         });
 
-        // --- GESTIONE ORDINAMENTO CATEGORIE ---
         let categories = Object.keys(grouped);
         if (MODE === "cucina") {
             const ordineCucina = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
             categories.sort((a, b) => ordineCucina.indexOf(a) - ordineCucina.indexOf(b));
         } else {
             const ordType = (S["Ordine Categorie Bar"] || "").toLowerCase();
-            if (ordType === "alfabetico") {
-                categories.sort();
-            } else if (ordType === "tabella") {
-                categories = catOrderInTable; // Segue ordine di apparizione nello Sheet
-            } else if (ordType.includes(",")) {
+            if (ordType === "tabella") categories = catOrderInTable;
+            else if (ordType === "alfabetico") categories.sort();
+            else if (ordType.includes(",")) {
                 const userOrder = ordType.split(',').map(x => x.trim().toUpperCase());
                 categories.sort((a, b) => userOrder.indexOf(a) - userOrder.indexOf(b));
             }
         }
 
-        // --- RENDERING HTML ---
         setTimeout(() => {
             menuEl.innerHTML = categories.map((cat, idx) => `
                 <div class="category" id="cat-${idx+1}">
@@ -220,60 +218,41 @@ async function updateData() {
                 </div>
             `).join('');
 
-            if(window.innerWidth > 768) applyCustomGrid(categories.length);
+            if(window.innerWidth > 768) {
+                applyCustomGrid(categories.length);
+                setTimeout(autoShrinkFont, 100); // Aspetta che il rendering sia finito
+            }
             menuEl.classList.remove("updating");
         }, 600);
 
-        // Gestione Promo
         if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
 
-    } catch (e) { console.error("Errore Sync:", e); }
+    } catch (e) { console.error(e); }
 }
 
-// --- LOGICA GRIGLIA COORDINATE (Riempimento totale) ---
 function applyCustomGrid(count) {
     const menu = document.getElementById("menu");
-    const pos = {
-        1:[1,1], 2:[1,2], 5:[1,3], 7:[1,4], 9:[1,5], 16:[1,6],
-        3:[2,1], 4:[2,2], 6:[2,3], 8:[2,4], 10:[2,5], 17:[2,6],
-        11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5], 18:[3,6]
-    };
+    const pos = { 1:[1,1], 2:[1,2], 5:[1,3], 7:[1,4], 9:[1,5], 16:[1,6], 3:[2,1], 4:[2,2], 6:[2,3], 8:[2,4], 10:[2,5], 17:[2,6], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5], 18:[3,6] };
     let maxR = 1, maxC = 1;
-    for(let i=1; i<=count; i++) {
-        if(pos[i]) {
-            maxR = Math.max(maxR, pos[i][0]);
-            maxC = Math.max(maxC, pos[i][1]);
-        }
-    }
+    for(let i=1; i<=count; i++) if(pos[i]) { maxR = Math.max(maxR, pos[i][0]); maxC = Math.max(maxC, pos[i][1]); }
     menu.style.gridTemplateRows = `repeat(${maxR}, 1fr)`;
     menu.style.gridTemplateColumns = `repeat(${maxC}, 1fr)`;
-    for(let i=1; i<=count; i++) {
-        const el = document.getElementById(`cat-${i}`);
-        if(el && pos[i]) {
-            el.style.gridRow = pos[i][0];
-            el.style.gridColumn = pos[i][1];
-        }
-    }
+    for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
 }
 
-// --- LOGICA PROMO ---
 let promoTimer = null;
 function handlePromo(url, time) {
     if(promoTimer) return;
     const p = document.getElementById("promo");
     p.style.backgroundImage = `url(${url})`;
     const t = (parseInt(time) || 10) * 1000;
-    const cycle = () => {
-        p.classList.add("show");
-        setTimeout(() => p.classList.remove("show"), t);
-    };
-    cycle();
-    promoTimer = setInterval(cycle, t * 4);
+    const cycle = () => { p.classList.add("show"); setTimeout(() => p.classList.remove("show"), t); };
+    cycle(); promoTimer = setInterval(cycle, t * 5);
 }
 
-// Avvio
 updateData();
 setInterval(updateData, 15000);
+window.addEventListener('resize', autoShrinkFont);
 </script>
 </body>
 </html>
