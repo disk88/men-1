@@ -3,76 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale Pro - Stable TV</title>
+<title>Menu Digitale Finale - Elegance Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
-/* ================= TEMI E VARIABILI ================= */
-:root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; }
+/* ==========================================================================
+   1. TEMI E VARIABILI (Colori e Font)
+   ========================================================================== */
+:root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.6s; }
 .theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
 .theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
 .theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
 .theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
 body { 
     margin: 0; padding: 0; width: 100vw; height: 100dvh; 
     font-family: 'Montserrat', sans-serif; 
     background-color: var(--bg); color: var(--text);
     display: flex; flex-direction: column; overflow: hidden;
-    padding-bottom: 5vh; /* Margine di sicurezza fondamentale per TV */
 }
 
-/* ================= HEADER DINAMICO ================= */
+/* ==========================================================================
+   2. HEADER (Logo e Titolo Proporzionati)
+   ========================================================================== */
 #header { 
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
-    padding: 2vh 4vw; gap: 2vw; min-height: 12vh;
+    padding: 1.5vh 4vw; gap: 20px; height: 11vh;
 }
 #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
 #title { 
     font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
-    font-size: clamp(20px, 4.5vw, 55px); color: var(--accent); letter-spacing: 1px;
-    line-height: 1; text-align: center;
+    font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
 }
 
-/* ================= GRIGLIA ANTI-TAGLIO ================= */
-#scroll-container { flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; }
+/* ==========================================================================
+   3. AREA CONTENUTO (Griglia Anti-Taglio TV)
+   ========================================================================== */
+#scroll-container { 
+    flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column;
+}
 #menu { 
     display: grid; width: 100%; height: 100%; gap: 15px;
-    /* Usiamo minmax per evitare che le celle diventino troppo piccole tagliando il testo */
-    grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr)); /* Forza equilibrio tra sopra e sotto */
 }
 
 .category { 
     border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
     border-radius: 12px; display: flex; flex-direction: column;
-    background: rgba(255,255,255,0.03); overflow: hidden;
+    background: rgba(255,255,255,0.03); overflow: hidden; transition: opacity var(--fade);
 }
 .category h2 { 
     margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
     color: var(--accent); border-bottom: 2px solid var(--accent); 
-    font-size: 1.25rem; text-transform: uppercase; flex-shrink: 0;
-    padding-bottom: 2px;
+    font-size: 1.3rem; text-transform: uppercase; flex-shrink: 0;
 }
 
 .items-list { 
-    flex-grow: 1; column-gap: 20px; font-size: 1.1rem;
-    overflow: hidden; /* Evita sovrapposizioni visive su Android TV */
+    flex-grow: 1; overflow: hidden; display: block;
+    font-size: 1rem; /* Base di partenza per il calcolo JS */
 }
 
-/* Se molti elementi (es. Spritz nell'immagine), usa 2 colonne */
-.category.voluminous .items-list { column-count: 2; }
+/* Gestione Multi-Colonna per Categorie Voluminose */
+.category.voluminous .items-list { column-count: 2; column-gap: 35px; }
 
-.item-box { break-inside: avoid; margin-bottom: 0.8vh; width: 100%; }
-.item-header { display: flex; justify-content: space-between; font-weight: 700; line-height: 1.1; }
-.price { color: var(--accent); font-family: monospace; margin-left: 10px; }
-.desc { font-style: italic; opacity: 0.7; font-size: 0.85rem; margin-top: 1px; line-height: 1.2; }
+.item-box { break-inside: avoid; margin-bottom: 0.7vh; width: 100%; }
+.item-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; gap: 12px; }
+.item-name { flex: 1; text-align: left; line-height: 1.1; }
+.price { color: var(--accent); font-family: monospace; white-space: nowrap; }
+.desc { font-style: italic; opacity: 0.7; font-size: 0.85em; margin-top: 1px; line-height: 1.1; }
 
-/* ================= BANNER E PROMO ================= */
+/* ==========================================================================
+   4. COMPONENTI EXTRA (Cucina, Banner, Promo)
+   ========================================================================== */
+#cucina-footer {
+    flex-shrink: 0; width: 100%; display: none; justify-content: center;
+    padding: 1vh 0 4vh 0; /* Sollevato per evitare tagli su TV */
+}
 #prezzo-cucina-box {
-    margin: 10px auto; padding: 10px 30px; border: 3px solid var(--accent);
-    border-radius: 10px; color: var(--accent); font-weight: 800;
-    font-size: 1.5rem; text-align: center; display: none; width: fit-content;
+    padding: 10px 40px; border: 3px solid var(--accent); border-radius: 10px;
+    color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg);
 }
 
 #banner {
@@ -83,20 +94,19 @@ body {
 .marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
 @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-#promo { 
-    position: fixed; inset: 0; background: black center/contain no-repeat; 
-    opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; 
-}
+#promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
 #promo.show { opacity: 1; }
 
-/* ================= MOBILE ================= */
+/* ==========================================================================
+   5. MOBILE RESPONSIVE
+   ========================================================================== */
 @media (max-width: 950px) {
-    #header { padding: 10px; }
-    #logo { height: 40px; }
+    #header { height: auto; padding: 10px; }
     #scroll-container { overflow-y: auto; display: block; }
-    #menu { display: flex !important; flex-direction: column; height: auto; gap: 20px; }
-    .category { height: auto; min-height: 100px; }
-    .items-list { column-count: 1 !important; }
+    #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
+    .category { height: auto; min-height: 120px; }
+    .category.voluminous .items-list { column-count: 1; }
+    #cucina-footer { padding-bottom: 20px; }
 }
 </style>
 </head>
@@ -104,11 +114,14 @@ body {
 
 <div id="header">
     <img id="logo">
-    <h1 id="title">...</h1>
+    <h1 id="title">Caricamento...</h1>
 </div>
 
 <div id="scroll-container">
     <div id="menu"></div>
+</div>
+
+<div id="cucina-footer">
     <div id="prezzo-cucina-box"></div>
 </div>
 
@@ -116,8 +129,12 @@ body {
 <div id="promo"></div>
 
 <script>
+/* ==========================================================================
+   6. LOGICA JAVASCRIPT (Refresh 15s, Auto-Font, API)
+   ========================================================================= */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
+// Utility per titoli puliti
 function smartTitle(str) {
     if (!str) return "";
     const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
@@ -130,19 +147,33 @@ const getVal = (r, k) => {
     return key ? r[key] : ""; 
 };
 
-// Logica Promo
+// Funzione Font Equilibrato (Elegante e proporzionato)
+function maximizeFont() {
+    if (window.innerWidth <= 950) return;
+    document.querySelectorAll('.category').forEach(cat => {
+        const list = cat.querySelector('.items-list');
+        let fontSize = 0.9; 
+        list.style.fontSize = fontSize + "rem";
+        
+        // Crescita controllata: si ferma a 1.5rem per mantenere eleganza
+        const LIMIT = 1.5; 
+        while (list.scrollHeight <= list.clientHeight && fontSize < LIMIT) {
+            fontSize += 0.05;
+            list.style.fontSize = fontSize + "rem";
+        }
+        list.style.fontSize = (fontSize - 0.1) + "rem"; 
+    });
+}
+
+// Gestione Promo (Ripristinata v5)
 let promoInterval = null;
 function handlePromo(url, time) {
     if(!url || promoInterval) return;
     const p = document.getElementById("promo");
     p.style.backgroundImage = `url(${url})`;
     const t = (parseInt(time) || 10) * 1000;
-    const cycle = () => { 
-        p.classList.add("show"); 
-        setTimeout(() => p.classList.remove("show"), t); 
-    };
-    cycle(); 
-    promoInterval = setInterval(cycle, t * 5);
+    const cycle = () => { p.classList.add("show"); setTimeout(() => p.classList.remove("show"), t); };
+    cycle(); promoInterval = setInterval(cycle, t * 5);
 }
 
 async function updateData() {
@@ -154,18 +185,19 @@ async function updateData() {
         document.body.className = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
         document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
         
-        // Banner e Prezzo
+        // Logo
+        const l = document.getElementById("logo");
+        if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
+
+        // Banner Bar / Cucina Footer
         const b = document.getElementById("banner");
         if (MODE === "bar" && S["Messaggio"]) { document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; } 
         else { b.style.display = "none"; }
 
+        const footer = document.getElementById("cucina-footer");
         const pC = document.getElementById("prezzo-cucina-box");
-        if (MODE === "cucina" && S["Prezzo"]) { pC.innerText = S["Prezzo"]; pC.style.display = "block"; } 
-        else { pC.style.display = "none"; }
-
-        // Logo
-        const l = document.getElementById("logo");
-        if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
+        if (MODE === "cucina" && S["Prezzo"]) { pC.innerText = S["Prezzo"]; footer.style.display = "flex"; } 
+        else { footer.style.display = "none"; }
 
         // Dati Piatti
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
@@ -179,24 +211,23 @@ async function updateData() {
         });
 
         let categories = Object.keys(grouped);
+        // Logica ordinamento
         if (MODE === "cucina") {
             const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
             categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
-        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") {
-            categories = catTable;
-        }
+        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") categories = catTable;
 
         document.getElementById("menu").innerHTML = categories.map((cat, idx) => {
-            const itemCount = grouped[cat].length;
-            // Se ci sono molti elementi (come gli Spritz in foto), dividi in due colonne
-            const colClass = itemCount > 6 ? 'voluminous' : ''; 
+            const items = grouped[cat];
+            const threshold = MODE === "cucina" ? 6 : 8;
+            const colClass = items.length > threshold ? 'voluminous' : '';
             return `
             <div class="category ${colClass}" id="cat-${idx+1}">
                 <h2>${cat}</h2>
                 <div class="items-list">
-                    ${grouped[cat].map(x => `
+                    ${items.map(x => `
                         <div class="item-box">
-                            <div class="item-header"><span>${x.n}</span><span class="price">${x.p}</span></div>
+                            <div class="item-header"><span class="item-name">${x.n}</span><span class="price">${x.p}</span></div>
                             ${x.i ? `<div class="desc">${x.i}</div>` : ''}
                         </div>
                     `).join('')}
@@ -204,9 +235,12 @@ async function updateData() {
             </div>`;
         }).join('');
 
-        if(window.innerWidth > 950) applyGrid(categories.length);
+        if(window.innerWidth > 950) {
+            applyGrid(categories.length);
+            setTimeout(maximizeFont, 400); // Ritardo per calcolo TV
+        }
 
-        // Gestione Promo (Solo Bar)
+        // Promo
         if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
         else { clearInterval(promoInterval); promoInterval = null; document.getElementById("promo").classList.remove("show"); }
 
@@ -224,7 +258,8 @@ function applyGrid(count) {
 }
 
 updateData();
-setInterval(updateData, 30000);
+setInterval(updateData, 15000); // Refresh a 15 secondi
+window.addEventListener('resize', () => { maximizeFont(); });
 document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
 </script>
 </body>
