@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale Finale - Elegance Edition</title>
+<title>Menu Digitale Finale v8</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
 /* ==========================================================================
-   1. TEMI E VARIABILI (Colori e Font)
+   1. STRUTTURA E TEMI
    ========================================================================== */
-:root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.6s; }
+:root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.3s; }
 .theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
 .theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
 .theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
@@ -26,7 +26,7 @@ body {
 }
 
 /* ==========================================================================
-   2. HEADER (Logo e Titolo Proporzionati)
+   2. HEADER
    ========================================================================== */
 #header { 
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
@@ -39,33 +39,30 @@ body {
 }
 
 /* ==========================================================================
-   3. AREA CONTENUTO (Griglia Anti-Taglio TV)
+   3. AREA MENU (Con Effetto Anti-Pulsazione)
    ========================================================================== */
 #scroll-container { 
     flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column;
+    transition: opacity var(--fade); /* Per evitare il flickering al refresh */
 }
 #menu { 
     display: grid; width: 100%; height: 100%; gap: 15px;
-    grid-template-rows: repeat(2, minmax(0, 1fr)); /* Forza equilibrio tra sopra e sotto */
+    grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .category { 
     border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
     border-radius: 12px; display: flex; flex-direction: column;
-    background: rgba(255,255,255,0.03); overflow: hidden; transition: opacity var(--fade);
+    background: rgba(255,255,255,0.03); overflow: hidden;
 }
 .category h2 { 
     margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
     color: var(--accent); border-bottom: 2px solid var(--accent); 
-    font-size: 1.3rem; text-transform: uppercase; flex-shrink: 0;
+    font-size: 1.6rem; /* Incrementato per monitor/TV */
+    text-transform: uppercase; flex-shrink: 0;
 }
 
-.items-list { 
-    flex-grow: 1; overflow: hidden; display: block;
-    font-size: 1rem; /* Base di partenza per il calcolo JS */
-}
-
-/* Gestione Multi-Colonna per Categorie Voluminose */
+.items-list { flex-grow: 1; overflow: hidden; display: block; font-size: 1rem; }
 .category.voluminous .items-list { column-count: 2; column-gap: 35px; }
 
 .item-box { break-inside: avoid; margin-bottom: 0.7vh; width: 100%; }
@@ -75,17 +72,18 @@ body {
 .desc { font-style: italic; opacity: 0.7; font-size: 0.85em; margin-top: 1px; line-height: 1.1; }
 
 /* ==========================================================================
-   4. COMPONENTI EXTRA (Cucina, Banner, Promo)
+   4. FOOTER E BANNER
    ========================================================================== */
 #cucina-footer {
     flex-shrink: 0; width: 100%; display: none; justify-content: center;
-    padding: 1vh 0 4vh 0; /* Sollevato per evitare tagli su TV */
+    padding: 1vh 0 4vh 0; 
 }
 #prezzo-cucina-box {
     padding: 10px 40px; border: 3px solid var(--accent); border-radius: 10px;
     color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg);
 }
 
+/* Banner scorrevole Bar */
 #banner {
     flex-shrink: 0; background: var(--accent); color: var(--bg);
     padding: 12px 0; font-weight: 900; text-transform: uppercase;
@@ -98,7 +96,7 @@ body {
 #promo.show { opacity: 1; }
 
 /* ==========================================================================
-   5. MOBILE RESPONSIVE
+   5. MOBILE RESPONSIVE (Prezzo nello Scroll)
    ========================================================================== */
 @media (max-width: 950px) {
     #header { height: auto; padding: 10px; }
@@ -106,7 +104,9 @@ body {
     #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
     .category { height: auto; min-height: 120px; }
     .category.voluminous .items-list { column-count: 1; }
-    #cucina-footer { padding-bottom: 20px; }
+    /* Prezzo cucina integrato nello scroll su mobile */
+    #cucina-footer { display: none !important; }
+    #mobile-price-container { display: block; margin: 20px 0; }
 }
 </style>
 </head>
@@ -119,6 +119,7 @@ body {
 
 <div id="scroll-container">
     <div id="menu"></div>
+    <div id="mobile-price-container"></div>
 </div>
 
 <div id="cucina-footer">
@@ -130,11 +131,10 @@ body {
 
 <script>
 /* ==========================================================================
-   6. LOGICA JAVASCRIPT (Refresh 15s, Auto-Font, API)
-   ========================================================================= */
+   6. LOGICA JAVASCRIPT
+   ========================================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
-// Utility per titoli puliti
 function smartTitle(str) {
     if (!str) return "";
     const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
@@ -147,15 +147,12 @@ const getVal = (r, k) => {
     return key ? r[key] : ""; 
 };
 
-// Funzione Font Equilibrato (Elegante e proporzionato)
 function maximizeFont() {
     if (window.innerWidth <= 950) return;
     document.querySelectorAll('.category').forEach(cat => {
         const list = cat.querySelector('.items-list');
         let fontSize = 0.9; 
         list.style.fontSize = fontSize + "rem";
-        
-        // Crescita controllata: si ferma a 1.5rem per mantenere eleganza
         const LIMIT = 1.5; 
         while (list.scrollHeight <= list.clientHeight && fontSize < LIMIT) {
             fontSize += 0.05;
@@ -165,7 +162,6 @@ function maximizeFont() {
     });
 }
 
-// Gestione Promo (Ripristinata v5)
 let promoInterval = null;
 function handlePromo(url, time) {
     if(!url || promoInterval) return;
@@ -177,6 +173,9 @@ function handlePromo(url, time) {
 }
 
 async function updateData() {
+    const container = document.getElementById("scroll-container");
+    container.style.opacity = "0"; // Nasconde per evitare pulsazione
+
     try {
         const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
         const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
@@ -189,17 +188,32 @@ async function updateData() {
         const l = document.getElementById("logo");
         if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
 
-        // Banner Bar / Cucina Footer
+        // Banner Bar
         const b = document.getElementById("banner");
-        if (MODE === "bar" && S["Messaggio"]) { document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; } 
-        else { b.style.display = "none"; }
+        if (MODE === "bar" && S["Messaggio"]) { 
+            document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; 
+        } else { b.style.display = "none"; }
 
-        const footer = document.getElementById("cucina-footer");
+        // Gestione Prezzo (Mobile vs TV)
+        const foot = document.getElementById("cucina-footer");
+        const mobPrice = document.getElementById("mobile-price-container");
         const pC = document.getElementById("prezzo-cucina-box");
-        if (MODE === "cucina" && S["Prezzo"]) { pC.innerText = S["Prezzo"]; footer.style.display = "flex"; } 
-        else { footer.style.display = "none"; }
+        
+        if (MODE === "cucina" && S["Prezzo"]) {
+            const priceHTML = `<div id="prezzo-cucina-box" style="display:block">${S["Prezzo"]}</div>`;
+            if(window.innerWidth <= 950) {
+                mobPrice.innerHTML = priceHTML;
+                foot.style.display = "none";
+            } else {
+                pC.innerText = S["Prezzo"];
+                foot.style.display = "flex";
+                mobPrice.innerHTML = "";
+            }
+        } else {
+            foot.style.display = "none";
+            mobPrice.innerHTML = "";
+        }
 
-        // Dati Piatti
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
         const grouped = {}; const catTable = [];
         data.forEach(r => {
@@ -211,7 +225,6 @@ async function updateData() {
         });
 
         let categories = Object.keys(grouped);
-        // Logica ordinamento
         if (MODE === "cucina") {
             const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
             categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
@@ -237,14 +250,16 @@ async function updateData() {
 
         if(window.innerWidth > 950) {
             applyGrid(categories.length);
-            setTimeout(maximizeFont, 400); // Ritardo per calcolo TV
+            maximizeFont();
         }
 
-        // Promo
+        // Mostra tutto una volta pronto
+        setTimeout(() => { container.style.opacity = "1"; }, 100);
+
         if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
         else { clearInterval(promoInterval); promoInterval = null; document.getElementById("promo").classList.remove("show"); }
 
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); container.style.opacity = "1"; }
 }
 
 function applyGrid(count) {
@@ -258,7 +273,7 @@ function applyGrid(count) {
 }
 
 updateData();
-setInterval(updateData, 15000); // Refresh a 15 secondi
+setInterval(updateData, 15000); // 15 secondi
 window.addEventListener('resize', () => { maximizeFont(); });
 document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
 </script>
