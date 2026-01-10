@@ -279,3 +279,290 @@ document.body.addEventListener('click', () => { if (!document.fullscreenElement)
 </script>
 </body>
 </html>
+
+---------2-----------
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Menu Digitale Finale v8</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   1. STRUTTURA E TEMI
+   ========================================================================== */
+:root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.5s; }
+.theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
+.theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
+.theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
+.theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
+.theme-sabaudo {--bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
+.theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
+.theme-neon {--bg: #050505; --text: #fafafa; --accent: #ff007f; }
+.theme-velvet {--bg: #120507; --text: #ece2d0; --accent: #d9534f; }
+
+* { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+body { 
+    margin: 0; padding: 0; width: 100vw; height: 100dvh; 
+    font-family: 'Montserrat', sans-serif; 
+    background-color: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* ==========================================================================
+   2. HEADER
+   ========================================================================== */
+#header { 
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
+    padding: 1.5vh 4vw; gap: 20px; height: 11vh;
+}
+#logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
+#title { 
+    font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
+    font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
+}
+
+/* ==========================================================================
+   3. AREA MENU (Con Effetto Anti-Pulsazione)
+   ========================================================================== */
+#scroll-container { 
+    flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column;
+    transition: opacity var(--fade); /* Per evitare il flickering al refresh */
+}
+#menu { 
+    display: grid; width: 100%; height: 100%; gap: 15px;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.category { 
+    border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
+    border-radius: 12px; display: flex; flex-direction: column;
+    background: rgba(255,255,255,0.03); overflow: hidden;
+}
+.category h2 { 
+    margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
+    color: var(--accent); border-bottom: 2px solid var(--accent); 
+    font-size: 1.6rem; /* Incrementato per monitor/TV */
+    text-transform: uppercase; flex-shrink: 0;
+}
+
+.items-list { flex-grow: 1; overflow: hidden; display: block; font-size: 1rem; }
+.category.voluminous .items-list { column-count: 2; column-gap: 35px; }
+
+.item-box { break-inside: avoid; margin-bottom: 0.7vh; width: 100%; }
+.item-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; gap: 12px; }
+.item-name { flex: 1; text-align: left; line-height: 1.1; }
+.price { color: var(--accent); font-family: monospace; white-space: nowrap; }
+.desc { font-style: italic; opacity: 0.7; font-size: 0.85em; margin-top: 1px; line-height: 1.1; }
+
+/* ==========================================================================
+   4. FOOTER E BANNER
+   ========================================================================== */
+#cucina-footer {
+    flex-shrink: 0; width: 100%; display: none; justify-content: center;
+    padding: 1vh 0 4vh 0; 
+}
+#prezzo-cucina-box {
+    padding: 10px 40px; border: 3px solid var(--accent); border-radius: 10px;
+    color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg);
+}
+
+/* Banner scorrevole Bar */
+#banner {
+    flex-shrink: 0; background: var(--accent); color: var(--bg);
+    padding: 12px 0; font-weight: 900; text-transform: uppercase;
+    overflow: hidden; white-space: nowrap; display: none; font-size: 1.2rem;
+}
+.marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
+@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+#promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
+#promo.show { opacity: 1; }
+
+/* ==========================================================================
+   5. MOBILE RESPONSIVE (Prezzo nello Scroll)
+   ========================================================================== */
+@media (max-width: 950px) {
+    #header { height: auto; padding: 10px; }
+    #scroll-container { overflow-y: auto; display: block; }
+    #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
+    .category { height: auto; min-height: 120px; }
+    .category.voluminous .items-list { column-count: 1; }
+    /* Prezzo cucina integrato nello scroll su mobile */
+    #cucina-footer { display: none !important; }
+    #mobile-price-container { display: block; margin: 20px 0; }
+}
+</style>
+</head>
+<body class="theme-classic">
+
+<div id="header">
+    <img id="logo">
+    <h1 id="title">Caricamento...</h1>
+</div>
+
+<div id="scroll-container">
+    <div id="menu"></div>
+    <div id="mobile-price-container"></div>
+</div>
+
+<div id="cucina-footer">
+    <div id="prezzo-cucina-box"></div>
+</div>
+
+<div id="banner"><div class="marquee" id="banner-text"></div></div>
+<div id="promo"></div>
+
+<script>
+/* ==========================================================================
+   6. LOGICA JAVASCRIPT
+   ========================================================================== */
+const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
+
+function smartTitle(str) {
+    if (!str) return "";
+    const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
+    let words = str.toLowerCase().split(' ');
+    return words.map((w, i) => (i > 0 && articoli.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+const getVal = (r, k) => { 
+    const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
+    return key ? r[key] : ""; 
+};
+
+function maximizeFont() {
+    if (window.innerWidth <= 950) return;
+    document.querySelectorAll('.category').forEach(cat => {
+        const list = cat.querySelector('.items-list');
+        let fontSize = 0.9; 
+        list.style.fontSize = fontSize + "rem";
+        const LIMIT = 1.5; 
+        while (list.scrollHeight <= list.clientHeight && fontSize < LIMIT) {
+            fontSize += 0.05;
+            list.style.fontSize = fontSize + "rem";
+        }
+        list.style.fontSize = (fontSize - 0.1) + "rem"; 
+    });
+}
+
+let promoInterval = null;
+function handlePromo(url, time) {
+    if(!url || promoInterval) return;
+    const p = document.getElementById("promo");
+    p.style.backgroundImage = `url(${url})`;
+    const t = (parseInt(time) || 10) * 1000;
+    const cycle = () => { p.classList.add("show"); setTimeout(() => p.classList.remove("show"), t); };
+    cycle(); promoInterval = setInterval(cycle, t * 5);
+}
+
+async function updateData() {
+    const container = document.getElementById("scroll-container");
+    container.style.opacity = "0"; // Nasconde per evitare pulsazione
+
+    try {
+        const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
+        const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
+
+        const MODE = (S["Modalità"] || "Bar").toLowerCase();
+        document.body.className = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
+        document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+        
+        // Logo
+        const l = document.getElementById("logo");
+        if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
+
+        // Banner Bar
+        const b = document.getElementById("banner");
+        if (MODE === "bar" && S["Messaggio"]) { 
+            document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; 
+        } else { b.style.display = "none"; }
+
+        // Gestione Prezzo (Mobile vs TV)
+        const foot = document.getElementById("cucina-footer");
+        const mobPrice = document.getElementById("mobile-price-container");
+        const pC = document.getElementById("prezzo-cucina-box");
+        
+        if (MODE === "cucina" && S["Prezzo"]) {
+            const priceHTML = `<div id="prezzo-cucina-box" style="display:block">${S["Prezzo"]}</div>`;
+            if(window.innerWidth <= 950) {
+                mobPrice.innerHTML = priceHTML;
+                foot.style.display = "none";
+            } else {
+                pC.innerText = S["Prezzo"];
+                foot.style.display = "flex";
+                mobPrice.innerHTML = "";
+            }
+        } else {
+            foot.style.display = "none";
+            mobPrice.innerHTML = "";
+        }
+
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
+        const grouped = {}; const catTable = [];
+        data.forEach(r => {
+            if (getVal(r, "Disponibile").toLowerCase() !== "si") return;
+            const cat = getVal(r, "Categoria").toUpperCase();
+            if (!cat) return;
+            if (!grouped[cat]) { grouped[cat] = []; catTable.push(cat); }
+            grouped[cat].push({ n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), p: getVal(r, "Prezzo"), i: smartTitle(getVal(r, "Ingredienti")) });
+        });
+
+        let categories = Object.keys(grouped);
+        if (MODE === "cucina") {
+            const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
+            categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
+        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") categories = catTable;
+
+        document.getElementById("menu").innerHTML = categories.map((cat, idx) => {
+            const items = grouped[cat];
+            const threshold = MODE === "cucina" ? 6 : 8;
+            const colClass = items.length > threshold ? 'voluminous' : '';
+            return `
+            <div class="category ${colClass}" id="cat-${idx+1}">
+                <h2>${cat}</h2>
+                <div class="items-list">
+                    ${items.map(x => `
+                        <div class="item-box">
+                            <div class="item-header"><span class="item-name">${x.n}</span><span class="price">${x.p}</span></div>
+                            ${x.i ? `<div class="desc">${x.i}</div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }).join('');
+
+        if(window.innerWidth > 950) {
+            applyGrid(categories.length);
+            maximizeFont();
+        }
+
+        // Mostra tutto una volta pronto
+        setTimeout(() => { container.style.opacity = "1"; }, 100);
+
+        if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
+        else { clearInterval(promoInterval); promoInterval = null; document.getElementById("promo").classList.remove("show"); }
+
+    } catch (e) { console.error(e); container.style.opacity = "1"; }
+}
+
+function applyGrid(count) {
+    const m = document.getElementById("menu");
+    const pos = { 1:[1,1], 2:[1,2], 5:[1,3], 7:[1,4], 9:[1,5], 16:[1,6], 3:[2,1], 4:[2,2], 6:[2,3], 8:[2,4], 10:[2,5], 17:[2,6], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5], 18:[3,6] };
+    let r = 1, c = 1;
+    for(let i=1; i<=count; i++) if(pos[i]) { r = Math.max(r, pos[i][0]); c = Math.max(c, pos[i][1]); }
+    m.style.gridTemplateRows = `repeat(${r}, 1fr)`;
+    m.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+    for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
+}
+
+updateData();
+setInterval(updateData, 15000); // 15 secondi
+window.addEventListener('resize', () => { maximizeFont(); });
+document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
+</script>
+</body>
+</html>
