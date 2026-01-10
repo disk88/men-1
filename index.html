@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale Finale v8</title>
+<title>Menu Digitale Finale v9</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -30,16 +30,34 @@ body {
 }
 
 /* ==========================================================================
-   2. HEADER
+   2. HEADER & OROLOGIO
    ========================================================================== */
 #header { 
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
     padding: 1.5vh 4vw; gap: 20px; height: 11vh;
+    position: relative; /* Necessario per posizionare l'orologio */
 }
 #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
 #title { 
     font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
     font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
+}
+
+/* Orologio Digitale */
+#clock {
+    position: absolute;
+    right: 3vw;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: right;
+    z-index: 100;
+}
+#clock-time {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1;
 }
 
 /* ==========================================================================
@@ -62,7 +80,7 @@ body {
 .category h2 { 
     margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
     color: var(--accent); border-bottom: 2px solid var(--accent); 
-    font-size: 1.6rem; /* Incrementato per monitor/TV */
+    font-size: 1.6rem; 
     text-transform: uppercase; flex-shrink: 0;
 }
 
@@ -100,15 +118,22 @@ body {
 #promo.show { opacity: 1; }
 
 /* ==========================================================================
-   5. MOBILE RESPONSIVE (Prezzo nello Scroll)
+   5. MOBILE RESPONSIVE
    ========================================================================== */
 @media (max-width: 950px) {
-    #header { height: auto; padding: 10px; }
+    #header { height: auto; padding: 10px 15px; justify-content: space-between; }
+    #title { font-size: 1.5rem; text-align: center; width: 100%; }
+    #logo { height: 50px; }
+    #clock { position: static; transform: none; font-size: 1rem; }
+    
+    /* Layout Header Mobile modificato per ospitare l'orologio */
+    #header { flex-wrap: wrap; }
+    #clock { order: 2; } 
+    
     #scroll-container { overflow-y: auto; display: block; }
     #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
     .category { height: auto; min-height: 120px; }
     .category.voluminous .items-list { column-count: 1; }
-    /* Prezzo cucina integrato nello scroll su mobile */
     #cucina-footer { display: none !important; }
     #mobile-price-container { display: block; margin: 20px 0; }
 }
@@ -119,6 +144,9 @@ body {
 <div id="header">
     <img id="logo">
     <h1 id="title">Caricamento...</h1>
+    <div id="clock">
+        <div id="clock-time">00:00</div>
+    </div>
 </div>
 
 <div id="scroll-container">
@@ -139,6 +167,39 @@ body {
    ========================================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 
+/**
+ * FIX PER IMMAGINI GOOGLE DRIVE
+ * Trasforma link /view o /open in link diretti che funzionano nei tag IMG
+ */
+function fixGoogleDriveUrl(url) {
+    if (!url) return "";
+    // Se è già un link diretto o non è di drive, lo ritorna
+    if (!url.includes("drive.google.com") && !url.includes("docs.google.com")) return url;
+    
+    try {
+        // Cerca l'ID del file
+        let id = "";
+        const parts = url.split('/');
+        // Caso standard: .../d/ID_FILE/...
+        const dIndex = parts.indexOf('d');
+        if (dIndex !== -1 && parts[dIndex + 1]) {
+            id = parts[dIndex + 1];
+        } 
+        // Caso alternativo: id=ID_FILE
+        else if (url.includes('id=')) {
+            id = url.split('id=')[1].split('&')[0];
+        }
+
+        if (id) {
+            // Usa il server lh3 per bypassare i limiti di download
+            return `https://lh3.googleusercontent.com/d/${id}`; 
+        }
+    } catch (e) {
+        console.warn("Errore parsing URL Drive:", e);
+    }
+    return url;
+}
+
 function smartTitle(str) {
     if (!str) return "";
     const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
@@ -150,6 +211,17 @@ const getVal = (r, k) => {
     const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
     return key ? r[key] : ""; 
 };
+
+// Funzione Orologio
+function startClock() {
+    const update = () => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('clock-time').innerText = timeStr;
+    };
+    update();
+    setInterval(update, 1000);
+}
 
 function maximizeFont() {
     if (window.innerWidth <= 950) return;
@@ -167,18 +239,25 @@ function maximizeFont() {
 }
 
 let promoInterval = null;
+
 function handlePromo(url, time) {
     if(!url || promoInterval) return;
+    
+    // Applica il fix al link dell'immagine promo
+    const directUrl = fixGoogleDriveUrl(url);
+
     const p = document.getElementById("promo");
-    p.style.backgroundImage = `url(${url})`;
+    p.style.backgroundImage = `url(${directUrl})`;
+    
     const t = (parseInt(time) || 10) * 1000;
     const cycle = () => { p.classList.add("show"); setTimeout(() => p.classList.remove("show"), t); };
-    cycle(); promoInterval = setInterval(cycle, t * 5);
+    cycle(); 
+    promoInterval = setInterval(cycle, t * 5);
 }
 
 async function updateData() {
     const container = document.getElementById("scroll-container");
-    container.style.opacity = "0"; // Nasconde per evitare pulsazione
+    container.style.opacity = "0"; 
 
     try {
         const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
@@ -188,9 +267,14 @@ async function updateData() {
         document.body.className = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
         document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
         
-        // Logo
+        // Gestione Logo con Fix URL
         const l = document.getElementById("logo");
-        if (S["Logo URL"]) { l.src = S["Logo URL"]; l.style.display = "block"; } else { l.style.display = "none"; }
+        if (S["Logo URL"]) { 
+            l.src = fixGoogleDriveUrl(S["Logo URL"]); 
+            l.style.display = "block"; 
+        } else { 
+            l.style.display = "none"; 
+        }
 
         // Banner Bar
         const b = document.getElementById("banner");
@@ -198,7 +282,7 @@ async function updateData() {
             document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; 
         } else { b.style.display = "none"; }
 
-        // Gestione Prezzo (Mobile vs TV)
+        // Gestione Prezzo
         const foot = document.getElementById("cucina-footer");
         const mobPrice = document.getElementById("mobile-price-container");
         const pC = document.getElementById("prezzo-cucina-box");
@@ -257,7 +341,6 @@ async function updateData() {
             maximizeFont();
         }
 
-        // Mostra tutto una volta pronto
         setTimeout(() => { container.style.opacity = "1"; }, 100);
 
         if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
@@ -276,8 +359,10 @@ function applyGrid(count) {
     for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
 }
 
+// Avvio Iniziale
+startClock();
 updateData();
-setInterval(updateData, 15000); // 15 secondi
+setInterval(updateData, 15000); 
 window.addEventListener('resize', () => { maximizeFont(); });
 document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
 </script>
