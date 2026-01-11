@@ -28,25 +28,26 @@ jobs:
 
               with open('settings.json') as f:
                   data = json.load(f)
+                  print(f'Righe trovate nel JSON: {len(data)}')
                   for r in data:
-                      # Cerchiamo i valori nelle chiavi 'Proprietà' e 'Valore'
-                      # Usiamo .lower() per ignorare MAIUSCOLE/minuscole
-                      prop = str(r.get('Proprietà', '')).lower().strip()
-                      val = str(r.get('Valore', '')).strip()
+                      # Cerchiamo di capire quali chiavi esistono nel JSON
+                      keys = r.keys()
+                      prop = str(next((r[k] for k in keys if 'propri' in k.lower()), '')).lower().strip()
+                      val = str(next((r[k] for k in keys if 'valor' in k.lower()), '')).strip()
 
                       if not val.startswith('http'): continue
 
                       if 'logo url' in prop:
-                          print('Scarico Logo...')
+                          print(f'Scarico Logo da: {val}')
                           urllib.request.urlretrieve(val, 'logo_static.png')
                           with open('logo_static.png.txt', 'w') as f2: f2.write(val)
 
                       if 'immagine promo' in prop:
-                          print('Scarico Promo...')
+                          print(f'Scarico Promo da: {val}')
                           urllib.request.urlretrieve(val, 'promo_static.jpg')
                           with open('promo_static.jpg.txt', 'w') as f2: f2.write(val)
           except Exception as e:
-              print(f'ERRORE: {e}')
+              print(f'ERRORE PYTHON: {e}')
               exit(1)
           "
 
