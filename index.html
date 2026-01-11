@@ -1,421 +1,288 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale Smart v10</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-
-<style>
-/* ==========================================================================
-   1. STRUTTURA E TEMI
-   ========================================================================== */
-:root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.5s; }
-
-/* Temi disponibili */
-.theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
-.theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
-.theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
-.theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
-.theme-sabaudo  { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
-.theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
-.theme-neon     { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
-.theme-velvet   { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
-
-* { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-
-body { 
-    margin: 0; padding: 0; width: 100vw; height: 100dvh; 
-    font-family: 'Montserrat', sans-serif; 
-    background-color: var(--bg); color: var(--text);
-    display: flex; flex-direction: column; overflow: hidden;
-    transition: background-color 0.5s ease;
-}
-
-/* ==========================================================================
-   2. HEADER & OROLOGIO
-   ========================================================================== */
-#header { 
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
-    padding: 1.5vh 4vw; gap: 20px; height: 11vh;
-    position: relative;
-}
-#logo { 
-    height: 7vh; width: auto; max-width: 15vw; object-fit: contain; 
-    display: none; /* Nascosto di default finché non caricato */
-}
-#title { 
-    font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
-    font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
-}
-
-/* Orologio Digitale */
-#clock {
-    position: absolute; right: 3vw; top: 50%; transform: translateY(-50%);
-    text-align: right; z-index: 100;
-}
-#clock-time {
-    font-family: 'Oswald', sans-serif; font-size: clamp(1.2rem, 2.5vw, 2.2rem);
-    color: var(--accent); font-weight: 700; line-height: 1;
-}
-
-/* ==========================================================================
-   3. AREA MENU (Griglia Dinamica)
-   ========================================================================== */
-#scroll-container { 
-    flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column;
-    opacity: 1; transition: opacity var(--fade);
-}
-#menu { 
-    display: grid; width: 100%; height: 100%; gap: 15px;
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-}
-
-.category { 
-    border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
-    border-radius: 12px; display: flex; flex-direction: column;
-    background: rgba(255,255,255,0.03); overflow: hidden;
-}
-.category h2 { 
-    margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
-    color: var(--accent); border-bottom: 2px solid var(--accent); 
-    font-size: 1.6rem; text-transform: uppercase; flex-shrink: 0;
-}
-
-.items-list { flex-grow: 1; overflow: hidden; display: block; font-size: 1rem; }
-.category.voluminous .items-list { column-count: 2; column-gap: 35px; }
-
-.item-box { break-inside: avoid; margin-bottom: 0.7vh; width: 100%; }
-.item-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; gap: 12px; }
-.item-name { flex: 1; text-align: left; line-height: 1.1; }
-.price { color: var(--accent); font-family: monospace; white-space: nowrap; }
-.desc { font-style: italic; opacity: 0.7; font-size: 0.85em; margin-top: 1px; line-height: 1.1; }
-
-/* ==========================================================================
-   4. FOOTER E BANNER
-   ========================================================================== */
-#cucina-footer {
-    flex-shrink: 0; width: 100%; display: none; justify-content: center;
-    padding: 1vh 0 4vh 0; 
-}
-#prezzo-cucina-box {
-    padding: 10px 40px; border: 3px solid var(--accent); border-radius: 10px;
-    color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg);
-}
-
-/* Banner scorrevole */
-#banner {
-    flex-shrink: 0; background: var(--accent); color: var(--bg);
-    padding: 12px 0; font-weight: 900; text-transform: uppercase;
-    overflow: hidden; white-space: nowrap; display: none; font-size: 1.2rem;
-}
-.marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
-@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
-/* Promo Full Screen */
-#promo { 
-    position: fixed; inset: 0; 
-    background: black center/contain no-repeat; 
-    opacity: 0; transition: opacity 1s; 
-    z-index: 9999; pointer-events: none; 
-}
-#promo.show { opacity: 1; pointer-events: auto; }
-
-/* ==========================================================================
-   5. MOBILE RESPONSIVE
-   ========================================================================== */
-@media (max-width: 950px) {
-    #header { height: auto; padding: 10px 15px; flex-wrap: wrap; justify-content: space-between; }
-    #title { font-size: 1.5rem; text-align: center; width: 100%; order: 3; margin-top: 10px; }
-    #logo { height: 50px; order: 1; }
-    #clock { position: static; transform: none; font-size: 1rem; order: 2; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menu Digitale Smart v10.1</title>
     
-    #scroll-container { overflow-y: auto; display: block; }
-    #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
-    .category { height: auto; min-height: 120px; }
-    .category.voluminous .items-list { column-count: 1; }
-    #cucina-footer { display: none !important; }
-    #mobile-price-container { display: block; margin: 20px 0; }
-}
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           1. VARIABILI E TEMI (Colori e Sfondi)
+           ========================================================================== */
+        :root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.5s; }
+
+        .theme-classic    { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
+        .theme-modern     { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
+        .theme-elegant    { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
+        .theme-pub        { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
+        .theme-sabaudo    { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
+        .theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
+        .theme-neon       { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
+        .theme-velvet     { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
+
+        /* ==========================================================================
+           2. RESET E LAYOUT BASE
+           ========================================================================== */
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body { 
+            margin: 0; padding: 0; width: 100vw; height: 100dvh; 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--bg); color: var(--text);
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: background-color var(--fade) ease;
+        }
+
+        /* ==========================================================================
+           3. HEADER (Logo, Titolo e Orologio)
+           ========================================================================== */
+        #header { 
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
+            padding: 1.5vh 4vw; gap: 20px; height: 11vh; position: relative; 
+        }
+
+        #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; display: none; }
+
+        #title { 
+            font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
+            font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
+        }
+
+        #clock { position: absolute; right: 3vw; top: 50%; transform: translateY(-50%); text-align: right; }
+        #clock-time { font-family: 'Oswald', sans-serif; font-size: clamp(1.2rem, 2.5vw, 2.2rem); color: var(--accent); font-weight: 700; }
+
+        /* ==========================================================================
+           4. CONTENUTI MENU (Griglia e Categorie)
+           ========================================================================== */
+        #scroll-container { 
+            flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; 
+            transition: opacity var(--fade); 
+        }
+
+        #menu { 
+            display: grid; width: 100%; height: 100%; gap: 15px;
+            grid-template-rows: repeat(2, minmax(0, 1fr));
+        }
+
+        .category { 
+            border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
+            border-radius: 12px; display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.03); overflow: hidden;
+        }
+
+        .category h2 { 
+            margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
+            color: var(--accent); border-bottom: 2px solid var(--accent); 
+            font-size: 1.6rem; text-transform: uppercase; flex-shrink: 0;
+        }
+
+        .items-list { flex-grow: 1; overflow: hidden; font-size: 1rem; }
+        .category.voluminous .items-list { column-count: 2; column-gap: 35px; }
+
+        .item-box { break-inside: avoid; margin-bottom: 0.7vh; }
+        .item-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; gap: 12px; }
+        .price { color: var(--accent); font-family: monospace; }
+        .desc { font-style: italic; opacity: 0.7; font-size: 0.85em; }
+
+        /* ==========================================================================
+           5. ELEMENTI ACCESSORI (Banner, Footer, Promo)
+           ========================================================================== */
+        #banner { flex-shrink: 0; background: var(--accent); color: var(--bg); padding: 12px 0; font-weight: 900; overflow: hidden; display: none; }
+        .marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        #promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
+        #promo.show { opacity: 1; }
+
+        /* ==========================================================================
+           6. RESPONSIVE MOBILE
+           ========================================================================== */
+        @media (max-width: 950px) {
+            #header { height: auto; padding: 10px; flex-direction: column; }
+            #clock { position: static; transform: none; margin-top: 5px; }
+            #menu { display: flex !important; flex-direction: column; overflow-y: auto; }
+            .category { height: auto; min-height: 150px; }
+        }
+    </style>
 </head>
 <body class="theme-classic">
 
-<div id="header">
-    <img id="logo" alt="Logo">
-    <h1 id="title">Inizializzazione...</h1>
-    <div id="clock">
-        <div id="clock-time">00:00</div>
+    <div id="header">
+        <img id="logo" alt="Logo">
+        <h1 id="title">Caricamento...</h1>
+        <div id="clock"><div id="clock-time">00:00</div></div>
     </div>
-</div>
 
-<div id="scroll-container">
-    <div id="menu"></div>
-    <div id="mobile-price-container"></div>
-</div>
+    <div id="scroll-container">
+        <div id="menu"></div>
+    </div>
 
-<div id="cucina-footer">
-    <div id="prezzo-cucina-box"></div>
-</div>
+    <div id="banner"><div class="marquee" id="banner-text"></div></div>
+    <div id="promo"></div>
 
-<div id="banner"><div class="marquee" id="banner-text"></div></div>
-<div id="promo"></div>
+    <script>
+        /* ==========================================================================
+           7. LOGICA DI SINCRONIZZAZIONE E DATI
+           ========================================================================== */
+        const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
+        let currentTheme = "";
+        let promoInterval = null;
 
-<script>
-/* ==========================================================================
-   6. CONFIGURAZIONE E UTILITY
-   ========================================================================== */
-const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
-let currentTheme = ""; // Per evitare refresh inutili del tema
-
-// Funzione helper per ottenere valori case-insensitive dalle righe sheet
-const getVal = (r, k) => { 
-    const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
-    return key ? r[key] : ""; 
-};
-
-// Formattazione titolo intelligente
-function smartTitle(str) {
-    if (!str) return "";
-    const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
-    let words = str.toLowerCase().split(' ');
-    return words.map((w, i) => (i > 0 && articoli.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-}
-
-// Orologio
-function startClock() {
-    const update = () => {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-        document.getElementById('clock-time').innerText = timeStr;
-    };
-    update();
-    setInterval(update, 1000);
-}
-
-// Ridimensionamento font automatico per schermi grandi
-function maximizeFont() {
-    if (window.innerWidth <= 950) return;
-    document.querySelectorAll('.category').forEach(cat => {
-        const list = cat.querySelector('.items-list');
-        let fontSize = 0.9; 
-        list.style.fontSize = fontSize + "rem";
-        const LIMIT = 1.5; 
-        while (list.scrollHeight <= list.clientHeight && fontSize < LIMIT) {
-            fontSize += 0.05;
-            list.style.fontSize = fontSize + "rem";
+        /**
+         * Utility: Fix per link diretti Google Drive
+         */
+        function fixGoogleDriveUrl(url) {
+            if (!url || !url.includes("drive.google.com")) return url;
+            const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
+            return id ? `https://lh3.googleusercontent.com/d/${id}` : url;
         }
-        list.style.fontSize = (fontSize - 0.1) + "rem"; 
-    });
-}
 
-// Griglia Layout Personalizzata
-function applyGrid(count) {
-    const m = document.getElementById("menu");
-    // Mappatura manuale delle posizioni per estetica
-    const pos = { 1:[1,1], 2:[1,2], 5:[1,3], 7:[1,4], 9:[1,5], 16:[1,6], 3:[2,1], 4:[2,2], 6:[2,3], 8:[2,4], 10:[2,5], 17:[2,6], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5], 18:[3,6] };
-    let r = 1, c = 1;
-    for(let i=1; i<=count; i++) if(pos[i]) { r = Math.max(r, pos[i][0]); c = Math.max(c, pos[i][1]); }
-    m.style.gridTemplateRows = `repeat(${r}, 1fr)`;
-    m.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
-    for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
-}
-
-/* ==========================================================================
-   7. GESTIONE SYNC MEDIA (NOVITÀ: GITHUB ACTIONS + CACHE)
-   ========================================================================== */
-async function updateMedia() {
-    try {
-        // 1. Scarica Impostazioni dallo Sheet
-        const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
-        const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
-
-        // 2. Verifica File di Controllo su GitHub
-        // Usiamo ?t=Date.now() per bypassare la cache del browser e leggere il valore vero del file .txt
-        const ts = Date.now();
-        const gitPromoCheck = await fetch("promo_static.jpg.txt?t=" + ts).then(r => r.text()).catch(() => "");
-        const gitLogoCheck = await fetch("logo_static.png.txt?t=" + ts).then(r => r.text()).catch(() => "");
-
-        // --- GESTIONE LOGO (PNG) ---
-        const logoEl = document.getElementById("logo");
-        const sheetLogoUrl = S["Logo URL"] || "";
-        
-        if (sheetLogoUrl && sheetLogoUrl.trim() === gitLogoCheck.trim()) {
-            // Se i link coincidono, GitHub ha l'immagine pronta. La mostriamo.
-            const newSrc = "logo_static.png?t=" + ts; // Cache busting immagine
-            // Evita reload se l'src è lo stesso (opzionale, il browser gestisce bene la cache ma ?t cambia sempre)
-            logoEl.src = newSrc;
-            logoEl.style.display = "block";
-        } else if (!sheetLogoUrl) {
-            logoEl.style.display = "none";
-        }
-        // Nota: Se i link non coincidono (aggiornamento in corso), non cambiamo nulla, rimane il vecchio logo o nessuno.
-
-        // --- GESTIONE PROMO (JPG) ---
-        const promoDiv = document.getElementById("promo");
-        const sheetPromoUrl = S["Immagine Promo"] || "";
-        const promoTime = parseInt(S["Tempo Promo"]) || 10;
-
-        // Pulizia timer precedenti se presenti
-        if (window.promoTimer) clearInterval(window.promoTimer);
-
-        if (sheetPromoUrl && sheetPromoUrl.trim() === gitPromoCheck.trim()) {
-            // Sincronizzato!
-            const imgUrl = "promo_static.jpg?t=" + ts;
+        /**
+         * Gestione Immagini: GitHub (Ottimizzate) vs Drive (Dirette)
+         */
+        async function updateSmartMedia(S) {
+            const ts = Date.now();
             
-            // Preload immagine background
-            const imgLoader = new Image();
-            imgLoader.src = imgUrl;
-            imgLoader.onload = () => {
-                promoDiv.style.backgroundImage = `url(${imgUrl})`;
-                
-                // Funzione ciclo promo
-                const cyclePromo = () => {
-                    promoDiv.classList.add("show");
-                    setTimeout(() => promoDiv.classList.remove("show"), promoTime * 1000);
-                };
-                
-                // Avvia subito e poi ripeti
-                cyclePromo();
-                window.promoTimer = setInterval(cyclePromo, promoTime * 1000 * 5); // Pausa lunga tra promo
-            };
-        } else {
-            // Se non sincronizzato o vuoto, nascondi tutto
-            promoDiv.classList.remove("show");
-            promoDiv.style.backgroundImage = "none";
-        }
-
-    } catch (e) {
-        console.error("Errore Media Sync:", e);
-    }
-}
-
-/* ==========================================================================
-   8. GESTIONE DATI MENU (AGGIORNAMENTO SENZA LAMPEGGIO)
-   ========================================================================== */
-async function updateData() {
-    try {
-        const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
-        const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
-
-        // -- Gestione Tema e Titolo --
-        const MODE = (S["Modalità"] || "Bar").toLowerCase();
-        const newThemeName = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
-        
-        // Applica fade solo se il tema cambia davvero
-        if (currentTheme !== newThemeName) {
-            document.body.className = newThemeName;
-            currentTheme = newThemeName;
-        }
-
-        document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
-
-        // -- Banner --
-        const b = document.getElementById("banner");
-        if (MODE === "bar" && S["Messaggio"]) { 
-            document.getElementById("banner-text").innerText = S["Messaggio"]; 
-            b.style.display = "block"; 
-        } else { b.style.display = "none"; }
-
-        // -- Footer / Prezzo Cucina --
-        const foot = document.getElementById("cucina-footer");
-        const mobPrice = document.getElementById("mobile-price-container");
-        const pC = document.getElementById("prezzo-cucina-box");
-
-        if (MODE === "cucina" && S["Prezzo"]) {
-            const priceHTML = `<div id="prezzo-cucina-box" style="display:block">${S["Prezzo"]}</div>`;
-            if(window.innerWidth <= 950) {
-                mobPrice.innerHTML = priceHTML;
-                foot.style.display = "none";
-            } else {
-                pC.innerText = S["Prezzo"];
-                foot.style.display = "flex";
-                mobPrice.innerHTML = "";
+            // Gestione LOGO
+            const logoUrl = S["Logo URL"];
+            const logoEl = document.getElementById("logo");
+            if (logoUrl) {
+                const check = await fetch(`logo_static.png.txt?t=${ts}`).then(r => r.text()).catch(() => "");
+                logoEl.src = (check.trim() === logoUrl.trim()) ? `logo_static.png?t=${ts}` : fixGoogleDriveUrl(logoUrl);
+                logoEl.style.display = "block";
             }
-        } else {
-            foot.style.display = "none";
-            mobPrice.innerHTML = "";
+
+            // Gestione PROMO
+            const promoUrl = S["Immagine Promo"];
+            const promoEl = document.getElementById("promo");
+            if (promoUrl) {
+                const check = await fetch(`promo_static.jpg.txt?t=${ts}`).then(r => r.text()).catch(() => "");
+                const finalPromo = (check.trim() === promoUrl.trim()) ? `promo_static.jpg?t=${ts}` : fixGoogleDriveUrl(promoUrl);
+                promoEl.style.backgroundImage = `url(${finalPromo})`;
+                
+                if (!promoInterval) {
+                    const time = (parseInt(S["Tempo Promo"]) || 10) * 1000;
+                    const cycle = () => { promoEl.classList.add("show"); setTimeout(() => promoEl.classList.remove("show"), time); };
+                    cycle();
+                    promoInterval = setInterval(cycle, time * 5);
+                }
+            } else {
+                clearInterval(promoInterval); promoInterval = null;
+                promoEl.classList.remove("show");
+            }
         }
 
-        // -- Download e Render Menu --
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
-        
-        const grouped = {}; 
-        const catTable = []; // Per ordinamento manuale
-        
-        data.forEach(r => {
-            if (getVal(r, "Disponibile").toLowerCase() !== "si") return;
-            const cat = getVal(r, "Categoria").toUpperCase();
-            if (!cat) return;
-            if (!grouped[cat]) { grouped[cat] = []; catTable.push(cat); }
-            
-            grouped[cat].push({ 
-                n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), 
-                p: getVal(r, "Prezzo"), 
-                i: smartTitle(getVal(r, "Ingredienti")) 
+        /**
+         * Aggiornamento principale Dati e Menu
+         */
+        async function updateAll() {
+            try {
+                // 1. Carica Impostazioni
+                const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
+                const S = {}; 
+                settings.forEach(r => {
+                    const keys = Object.keys(r);
+                    S[r[keys[0]]] = r[keys[1]];
+                });
+
+                // 2. Tema e Titolo (Anti-Flicker)
+                const MODE = (S["Modalità"] || "Bar").toLowerCase();
+                const theme = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
+                if (currentTheme !== theme) { document.body.className = theme; currentTheme = theme; }
+                document.getElementById("title").innerText = (MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"]);
+
+                // 3. Aggiorna Media (Logo/Promo)
+                updateSmartMedia(S);
+
+                // 4. Carica Menu
+                const menuData = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
+                renderMenu(menuData, MODE);
+
+            } catch (e) { console.error("Errore sync:", e); }
+        }
+
+        /**
+         * Renderizza l'HTML del Menu
+         */
+        function renderMenu(data, mode) {
+            const grouped = {};
+            data.forEach(r => {
+                const keys = Object.keys(r);
+                const disp = r[keys.find(k => k.includes("Disponibile"))];
+                if (disp?.toLowerCase() !== "si") return;
+                
+                const cat = (r[keys.find(k => k.includes("Categoria"))] || "ALTRO").toUpperCase();
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(r);
             });
-        });
 
-        // Ordinamento Categorie
-        let categories = Object.keys(grouped);
-        if (MODE === "cucina") {
-            const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
-            categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
-        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") {
-            categories = catTable; // Usa l'ordine di apparizione nello sheet
-        }
+            const categories = Object.keys(grouped);
+            if (mode === "cucina") {
+                const ord = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
+                categories.sort((a,b) => ord.indexOf(a) - ord.indexOf(b));
+            }
 
-        // Generazione HTML Menu
-        const htmlContent = categories.map((cat, idx) => {
-            const items = grouped[cat];
-            const threshold = MODE === "cucina" ? 6 : 8;
-            const colClass = items.length > threshold ? 'voluminous' : '';
-            return `
-            <div class="category ${colClass}" id="cat-${idx+1}">
-                <h2>${cat}</h2>
-                <div class="items-list">
-                    ${items.map(x => `
-                        <div class="item-box">
-                            <div class="item-header"><span class="item-name">${x.n}</span><span class="price">${x.p}</span></div>
-                            ${x.i ? `<div class="desc">${x.i}</div>` : ''}
-                        </div>
-                    `).join('')}
+            document.getElementById("menu").innerHTML = categories.map((cat, idx) => `
+                <div class="category ${grouped[cat].length > 7 ? 'voluminous' : ''}" id="cat-${idx+1}">
+                    <h2>${cat}</h2>
+                    <div class="items-list">
+                        ${grouped[cat].map(item => {
+                            const k = Object.keys(item);
+                            return `
+                            <div class="item-box">
+                                <div class="item-header">
+                                    <span>${item[k.find(x => x.includes("Nome") || x.includes("Piatto"))]}</span>
+                                    <span class="price">${item[k.find(x => x.includes("Prezzo"))]}</span>
+                                </div>
+                                <div class="desc">${item[k.find(x => x.includes("Ingredienti"))] || ""}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
                 </div>
-            </div>`;
-        }).join('');
+            `).join('');
 
-        // Iniezione HTML (senza opacity flicker)
-        document.getElementById("menu").innerHTML = htmlContent;
-
-        // Aggiustamenti layout Desktop
-        if(window.innerWidth > 950) {
-            applyGrid(categories.length);
-            maximizeFont();
+            if(window.innerWidth > 950) { applyGrid(categories.length); maximizeFont(); }
         }
 
-    } catch (e) { console.error("Errore Dati Menu:", e); }
-}
+        /* ==========================================================================
+           8. FUNZIONI DI LAYOUT E SERVIZIO
+           ========================================================================== */
+        function applyGrid(n) {
+            const m = document.getElementById("menu");
+            const pos = { 1:[1,1], 2:[1,2], 3:[2,1], 4:[2,2], 5:[1,3], 6:[2,3], 7:[1,4], 8:[2,4], 9:[1,5], 10:[2,5] };
+            let maxR = 1, maxC = 1;
+            for(let i=1; i<=n; i++) if(pos[i]) { maxR = Math.max(maxR, pos[i][0]); maxC = Math.max(maxC, pos[i][1]); }
+            m.style.gridTemplateRows = `repeat(${maxR}, 1fr)`;
+            m.style.gridTemplateColumns = `repeat(${maxC}, 1fr)`;
+            for(let i=1; i<=n; i++) { 
+                const el = document.getElementById(`cat-${i}`); 
+                if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } 
+            }
+        }
 
-/* ==========================================================================
-   9. AVVIO SISTEMA
-   ========================================================================== */
-startClock();
+        function maximizeFont() {
+            document.querySelectorAll('.items-list').forEach(list => {
+                let size = 0.9; list.style.fontSize = size + "rem";
+                while (list.scrollHeight <= list.clientHeight && size < 1.4) {
+                    size += 0.05; list.style.fontSize = size + "rem";
+                }
+                list.style.fontSize = (size - 0.1) + "rem";
+            });
+        }
 
-// Primo avvio
-updateData();
-updateMedia();
+        function startClock() {
+            setInterval(() => {
+                document.getElementById('clock-time').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            }, 1000);
+        }
 
-// Loop di aggiornamento
-// Media: ogni 30s (per dare tempo a GitHub Actions di finire)
-setInterval(updateMedia, 30000); 
-
-// Dati Menu: ogni 15s (Testo leggero, veloce da aggiornare)
-setInterval(updateData, 15000);
-
-// Eventi Browser
-window.addEventListener('resize', () => { maximizeFont(); });
-document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
-
-</script>
+        // INIT
+        startClock();
+        updateAll();
+        setInterval(updateAll, 20000); // Sincronizzazione ogni 20 secondi
+        document.body.addEventListener('click', () => document.documentElement.requestFullscreen());
+    </script>
 </body>
 </html>
