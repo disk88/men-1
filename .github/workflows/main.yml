@@ -22,7 +22,6 @@ jobs:
           python3 -c "
           import json, urllib.request, os
           try:
-              # Fingiti un browser per evitare l'errore 403
               opener = urllib.request.build_opener()
               opener.addheaders = [('User-agent', 'Mozilla/5.0')]
               urllib.request.install_opener(opener)
@@ -30,15 +29,20 @@ jobs:
               with open('settings.json') as f:
                   data = json.load(f)
                   for r in data:
-                      p = r.get('Proprietà','').lower()
+                      # Trasformiamo tutto in minuscolo per non sbagliare
+                      p = r.get('Proprietà','').lower().strip()
                       v = r.get('Valore','').strip()
+                      
                       if not v.startswith('http'): continue
                       
+                      # Controllo Logo
                       if 'logo' in p:
                           print('Scarico Logo...')
                           urllib.request.urlretrieve(v, 'logo_static.png')
                           with open('logo_static.png.txt', 'w') as f2: f2.write(v)
-                      if 'promo' in p and 'immagine' in p:
+                      
+                      # Controllo Promo (più flessibile)
+                      if 'promo' in p:
                           print('Scarico Promo...')
                           urllib.request.urlretrieve(v, 'promo_static.jpg')
                           with open('promo_static.jpg.txt', 'w') as f2: f2.write(v)
