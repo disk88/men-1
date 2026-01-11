@@ -29,23 +29,22 @@ jobs:
               with open('settings.json') as f:
                   data = json.load(f)
                   for r in data:
-                      # Trasformiamo tutto in minuscolo per non sbagliare
-                      p = r.get('Proprietà','').lower().strip()
-                      v = r.get('Valore','').strip()
-                      
-                      if not v.startswith('http'): continue
-                      
-                      # Controllo Logo
-                      if 'logo' in p:
+                      # Cerchiamo i valori nelle chiavi 'Proprietà' e 'Valore'
+                      # Usiamo .lower() per ignorare MAIUSCOLE/minuscole
+                      prop = str(r.get('Proprietà', '')).lower().strip()
+                      val = str(r.get('Valore', '')).strip()
+
+                      if not val.startswith('http'): continue
+
+                      if 'logo url' in prop:
                           print('Scarico Logo...')
-                          urllib.request.urlretrieve(v, 'logo_static.png')
-                          with open('logo_static.png.txt', 'w') as f2: f2.write(v)
-                      
-                      # Controllo Promo (più flessibile)
-                      if 'promo' in p:
+                          urllib.request.urlretrieve(val, 'logo_static.png')
+                          with open('logo_static.png.txt', 'w') as f2: f2.write(val)
+
+                      if 'immagine promo' in prop:
                           print('Scarico Promo...')
-                          urllib.request.urlretrieve(v, 'promo_static.jpg')
-                          with open('promo_static.jpg.txt', 'w') as f2: f2.write(v)
+                          urllib.request.urlretrieve(val, 'promo_static.jpg')
+                          with open('promo_static.jpg.txt', 'w') as f2: f2.write(val)
           except Exception as e:
               print(f'ERRORE: {e}')
               exit(1)
