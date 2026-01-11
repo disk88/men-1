@@ -23,32 +23,29 @@ jobs:
           import json, urllib.request, os
           try:
               opener = urllib.request.build_opener()
-              opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+              opener.addheaders = [('User-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebkit/537.36')]
               urllib.request.install_opener(opener)
 
               with open('settings.json') as f:
                   data = json.load(f)
-                  print(f'Righe trovate nel JSON: {len(data)}')
                   for r in data:
-                      # Cerchiamo di capire quali chiavi esistono nel JSON
-                      keys = r.keys()
-                      prop = str(next((r[k] for k in keys if 'propri' in k.lower()), '')).lower().strip()
-                      val = str(next((r[k] for k in keys if 'valor' in k.lower()), '')).strip()
+                      # Cerchiamo le chiavi ignorando maiuscole e spazi
+                      p = next((str(v).lower() for k, v in r.items() if 'propri' in k.lower()), '')
+                      v = next((str(v).strip() for k, v in r.items() if 'valor' in k.lower()), '')
 
-                      if not val.startswith('http'): continue
+                      if not v.startswith('http'): continue
 
-                      if 'logo url' in prop:
-                          print(f'Scarico Logo da: {val}')
-                          urllib.request.urlretrieve(val, 'logo_static.png')
-                          with open('logo_static.png.txt', 'w') as f2: f2.write(val)
+                      if 'logo' in p:
+                          print(f'Scarico Logo...')
+                          urllib.request.urlretrieve(v, 'logo_static.png')
+                          with open('logo_static.png.txt', 'w') as f2: f2.write(v)
 
-                      if 'immagine promo' in prop:
-                          print(f'Scarico Promo da: {val}')
-                          urllib.request.urlretrieve(val, 'promo_static.jpg')
-                          with open('promo_static.jpg.txt', 'w') as f2: f2.write(val)
+                      if 'promo' in p:
+                          print(f'Scarico Promo...')
+                          urllib.request.urlretrieve(v, 'promo_static.jpg')
+                          with open('promo_static.jpg.txt', 'w') as f2: f2.write(v)
           except Exception as e:
-              print(f'ERRORE PYTHON: {e}')
-              exit(1)
+              print(f'ERRORE: {e}')
           "
 
       - name: Commit and Push
