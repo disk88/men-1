@@ -8,9 +8,9 @@ from PIL import Image
 # Configurazione
 SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c"
 
-# Mappatura: Cosa cercare nello Sheet -> Nome file da salvare su GitHub
+# Mappatura: Etichetta nello Sheet -> Nome file finale
 TASKS = {
-    "Logo URL": "logo_static.jpg",
+    "Logo URL": "logo_static.png",
     "Immagine Promo": "promo_static.jpg"
 }
 
@@ -22,34 +22,37 @@ def get_drive_direct_url(url):
 
 def process_media(sheet, label, filename):
     try:
-        # Trova la cella con l'etichetta (es. "Logo URL")
         cell = sheet.find(label)
         row = cell.row
-        # Il link è nella colonna B (2), il feedback andrà nella colonna C (3)
-        url = sheet.cell(row, 2).value
+        url = sheet.cell(row, 2).value # Colonna B
         
         if url and url.strip():
             print(f"Elaborazione {label}: {url}")
             direct_url = get_drive_direct_url(url)
             
-            # Download e Ottimizzazione
             urllib.request.urlretrieve(direct_url, "temp_img")
-            img = Image.open("temp_img").convert("RGB")
+            img = Image.open("temp_img")
             
-            # Ridimensionamento intelligente per non pesare sui dispositivi
+            # Ridimensionamento intelligente (max 1920px)
             if img.width > 1920:
                 img.thumbnail((1920, 1920), Image.Resampling.LANCZOS)
             
-            img.save(filename, "JPEG", quality=85, optimize=True)
+            if "Logo" in label:
+                # Salva in PNG per preservare la trasparenza
+                img.save(filename, "PNG", optimize=True)
+            else:
+                # Salva in JPG per leggerezza (converte in RGB per sicurezza)
+                img = img.convert("RGB")
+                img.save(filename, "JPEG", quality=85, optimize=True)
             
-            # Crea un file .txt con l'URL originale per il controllo di sincronizzazione del sito
+            # Crea il file di testo per il controllo "anti-lag"
             with open(f"{filename}.txt", "w") as f:
                 f.write(url)
             
             os.remove("temp_img")
-            sheet.update_cell(row, 3, "🟢 SUCCESS")
+            sheet.update_cell(row, 3, "🟢 SUCCESS") # Colonna C
         else:
-            # Se il link è vuoto, rimuoviamo i file vecchi
+            # Pulizia se il link viene rimosso
             if os.path.exists(filename): os.remove(filename)
             if os.path.exists(f"{filename}.txt"): os.remove(f"{filename}.txt")
             sheet.update_cell(row, 3, "⚪ EMPTY")
@@ -59,23 +62,16 @@ def process_media(sheet, label, filename):
         try:
             cell = sheet.find(label)
             sheet.update_cell(cell.row, 3, f"🔴 ERROR")
-        except:
-            pass
+        except: pass
 
 def main():
-    if 'GOOGLE_CREDENTIALS' not in os.environ:
-        print("Errore: Credenziali non trovate nei Secrets di GitHub")
-        return
-
-    # Autenticazione
+    if 'GOOGLE_CREDENTIALS' not in os.environ: return
     creds_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
     scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
     creds = Credentials.from_service_account_info(creds_info, scopes=scope)
     client = gspread.authorize(creds)
-    
     sheet = client.open_by_key(SHEET_ID).worksheet("Impostazioni")
 
-    # Esegui per ogni elemento configurato (Logo e Promo)
     for label, filename in TASKS.items():
         process_media(sheet, label, filename)
 
