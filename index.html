@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Menu Digitale Finale v9</title>
+<title>Menu Digitale Smart v10</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -11,14 +11,16 @@
    1. STRUTTURA E TEMI
    ========================================================================== */
 :root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.5s; }
+
+/* Temi disponibili */
 .theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
 .theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
 .theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
 .theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
-.theme-sabaudo {--bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
+.theme-sabaudo  { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
 .theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
-.theme-neon {--bg: #050505; --text: #fafafa; --accent: #ff007f; }
-.theme-velvet {--bg: #120507; --text: #ece2d0; --accent: #d9534f; }
+.theme-neon     { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
+.theme-velvet   { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
 
 * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
@@ -27,6 +29,7 @@ body {
     font-family: 'Montserrat', sans-serif; 
     background-color: var(--bg); color: var(--text);
     display: flex; flex-direction: column; overflow: hidden;
+    transition: background-color 0.5s ease;
 }
 
 /* ==========================================================================
@@ -35,9 +38,12 @@ body {
 #header { 
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
     padding: 1.5vh 4vw; gap: 20px; height: 11vh;
-    position: relative; /* Necessario per posizionare l'orologio */
+    position: relative;
 }
-#logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
+#logo { 
+    height: 7vh; width: auto; max-width: 15vw; object-fit: contain; 
+    display: none; /* Nascosto di default finché non caricato */
+}
 #title { 
     font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
     font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
@@ -45,27 +51,20 @@ body {
 
 /* Orologio Digitale */
 #clock {
-    position: absolute;
-    right: 3vw;
-    top: 50%;
-    transform: translateY(-50%);
-    text-align: right;
-    z-index: 100;
+    position: absolute; right: 3vw; top: 50%; transform: translateY(-50%);
+    text-align: right; z-index: 100;
 }
 #clock-time {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(1.2rem, 2.5vw, 2.2rem);
-    color: var(--accent);
-    font-weight: 700;
-    line-height: 1;
+    font-family: 'Oswald', sans-serif; font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+    color: var(--accent); font-weight: 700; line-height: 1;
 }
 
 /* ==========================================================================
-   3. AREA MENU (Con Effetto Anti-Pulsazione)
+   3. AREA MENU (Griglia Dinamica)
    ========================================================================== */
 #scroll-container { 
     flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column;
-    transition: opacity var(--fade); /* Per evitare il flickering al refresh */
+    opacity: 1; transition: opacity var(--fade);
 }
 #menu { 
     display: grid; width: 100%; height: 100%; gap: 15px;
@@ -80,8 +79,7 @@ body {
 .category h2 { 
     margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
     color: var(--accent); border-bottom: 2px solid var(--accent); 
-    font-size: 1.6rem; 
-    text-transform: uppercase; flex-shrink: 0;
+    font-size: 1.6rem; text-transform: uppercase; flex-shrink: 0;
 }
 
 .items-list { flex-grow: 1; overflow: hidden; display: block; font-size: 1rem; }
@@ -105,7 +103,7 @@ body {
     color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg);
 }
 
-/* Banner scorrevole Bar */
+/* Banner scorrevole */
 #banner {
     flex-shrink: 0; background: var(--accent); color: var(--bg);
     padding: 12px 0; font-weight: 900; text-transform: uppercase;
@@ -114,21 +112,23 @@ body {
 .marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
 @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-#promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
-#promo.show { opacity: 1; }
+/* Promo Full Screen */
+#promo { 
+    position: fixed; inset: 0; 
+    background: black center/contain no-repeat; 
+    opacity: 0; transition: opacity 1s; 
+    z-index: 9999; pointer-events: none; 
+}
+#promo.show { opacity: 1; pointer-events: auto; }
 
 /* ==========================================================================
    5. MOBILE RESPONSIVE
    ========================================================================== */
 @media (max-width: 950px) {
-    #header { height: auto; padding: 10px 15px; justify-content: space-between; }
-    #title { font-size: 1.5rem; text-align: center; width: 100%; }
-    #logo { height: 50px; }
-    #clock { position: static; transform: none; font-size: 1rem; }
-    
-    /* Layout Header Mobile modificato per ospitare l'orologio */
-    #header { flex-wrap: wrap; }
-    #clock { order: 2; } 
+    #header { height: auto; padding: 10px 15px; flex-wrap: wrap; justify-content: space-between; }
+    #title { font-size: 1.5rem; text-align: center; width: 100%; order: 3; margin-top: 10px; }
+    #logo { height: 50px; order: 1; }
+    #clock { position: static; transform: none; font-size: 1rem; order: 2; }
     
     #scroll-container { overflow-y: auto; display: block; }
     #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
@@ -142,8 +142,8 @@ body {
 <body class="theme-classic">
 
 <div id="header">
-    <img id="logo">
-    <h1 id="title">Caricamento...</h1>
+    <img id="logo" alt="Logo">
+    <h1 id="title">Inizializzazione...</h1>
     <div id="clock">
         <div id="clock-time">00:00</div>
     </div>
@@ -163,43 +163,18 @@ body {
 
 <script>
 /* ==========================================================================
-   6. LOGICA JAVASCRIPT
+   6. CONFIGURAZIONE E UTILITY
    ========================================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
+let currentTheme = ""; // Per evitare refresh inutili del tema
 
-/**
- * FIX PER IMMAGINI GOOGLE DRIVE
- * Trasforma link /view o /open in link diretti che funzionano nei tag IMG
- */
-function fixGoogleDriveUrl(url) {
-    if (!url) return "";
-    // Se è già un link diretto o non è di drive, lo ritorna
-    if (!url.includes("drive.google.com") && !url.includes("docs.google.com")) return url;
-    
-    try {
-        // Cerca l'ID del file
-        let id = "";
-        const parts = url.split('/');
-        // Caso standard: .../d/ID_FILE/...
-        const dIndex = parts.indexOf('d');
-        if (dIndex !== -1 && parts[dIndex + 1]) {
-            id = parts[dIndex + 1];
-        } 
-        // Caso alternativo: id=ID_FILE
-        else if (url.includes('id=')) {
-            id = url.split('id=')[1].split('&')[0];
-        }
+// Funzione helper per ottenere valori case-insensitive dalle righe sheet
+const getVal = (r, k) => { 
+    const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
+    return key ? r[key] : ""; 
+};
 
-        if (id) {
-            // Usa il server lh3 per bypassare i limiti di download
-            return `https://lh3.googleusercontent.com/d/${id}`; 
-        }
-    } catch (e) {
-        console.warn("Errore parsing URL Drive:", e);
-    }
-    return url;
-}
-
+// Formattazione titolo intelligente
 function smartTitle(str) {
     if (!str) return "";
     const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
@@ -207,12 +182,7 @@ function smartTitle(str) {
     return words.map((w, i) => (i > 0 && articoli.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
-const getVal = (r, k) => { 
-    const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
-    return key ? r[key] : ""; 
-};
-
-// Funzione Orologio
+// Orologio
 function startClock() {
     const update = () => {
         const now = new Date();
@@ -223,6 +193,7 @@ function startClock() {
     setInterval(update, 1000);
 }
 
+// Ridimensionamento font automatico per schermi grandi
 function maximizeFont() {
     if (window.innerWidth <= 950) return;
     document.querySelectorAll('.category').forEach(cat => {
@@ -238,55 +209,119 @@ function maximizeFont() {
     });
 }
 
-let promoInterval = null;
-
-function handlePromo(url, time) {
-    if(!url || promoInterval) return;
-    
-    // Applica il fix al link dell'immagine promo
-    const directUrl = fixGoogleDriveUrl(url);
-
-    const p = document.getElementById("promo");
-    p.style.backgroundImage = `url(${directUrl})`;
-    
-    const t = (parseInt(time) || 10) * 1000;
-    const cycle = () => { p.classList.add("show"); setTimeout(() => p.classList.remove("show"), t); };
-    cycle(); 
-    promoInterval = setInterval(cycle, t * 5);
+// Griglia Layout Personalizzata
+function applyGrid(count) {
+    const m = document.getElementById("menu");
+    // Mappatura manuale delle posizioni per estetica
+    const pos = { 1:[1,1], 2:[1,2], 5:[1,3], 7:[1,4], 9:[1,5], 16:[1,6], 3:[2,1], 4:[2,2], 6:[2,3], 8:[2,4], 10:[2,5], 17:[2,6], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5], 18:[3,6] };
+    let r = 1, c = 1;
+    for(let i=1; i<=count; i++) if(pos[i]) { r = Math.max(r, pos[i][0]); c = Math.max(c, pos[i][1]); }
+    m.style.gridTemplateRows = `repeat(${r}, 1fr)`;
+    m.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+    for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
 }
 
-async function updateData() {
-    const container = document.getElementById("scroll-container");
-    container.style.opacity = "0"; 
+/* ==========================================================================
+   7. GESTIONE SYNC MEDIA (NOVITÀ: GITHUB ACTIONS + CACHE)
+   ========================================================================== */
+async function updateMedia() {
+    try {
+        // 1. Scarica Impostazioni dallo Sheet
+        const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
+        const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
+        // 2. Verifica File di Controllo su GitHub
+        // Usiamo ?t=Date.now() per bypassare la cache del browser e leggere il valore vero del file .txt
+        const ts = Date.now();
+        const gitPromoCheck = await fetch("promo_static.jpg.txt?t=" + ts).then(r => r.text()).catch(() => "");
+        const gitLogoCheck = await fetch("logo_static.png.txt?t=" + ts).then(r => r.text()).catch(() => "");
+
+        // --- GESTIONE LOGO (PNG) ---
+        const logoEl = document.getElementById("logo");
+        const sheetLogoUrl = S["Logo URL"] || "";
+        
+        if (sheetLogoUrl && sheetLogoUrl.trim() === gitLogoCheck.trim()) {
+            // Se i link coincidono, GitHub ha l'immagine pronta. La mostriamo.
+            const newSrc = "logo_static.png?t=" + ts; // Cache busting immagine
+            // Evita reload se l'src è lo stesso (opzionale, il browser gestisce bene la cache ma ?t cambia sempre)
+            logoEl.src = newSrc;
+            logoEl.style.display = "block";
+        } else if (!sheetLogoUrl) {
+            logoEl.style.display = "none";
+        }
+        // Nota: Se i link non coincidono (aggiornamento in corso), non cambiamo nulla, rimane il vecchio logo o nessuno.
+
+        // --- GESTIONE PROMO (JPG) ---
+        const promoDiv = document.getElementById("promo");
+        const sheetPromoUrl = S["Immagine Promo"] || "";
+        const promoTime = parseInt(S["Tempo Promo"]) || 10;
+
+        // Pulizia timer precedenti se presenti
+        if (window.promoTimer) clearInterval(window.promoTimer);
+
+        if (sheetPromoUrl && sheetPromoUrl.trim() === gitPromoCheck.trim()) {
+            // Sincronizzato!
+            const imgUrl = "promo_static.jpg?t=" + ts;
+            
+            // Preload immagine background
+            const imgLoader = new Image();
+            imgLoader.src = imgUrl;
+            imgLoader.onload = () => {
+                promoDiv.style.backgroundImage = `url(${imgUrl})`;
+                
+                // Funzione ciclo promo
+                const cyclePromo = () => {
+                    promoDiv.classList.add("show");
+                    setTimeout(() => promoDiv.classList.remove("show"), promoTime * 1000);
+                };
+                
+                // Avvia subito e poi ripeti
+                cyclePromo();
+                window.promoTimer = setInterval(cyclePromo, promoTime * 1000 * 5); // Pausa lunga tra promo
+            };
+        } else {
+            // Se non sincronizzato o vuoto, nascondi tutto
+            promoDiv.classList.remove("show");
+            promoDiv.style.backgroundImage = "none";
+        }
+
+    } catch (e) {
+        console.error("Errore Media Sync:", e);
+    }
+}
+
+/* ==========================================================================
+   8. GESTIONE DATI MENU (AGGIORNAMENTO SENZA LAMPEGGIO)
+   ========================================================================== */
+async function updateData() {
     try {
         const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
         const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
+        // -- Gestione Tema e Titolo --
         const MODE = (S["Modalità"] || "Bar").toLowerCase();
-        document.body.className = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
-        document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+        const newThemeName = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
         
-        // Gestione Logo con Fix URL
-        const l = document.getElementById("logo");
-        if (S["Logo URL"]) { 
-            l.src = fixGoogleDriveUrl(S["Logo URL"]); 
-            l.style.display = "block"; 
-        } else { 
-            l.style.display = "none"; 
+        // Applica fade solo se il tema cambia davvero
+        if (currentTheme !== newThemeName) {
+            document.body.className = newThemeName;
+            currentTheme = newThemeName;
         }
 
-        // Banner Bar
+        document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+
+        // -- Banner --
         const b = document.getElementById("banner");
         if (MODE === "bar" && S["Messaggio"]) { 
-            document.getElementById("banner-text").innerText = S["Messaggio"]; b.style.display = "block"; 
+            document.getElementById("banner-text").innerText = S["Messaggio"]; 
+            b.style.display = "block"; 
         } else { b.style.display = "none"; }
 
-        // Gestione Prezzo
+        // -- Footer / Prezzo Cucina --
         const foot = document.getElementById("cucina-footer");
         const mobPrice = document.getElementById("mobile-price-container");
         const pC = document.getElementById("prezzo-cucina-box");
-        
+
         if (MODE === "cucina" && S["Prezzo"]) {
             const priceHTML = `<div id="prezzo-cucina-box" style="display:block">${S["Prezzo"]}</div>`;
             if(window.innerWidth <= 950) {
@@ -302,23 +337,36 @@ async function updateData() {
             mobPrice.innerHTML = "";
         }
 
+        // -- Download e Render Menu --
         const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
-        const grouped = {}; const catTable = [];
+        
+        const grouped = {}; 
+        const catTable = []; // Per ordinamento manuale
+        
         data.forEach(r => {
             if (getVal(r, "Disponibile").toLowerCase() !== "si") return;
             const cat = getVal(r, "Categoria").toUpperCase();
             if (!cat) return;
             if (!grouped[cat]) { grouped[cat] = []; catTable.push(cat); }
-            grouped[cat].push({ n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), p: getVal(r, "Prezzo"), i: smartTitle(getVal(r, "Ingredienti")) });
+            
+            grouped[cat].push({ 
+                n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), 
+                p: getVal(r, "Prezzo"), 
+                i: smartTitle(getVal(r, "Ingredienti")) 
+            });
         });
 
+        // Ordinamento Categorie
         let categories = Object.keys(grouped);
         if (MODE === "cucina") {
             const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
             categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
-        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") categories = catTable;
+        } else if (S["Ordine Categorie Bar"]?.toLowerCase() === "tabella") {
+            categories = catTable; // Usa l'ordine di apparizione nello sheet
+        }
 
-        document.getElementById("menu").innerHTML = categories.map((cat, idx) => {
+        // Generazione HTML Menu
+        const htmlContent = categories.map((cat, idx) => {
             const items = grouped[cat];
             const threshold = MODE === "cucina" ? 6 : 8;
             const colClass = items.length > threshold ? 'voluminous' : '';
@@ -336,35 +384,38 @@ async function updateData() {
             </div>`;
         }).join('');
 
+        // Iniezione HTML (senza opacity flicker)
+        document.getElementById("menu").innerHTML = htmlContent;
+
+        // Aggiustamenti layout Desktop
         if(window.innerWidth > 950) {
             applyGrid(categories.length);
             maximizeFont();
         }
 
-        setTimeout(() => { container.style.opacity = "1"; }, 100);
-
-        if (MODE === "bar" && S["Immagine Promo"]) handlePromo(S["Immagine Promo"], S["Tempo Promo"]);
-        else { clearInterval(promoInterval); promoInterval = null; document.getElementById("promo").classList.remove("show"); }
-
-    } catch (e) { console.error(e); container.style.opacity = "1"; }
+    } catch (e) { console.error("Errore Dati Menu:", e); }
 }
 
-function applyGrid(count) {
-    const m = document.getElementById("menu");
-    const pos = { 1:[1,1], 2:[1,2], 5:[1,3], 7:[1,4], 9:[1,5], 16:[1,6], 3:[2,1], 4:[2,2], 6:[2,3], 8:[2,4], 10:[2,5], 17:[2,6], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5], 18:[3,6] };
-    let r = 1, c = 1;
-    for(let i=1; i<=count; i++) if(pos[i]) { r = Math.max(r, pos[i][0]); c = Math.max(c, pos[i][1]); }
-    m.style.gridTemplateRows = `repeat(${r}, 1fr)`;
-    m.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
-    for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
-}
-
-// Avvio Iniziale
+/* ==========================================================================
+   9. AVVIO SISTEMA
+   ========================================================================== */
 startClock();
+
+// Primo avvio
 updateData();
-setInterval(updateData, 15000); 
+updateMedia();
+
+// Loop di aggiornamento
+// Media: ogni 30s (per dare tempo a GitHub Actions di finire)
+setInterval(updateMedia, 30000); 
+
+// Dati Menu: ogni 15s (Testo leggero, veloce da aggiornare)
+setInterval(updateData, 15000);
+
+// Eventi Browser
 window.addEventListener('resize', () => { maximizeFont(); });
 document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
+
 </script>
 </body>
 </html>
