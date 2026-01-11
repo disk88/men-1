@@ -19,6 +19,9 @@
 .theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
 .theme-neon     { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
 .theme-velvet   { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
+.theme-bistro    { --bg: #f8f5f0; --text: #2d2d2d; --accent: #c0392b; }
+.theme-nordic    { --bg: #eef2f3; --text: #34495e; --accent: #2980b9; }
+.theme-lounge    { --bg: #ffffff; --text: #1a1a1a; --accent: #b58d3d; }
 
 * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 body { margin: 0; padding: 0; width: 100vw; height: 100dvh; font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; transition: background-color 0.5s ease; }
@@ -65,6 +68,16 @@ body { margin: 0; padding: 0; width: 100vw; height: 100dvh; font-family: 'Montse
     .category.voluminous .items-list { column-count: 1; }
     #cucina-footer { display: none !important; }
     #mobile-price-container { display: block; margin: 20px 0; }
+}
+/* Correzione visibilità per temi chiari */
+.theme-bistro .category, .theme-nordic .category, .theme-lounge .category {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-bistro .desc, .theme-nordic .desc, .theme-lounge .desc {
+    color: #444 !important;
+    opacity: 0.9;
 }
 </style>
 </head>
