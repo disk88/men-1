@@ -47,4 +47,4 @@ jobs:
         if: success()
         run: |
           # Sostituisci l'URL qui sotto con quello del tuo "Deploy" (Distribuzione) di Apps Script
-          curl -L "https://script.google.com/macros/s/IL_TUO_ID_DEPLOY/exec"
+          curl -L "https://script.google.com/macros/s/AKfycbxMgOipuT-EYpoT5TM04hyWFrMk05FgBCfP-4pDa1gRyX-ENOJIMRqGmvDfVDV7h6OZ/exec"
