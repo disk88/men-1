@@ -16,12 +16,17 @@ jobs:
 
       - name: Download and Sync
         run: |
-          # Scarichiamo i dati (Uso il tuo ID direttamente qui)
+          # Scarica i dati dallo Sheet (Uso il tuo ID)
           curl -L "https://opensheet.elk.sh/1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c/Impostazioni" > settings.json
           
           python3 -c "
           import json, urllib.request, os
           try:
+              # Fingiti un browser per evitare l'errore 403
+              opener = urllib.request.build_opener()
+              opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+              urllib.request.install_opener(opener)
+
               with open('settings.json') as f:
                   data = json.load(f)
                   for r in data:
@@ -30,11 +35,11 @@ jobs:
                       if not v.startswith('http'): continue
                       
                       if 'logo' in p:
-                          print(f'Scarico Logo da: {v}')
+                          print('Scarico Logo...')
                           urllib.request.urlretrieve(v, 'logo_static.png')
                           with open('logo_static.png.txt', 'w') as f2: f2.write(v)
                       if 'promo' in p and 'immagine' in p:
-                          print(f'Scarico Promo da: {v}')
+                          print('Scarico Promo...')
                           urllib.request.urlretrieve(v, 'promo_static.jpg')
                           with open('promo_static.jpg.txt', 'w') as f2: f2.write(v)
           except Exception as e:
@@ -49,3 +54,9 @@ jobs:
           git add .
           git commit -m "Sync immagini" || echo "No changes"
           git push
+
+      - name: Success Signal
+        if: success()
+        run: |
+          # Sostituisci l'URL tra le virgolette con il tuo link che finisce con /exec
+          curl -L "https://script.google.com/macros/s/AKfycbxMgOipuT-EYpoT5TM04hyWFrMk05FgBCfP-4pDa1gRyX-ENOJIMRqGmvDfVDV7h6OZ/exec"
