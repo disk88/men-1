@@ -3,286 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Menu Digitale Smart v10.1</title>
-    
+    <title>Menu Digitale Smart v10.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           1. VARIABILI E TEMI (Colori e Sfondi)
+           1. STILI E TEMI (Invariati rispetto al tuo originale)
            ========================================================================== */
         :root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.5s; }
-
-        .theme-classic    { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
-        .theme-modern     { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
-        .theme-elegant    { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
-        .theme-pub        { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
-        .theme-sabaudo    { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
+        .theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
+        .theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
+        .theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
+        .theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
+        .theme-sabaudo { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
         .theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
-        .theme-neon       { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
-        .theme-velvet     { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
+        .theme-neon { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
+        .theme-velvet { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
 
-        /* ==========================================================================
-           2. RESET E LAYOUT BASE
-           ========================================================================== */
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { margin: 0; padding: 0; width: 100vw; height: 100dvh; font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
 
-        body { 
-            margin: 0; padding: 0; width: 100vw; height: 100dvh; 
-            font-family: 'Montserrat', sans-serif; 
-            background-color: var(--bg); color: var(--text);
-            display: flex; flex-direction: column; overflow: hidden;
-            transition: background-color var(--fade) ease;
-        }
+        /* HEADER E OROLOGIO */
+        #header { flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 1.5vh 4vw; gap: 20px; height: 11vh; position: relative; }
+        #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
+        #title { font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1; }
+        #clock { position: absolute; right: 3vw; top: 50%; transform: translateY(-50%); text-align: right; z-index: 100; }
+        #clock-time { font-family: 'Oswald', sans-serif; font-size: clamp(1.2rem, 2.5vw, 2.2rem); color: var(--accent); font-weight: 700; line-height: 1; }
 
-        /* ==========================================================================
-           3. HEADER (Logo, Titolo e Orologio)
-           ========================================================================== */
-        #header { 
-            flex-shrink: 0; display: flex; align-items: center; justify-content: center; 
-            padding: 1.5vh 4vw; gap: 20px; height: 11vh; position: relative; 
-        }
-
-        #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; display: none; }
-
-        #title { 
-            font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; 
-            font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1;
-        }
-
-        #clock { position: absolute; right: 3vw; top: 50%; transform: translateY(-50%); text-align: right; }
-        #clock-time { font-family: 'Oswald', sans-serif; font-size: clamp(1.2rem, 2.5vw, 2.2rem); color: var(--accent); font-weight: 700; }
-
-        /* ==========================================================================
-           4. CONTENUTI MENU (Griglia e Categorie)
-           ========================================================================== */
-        #scroll-container { 
-            flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; 
-            transition: opacity var(--fade); 
-        }
-
-        #menu { 
-            display: grid; width: 100%; height: 100%; gap: 15px;
-            grid-template-rows: repeat(2, minmax(0, 1fr));
-        }
-
-        .category { 
-            border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; 
-            border-radius: 12px; display: flex; flex-direction: column;
-            background: rgba(255,255,255,0.03); overflow: hidden;
-        }
-
-        .category h2 { 
-            margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; 
-            color: var(--accent); border-bottom: 2px solid var(--accent); 
-            font-size: 1.6rem; text-transform: uppercase; flex-shrink: 0;
-        }
-
-        .items-list { flex-grow: 1; overflow: hidden; font-size: 1rem; }
+        /* AREA MENU */
+        #scroll-container { flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; transition: opacity var(--fade); }
+        #menu { display: grid; width: 100%; height: 100%; gap: 15px; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+        .category { border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; border-radius: 12px; display: flex; flex-direction: column; background: rgba(255,255,255,0.03); overflow: hidden; }
+        .category h2 { margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; color: var(--accent); border-bottom: 2px solid var(--accent); font-size: 1.6rem; text-transform: uppercase; flex-shrink: 0; }
+        .items-list { flex-grow: 1; overflow: hidden; display: block; font-size: 1rem; }
         .category.voluminous .items-list { column-count: 2; column-gap: 35px; }
-
-        .item-box { break-inside: avoid; margin-bottom: 0.7vh; }
+        .item-box { break-inside: avoid; margin-bottom: 0.7vh; width: 100%; }
         .item-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; gap: 12px; }
-        .price { color: var(--accent); font-family: monospace; }
-        .desc { font-style: italic; opacity: 0.7; font-size: 0.85em; }
+        .item-name { flex: 1; text-align: left; line-height: 1.1; }
+        .price { color: var(--accent); font-family: monospace; white-space: nowrap; }
+        .desc { font-style: italic; opacity: 0.7; font-size: 0.85em; margin-top: 1px; line-height: 1.1; }
 
-        /* ==========================================================================
-           5. ELEMENTI ACCESSORI (Banner, Footer, Promo)
-           ========================================================================== */
-        #banner { flex-shrink: 0; background: var(--accent); color: var(--bg); padding: 12px 0; font-weight: 900; overflow: hidden; display: none; }
+        /* FOOTER E PROMO */
+        #cucina-footer { flex-shrink: 0; width: 100%; display: none; justify-content: center; padding: 1vh 0 4vh 0; }
+        #prezzo-cucina-box { padding: 10px 40px; border: 3px solid var(--accent); border-radius: 10px; color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg); }
+        #banner { flex-shrink: 0; background: var(--accent); color: var(--bg); padding: 12px 0; font-weight: 900; text-transform: uppercase; overflow: hidden; white-space: nowrap; display: none; font-size: 1.2rem; }
         .marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
         #promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
         #promo.show { opacity: 1; }
 
-        /* ==========================================================================
-           6. RESPONSIVE MOBILE
-           ========================================================================== */
         @media (max-width: 950px) {
-            #header { height: auto; padding: 10px; flex-direction: column; }
-            #clock { position: static; transform: none; margin-top: 5px; }
-            #menu { display: flex !important; flex-direction: column; overflow-y: auto; }
-            .category { height: auto; min-height: 150px; }
+            #header { height: auto; padding: 10px 15px; justify-content: space-between; flex-wrap: wrap; }
+            #title { font-size: 1.5rem; text-align: center; width: 100%; }
+            #logo { height: 50px; }
+            #clock { position: static; transform: none; font-size: 1rem; }
+            #scroll-container { overflow-y: auto; display: block; }
+            #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
         }
     </style>
 </head>
 <body class="theme-classic">
 
-    <div id="header">
-        <img id="logo" alt="Logo">
-        <h1 id="title">Caricamento...</h1>
-        <div id="clock"><div id="clock-time">00:00</div></div>
-    </div>
+<div id="header">
+    <img id="logo">
+    <h1 id="title">Caricamento...</h1>
+    <div id="clock"><div id="clock-time">00:00</div></div>
+</div>
 
-    <div id="scroll-container">
-        <div id="menu"></div>
-    </div>
+<div id="scroll-container">
+    <div id="menu"></div>
+    <div id="mobile-price-container"></div>
+</div>
 
-    <div id="banner"><div class="marquee" id="banner-text"></div></div>
-    <div id="promo"></div>
+<div id="cucina-footer"><div id="prezzo-cucina-box"></div></div>
+<div id="banner"><div class="marquee" id="banner-text"></div></div>
+<div id="promo"></div>
 
-    <script>
-        /* ==========================================================================
-           7. LOGICA DI SINCRONIZZAZIONE E DATI
-           ========================================================================== */
-        const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
-        let currentTheme = "";
-        let promoInterval = null;
+<script>
+/* ==========================================================================
+   2. LOGICA DI SINCRONIZZAZIONE (Il cuore del sistema)
+   ========================================================================== */
+const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
+let currentTheme = "";
+let promoInterval = null;
 
-        /**
-         * Utility: Fix per link diretti Google Drive
-         */
-        function fixGoogleDriveUrl(url) {
-            if (!url || !url.includes("drive.google.com")) return url;
-            const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
-            return id ? `https://lh3.googleusercontent.com/d/${id}` : url;
+// Utility per link diretti Drive (Necessaria per velocità iniziale)
+function fixGoogleDriveUrl(url) {
+    if (!url || !url.includes("drive.google.com")) return url;
+    const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
+    return id ? `https://docs.google.com/uc?export=view&id=${id}` : url;
+}
+
+// Lettore flessibile per le celle dello Sheet
+const getVal = (r, k) => { 
+    const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
+    return key ? r[key] : ""; 
+};
+
+/**
+ * Gestione Intelligente Media: Controlla se GitHub ha finito, altrimenti usa Drive.
+ */
+async function loadMediaSmart(S) {
+    const ts = Date.now();
+    
+    // 1. LOGO
+    const logoUrl = S["Logo URL"];
+    if (logoUrl) {
+        const check = await fetch(`logo_static.png.txt?t=${ts}`).then(r => r.text()).catch(() => "");
+        document.getElementById("logo").src = (check.trim() === logoUrl.trim()) ? `logo_static.png?t=${ts}` : fixGoogleDriveUrl(logoUrl);
+        document.getElementById("logo").style.display = "block";
+    }
+
+    // 2. PROMO
+    const promoUrl = S["Immagine Promo"];
+    if (promoUrl) {
+        const check = await fetch(`promo_static.jpg.txt?t=${ts}`).then(r => r.text()).catch(() => "");
+        const finalUrl = (check.trim() === promoUrl.trim()) ? `promo_static.jpg?t=${ts}` : fixGoogleDriveUrl(promoUrl);
+        document.getElementById("promo").style.backgroundImage = `url(${finalUrl})`;
+        
+        if (!promoInterval) {
+            const time = (parseInt(S["Tempo Promo"]) || 10) * 1000;
+            const cycle = () => { document.getElementById("promo").classList.add("show"); setTimeout(() => document.getElementById("promo").classList.remove("show"), time); };
+            cycle(); promoInterval = setInterval(cycle, time * 5);
+        }
+    } else {
+        clearInterval(promoInterval); promoInterval = null;
+        document.getElementById("promo").classList.remove("show");
+    }
+}
+
+/**
+ * Aggiornamento Dati e Menu (Anti-Lampeggio)
+ */
+async function updateData() {
+    try {
+        const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
+        const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
+
+        // Gestione Tema e Titolo
+        const MODE = (S["Modalità"] || "Bar").toLowerCase();
+        const theme = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
+        if (currentTheme !== theme) { document.body.className = theme; currentTheme = theme; }
+        document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
+
+        // Avvio caricamento media
+        loadMediaSmart(S);
+
+        // Caricamento piatti
+        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
+        const grouped = {};
+        data.forEach(r => {
+            if (getVal(r, "Disponibile").toLowerCase() !== "si") return;
+            const cat = getVal(r, "Categoria").toUpperCase();
+            if (!cat) return;
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push({ n: getVal(r, "Piatto") || getVal(r, "Nome"), p: getVal(r, "Prezzo"), i: getVal(r, "Ingredienti") });
+        });
+
+        let categories = Object.keys(grouped);
+        if (MODE === "cucina") {
+            const ordC = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
+            categories.sort((a, b) => ordC.indexOf(a) - ordC.indexOf(b));
         }
 
-        /**
-         * Gestione Immagini: GitHub (Ottimizzate) vs Drive (Dirette)
-         */
-        async function updateSmartMedia(S) {
-            const ts = Date.now();
-            
-            // Gestione LOGO
-            const logoUrl = S["Logo URL"];
-            const logoEl = document.getElementById("logo");
-            if (logoUrl) {
-                const check = await fetch(`logo_static.png.txt?t=${ts}`).then(r => r.text()).catch(() => "");
-                logoEl.src = (check.trim() === logoUrl.trim()) ? `logo_static.png?t=${ts}` : fixGoogleDriveUrl(logoUrl);
-                logoEl.style.display = "block";
-            }
-
-            // Gestione PROMO
-            const promoUrl = S["Immagine Promo"];
-            const promoEl = document.getElementById("promo");
-            if (promoUrl) {
-                const check = await fetch(`promo_static.jpg.txt?t=${ts}`).then(r => r.text()).catch(() => "");
-                const finalPromo = (check.trim() === promoUrl.trim()) ? `promo_static.jpg?t=${ts}` : fixGoogleDriveUrl(promoUrl);
-                promoEl.style.backgroundImage = `url(${finalPromo})`;
-                
-                if (!promoInterval) {
-                    const time = (parseInt(S["Tempo Promo"]) || 10) * 1000;
-                    const cycle = () => { promoEl.classList.add("show"); setTimeout(() => promoEl.classList.remove("show"), time); };
-                    cycle();
-                    promoInterval = setInterval(cycle, time * 5);
-                }
-            } else {
-                clearInterval(promoInterval); promoInterval = null;
-                promoEl.classList.remove("show");
-            }
-        }
-
-        /**
-         * Aggiornamento principale Dati e Menu
-         */
-        async function updateAll() {
-            try {
-                // 1. Carica Impostazioni
-                const settings = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
-                const S = {}; 
-                settings.forEach(r => {
-                    const keys = Object.keys(r);
-                    S[r[keys[0]]] = r[keys[1]];
-                });
-
-                // 2. Tema e Titolo (Anti-Flicker)
-                const MODE = (S["Modalità"] || "Bar").toLowerCase();
-                const theme = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
-                if (currentTheme !== theme) { document.body.className = theme; currentTheme = theme; }
-                document.getElementById("title").innerText = (MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"]);
-
-                // 3. Aggiorna Media (Logo/Promo)
-                updateSmartMedia(S);
-
-                // 4. Carica Menu
-                const menuData = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
-                renderMenu(menuData, MODE);
-
-            } catch (e) { console.error("Errore sync:", e); }
-        }
-
-        /**
-         * Renderizza l'HTML del Menu
-         */
-        function renderMenu(data, mode) {
-            const grouped = {};
-            data.forEach(r => {
-                const keys = Object.keys(r);
-                const disp = r[keys.find(k => k.includes("Disponibile"))];
-                if (disp?.toLowerCase() !== "si") return;
-                
-                const cat = (r[keys.find(k => k.includes("Categoria"))] || "ALTRO").toUpperCase();
-                if (!grouped[cat]) grouped[cat] = [];
-                grouped[cat].push(r);
-            });
-
-            const categories = Object.keys(grouped);
-            if (mode === "cucina") {
-                const ord = ["ANTIPASTO", "PRIMO", "SECONDO", "CONTORNO", "DOLCE"];
-                categories.sort((a,b) => ord.indexOf(a) - ord.indexOf(b));
-            }
-
-            document.getElementById("menu").innerHTML = categories.map((cat, idx) => `
-                <div class="category ${grouped[cat].length > 7 ? 'voluminous' : ''}" id="cat-${idx+1}">
-                    <h2>${cat}</h2>
-                    <div class="items-list">
-                        ${grouped[cat].map(item => {
-                            const k = Object.keys(item);
-                            return `
-                            <div class="item-box">
-                                <div class="item-header">
-                                    <span>${item[k.find(x => x.includes("Nome") || x.includes("Piatto"))]}</span>
-                                    <span class="price">${item[k.find(x => x.includes("Prezzo"))]}</span>
-                                </div>
-                                <div class="desc">${item[k.find(x => x.includes("Ingredienti"))] || ""}</div>
-                            </div>`;
-                        }).join('')}
-                    </div>
+        document.getElementById("menu").innerHTML = categories.map((cat, idx) => `
+            <div class="category ${grouped[cat].length > 7 ? 'voluminous' : ''}" id="cat-${idx+1}">
+                <h2>${cat}</h2>
+                <div class="items-list">
+                    ${grouped[cat].map(x => `
+                        <div class="item-box">
+                            <div class="item-header"><span class="item-name">${x.n}</span><span class="price">${x.p}</span></div>
+                            ${x.i ? `<div class="desc">${x.i}</div>` : ''}
+                        </div>
+                    `).join('')}
                 </div>
-            `).join('');
+            </div>`).join('');
 
-            if(window.innerWidth > 950) { applyGrid(categories.length); maximizeFont(); }
-        }
+        if(window.innerWidth > 950) { applyGrid(categories.length); maximizeFont(); }
 
-        /* ==========================================================================
-           8. FUNZIONI DI LAYOUT E SERVIZIO
-           ========================================================================== */
-        function applyGrid(n) {
-            const m = document.getElementById("menu");
-            const pos = { 1:[1,1], 2:[1,2], 3:[2,1], 4:[2,2], 5:[1,3], 6:[2,3], 7:[1,4], 8:[2,4], 9:[1,5], 10:[2,5] };
-            let maxR = 1, maxC = 1;
-            for(let i=1; i<=n; i++) if(pos[i]) { maxR = Math.max(maxR, pos[i][0]); maxC = Math.max(maxC, pos[i][1]); }
-            m.style.gridTemplateRows = `repeat(${maxR}, 1fr)`;
-            m.style.gridTemplateColumns = `repeat(${maxC}, 1fr)`;
-            for(let i=1; i<=n; i++) { 
-                const el = document.getElementById(`cat-${i}`); 
-                if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } 
-            }
-        }
+    } catch (e) { console.error("Errore caricamento:", e); }
+}
 
-        function maximizeFont() {
-            document.querySelectorAll('.items-list').forEach(list => {
-                let size = 0.9; list.style.fontSize = size + "rem";
-                while (list.scrollHeight <= list.clientHeight && size < 1.4) {
-                    size += 0.05; list.style.fontSize = size + "rem";
-                }
-                list.style.fontSize = (size - 0.1) + "rem";
-            });
-        }
+/* ==========================================================================
+   3. FUNZIONI DI SERVIZIO (Orologio, Layout, Fullscreen)
+   ========================================================================== */
+function startClock() {
+    setInterval(() => {
+        document.getElementById('clock-time').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    }, 1000);
+}
 
-        function startClock() {
-            setInterval(() => {
-                document.getElementById('clock-time').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            }, 1000);
-        }
+function applyGrid(count) {
+    const m = document.getElementById("menu");
+    const pos = { 1:[1,1], 2:[1,2], 3:[2,1], 4:[2,2], 5:[1,3], 6:[2,3], 7:[1,4], 8:[2,4], 9:[1,5], 10:[2,5], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5] };
+    let r = 1, c = 1;
+    for(let i=1; i<=count; i++) if(pos[i]) { r = Math.max(r, pos[i][0]); c = Math.max(c, pos[i][1]); }
+    m.style.gridTemplateRows = `repeat(${r}, 1fr)`;
+    m.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+    for(let i=1; i<=count; i++) { const el = document.getElementById(`cat-${i}`); if(el && pos[i]) { el.style.gridRow = pos[i][0]; el.style.gridColumn = pos[i][1]; } }
+}
 
-        // INIT
-        startClock();
-        updateAll();
-        setInterval(updateAll, 20000); // Sincronizzazione ogni 20 secondi
-        document.body.addEventListener('click', () => document.documentElement.requestFullscreen());
-    </script>
+function maximizeFont() {
+    document.querySelectorAll('.items-list').forEach(list => {
+        let size = 0.9; list.style.fontSize = size + "rem";
+        while (list.scrollHeight <= list.clientHeight && size < 1.5) { size += 0.05; list.style.fontSize = size + "rem"; }
+        list.style.fontSize = (size - 0.1) + "rem"; 
+    });
+}
+
+// Avvio Iniziale
+startClock();
+updateData();
+setInterval(updateData, 20000);
+document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
+</script>
 </body>
 </html>
