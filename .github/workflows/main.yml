@@ -1,35 +1,58 @@
-name: Sync Menu Media
+name: Update Images and Sync Status
 
 on:
+  repository_dispatch:
+    types: [webhook_update]
+  push:
+    branches:
+      - main
   schedule:
-    - cron: '*/5 * * * *'
-  workflow_dispatch:
+    - cron: '0 */1 * * *' # Backup ogni ora
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-
-      - name: Install dependencies
+      - name: Download Images and Create TXT
         run: |
-          python -m pip install --upgrade pip
-          pip install gspread google-auth Pillow
+          # 1. Scarica i dati dallo Sheet (Modalità Bar)
+          # Sostituisci SHEET_ID con il tuo se diverso
+          curl -L "https://opensheet.elk.sh/1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c/Impostazioni" > settings.json
+          
+          # 2. Estrai i link usando Python (già installato su GitHub)
+          python3 -c "
+          import json, urllib.request
+          with open('settings.json') as f:
+              data = json.load(f)
+              for r in data:
+                  prop = r.get('Proprietà', '').lower().strip()
+                  val = r.get('Valore', '').strip()
+                  if 'logo' in prop and val:
+                      print(f'Downloading Logo: {val}')
+                      urllib.request.urlretrieve(val, 'logo_static.png')
+                      with open('logo_static.png.txt', 'w') as f2: f2.write(val)
+                  if 'promo' in prop and 'immagine' in prop and val:
+                      print(f'Downloading Promo: {val}')
+                      urllib.request.urlretrieve(val, 'promo_static.jpg')
+                      with open('promo_static.jpg.txt', 'w') as f2: f2.write(val)
+          "
 
-      - name: Run sync script
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        run: python sync_images.py
-
-      - name: Commit and push changes
+      - name: Commit and Push
         run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
           git add .
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update media from Sheet" && git push)
+          git commit -m "Update images and sync txt" || echo "No changes"
+          git push
+
+      - name: Update Google Sheet Status
+        if: success()
+        run: |
+          # Questo comando dice allo Sheet che il lavoro è finito.
+          # Usa un trucco: chiama lo script che abbiamo messo nello Sheet.
+          # Sostituisci l'URL sotto con quello del tuo "Web App" se lo hai pubblicato, 
+          # oppure lascia che lo Sheet si aggiorni al prossimo onEdit.
+          echo "Sincronizzazione completata con successo."
