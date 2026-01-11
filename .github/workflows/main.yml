@@ -1,43 +1,38 @@
-name: Update Images and Sync Status
+name: Update Images
 
 on:
   repository_dispatch:
     types: [webhook_update]
   push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 */1 * * *' # Backup ogni ora
+    branches: [main]
+  workflow_dispatch: # Permette anche l'avvio manuale da GitHub
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Images and Create TXT
+      - name: Download and Sync
         run: |
-          # 1. Scarica i dati dallo Sheet (Modalità Bar)
-          # Sostituisci SHEET_ID con il tuo se diverso
-          curl -L "https://opensheet.elk.sh/1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c/Impostazioni" > settings.json
+          # Scarica le impostazioni per vedere i link aggiornati
+          curl -L "https://opensheet.elk.sh/${{ secrets.SHEET_ID }}/Impostazioni" > settings.json
           
-          # 2. Estrai i link usando Python (già installato su GitHub)
+          # Script Python per scaricare le immagini e creare i file .txt di verifica
           python3 -c "
-          import json, urllib.request
+          import json, urllib.request, os
           with open('settings.json') as f:
               data = json.load(f)
               for r in data:
-                  prop = r.get('Proprietà', '').lower().strip()
-                  val = r.get('Valore', '').strip()
-                  if 'logo' in prop and val:
-                      print(f'Downloading Logo: {val}')
-                      urllib.request.urlretrieve(val, 'logo_static.png')
-                      with open('logo_static.png.txt', 'w') as f2: f2.write(val)
-                  if 'promo' in prop and 'immagine' in prop and val:
-                      print(f'Downloading Promo: {val}')
-                      urllib.request.urlretrieve(val, 'promo_static.jpg')
-                      with open('promo_static.jpg.txt', 'w') as f2: f2.write(val)
+                  p = r.get('Proprietà','').lower()
+                  v = r.get('Valore','').strip()
+                  if 'logo' in p and v:
+                      urllib.request.urlretrieve(v, 'logo_static.png')
+                      with open('logo_static.png.txt', 'w') as f2: f2.write(v)
+                  if 'promo' in p and 'immagine' in p and v:
+                      urllib.request.urlretrieve(v, 'promo_static.jpg')
+                      with open('promo_static.jpg.txt', 'w') as f2: f2.write(v)
           "
 
       - name: Commit and Push
@@ -45,14 +40,11 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add .
-          git commit -m "Update images and sync txt" || echo "No changes"
+          git commit -m "Sync immagini da Sheet" || echo "Nessuna modifica"
           git push
 
-      - name: Update Google Sheet Status
+      - name: Confirm to Sheet
         if: success()
         run: |
-          # Questo comando dice allo Sheet che il lavoro è finito.
-          # Usa un trucco: chiama lo script che abbiamo messo nello Sheet.
-          # Sostituisci l'URL sotto con quello del tuo "Web App" se lo hai pubblicato, 
-          # oppure lascia che lo Sheet si aggiorni al prossimo onEdit.
-          echo "Sincronizzazione completata con successo."
+          # Sostituisci l'URL qui sotto con quello del tuo "Deploy" (Distribuzione) di Apps Script
+          curl -L "https://script.google.com/macros/s/IL_TUO_ID_DEPLOY/exec"
