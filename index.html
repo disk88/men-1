@@ -3,62 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Menu Digitale Smart v10.2</title>
+    <title>Menu Digitale Smart - Versione Integrale</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           1. STILI E TEMI (Invariati rispetto al tuo originale)
+           1. TUTTI I TUOI STILI ORIGINALI
            ========================================================================== */
         :root { --bg: #0d0d0d; --text: #fff; --accent: #d4af37; --fade: 0.5s; }
         .theme-classic  { --bg: #0d0d0d; --text: #ffffff; --accent: #d4af37; }
         .theme-modern   { --bg: #0a1016; --text: #e0e6ed; --accent: #00f2ff; }
         .theme-elegant  { --bg: #141614; --text: #f1ede4; --accent: #8e9e82; }
         .theme-pub      { --bg: #1a0f0a; --text: #fceade; --accent: #f39c12; }
-        .theme-sabaudo { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
+        .theme-sabaudo  { --bg: #1c1310; --text: #f4e8d1; --accent: #c5a059; }
         .theme-industrial { --bg: #1a1a1d; --text: #ffffff; --accent: #e67e22; }
-        .theme-neon { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
-        .theme-velvet { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
+        .theme-neon     { --bg: #050505; --text: #fafafa; --accent: #ff007f; }
+        .theme-velvet   { --bg: #120507; --text: #ece2d0; --accent: #d9534f; }
 
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { margin: 0; padding: 0; width: 100vw; height: 100dvh; font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
-
-        /* HEADER E OROLOGIO */
+        body { margin: 0; padding: 0; width: 100vw; height: 100dvh; font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; transition: background-color var(--fade) ease; }
+        
         #header { flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 1.5vh 4vw; gap: 20px; height: 11vh; position: relative; }
-        #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; }
+        #logo { height: 7vh; width: auto; max-width: 15vw; object-fit: contain; display: none; }
         #title { font-family: 'Playfair Display', serif; text-transform: uppercase; margin: 0; font-size: clamp(20px, 4vw, 50px); color: var(--accent); line-height: 1; }
         #clock { position: absolute; right: 3vw; top: 50%; transform: translateY(-50%); text-align: right; z-index: 100; }
         #clock-time { font-family: 'Oswald', sans-serif; font-size: clamp(1.2rem, 2.5vw, 2.2rem); color: var(--accent); font-weight: 700; line-height: 1; }
 
-        /* AREA MENU */
-        #scroll-container { flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; transition: opacity var(--fade); }
+        #scroll-container { flex-grow: 1; padding: 1vh 2vw; overflow: hidden; display: flex; flex-direction: column; opacity: 1; transition: opacity var(--fade); }
         #menu { display: grid; width: 100%; height: 100%; gap: 15px; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+        
         .category { border: 2px solid rgba(255,255,255,0.1); padding: 1.5vh; border-radius: 12px; display: flex; flex-direction: column; background: rgba(255,255,255,0.03); overflow: hidden; }
         .category h2 { margin: 0 0 1vh 0; font-family: 'Oswald', sans-serif; color: var(--accent); border-bottom: 2px solid var(--accent); font-size: 1.6rem; text-transform: uppercase; flex-shrink: 0; }
+        
         .items-list { flex-grow: 1; overflow: hidden; display: block; font-size: 1rem; }
         .category.voluminous .items-list { column-count: 2; column-gap: 35px; }
+        
         .item-box { break-inside: avoid; margin-bottom: 0.7vh; width: 100%; }
         .item-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; gap: 12px; }
         .item-name { flex: 1; text-align: left; line-height: 1.1; }
         .price { color: var(--accent); font-family: monospace; white-space: nowrap; }
         .desc { font-style: italic; opacity: 0.7; font-size: 0.85em; margin-top: 1px; line-height: 1.1; }
 
-        /* FOOTER E PROMO */
         #cucina-footer { flex-shrink: 0; width: 100%; display: none; justify-content: center; padding: 1vh 0 4vh 0; }
         #prezzo-cucina-box { padding: 10px 40px; border: 3px solid var(--accent); border-radius: 10px; color: var(--accent); font-weight: 800; font-size: 1.7rem; background: var(--bg); }
+        
         #banner { flex-shrink: 0; background: var(--accent); color: var(--bg); padding: 12px 0; font-weight: 900; text-transform: uppercase; overflow: hidden; white-space: nowrap; display: none; font-size: 1.2rem; }
         .marquee { display: inline-block; padding-left: 100%; animation: scroll 25s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        
         #promo { position: fixed; inset: 0; background: black center/contain no-repeat; opacity: 0; transition: 1s; z-index: 9999; pointer-events: none; }
         #promo.show { opacity: 1; }
 
         @media (max-width: 950px) {
-            #header { height: auto; padding: 10px 15px; justify-content: space-between; flex-wrap: wrap; }
-            #title { font-size: 1.5rem; text-align: center; width: 100%; }
-            #logo { height: 50px; }
-            #clock { position: static; transform: none; font-size: 1rem; }
+            #header { height: auto; padding: 10px 15px; flex-wrap: wrap; justify-content: space-between; }
+            #title { font-size: 1.5rem; text-align: center; width: 100%; order: 3; margin-top: 10px; }
+            #logo { height: 50px; order: 1; }
+            #clock { position: static; transform: none; font-size: 1rem; order: 2; }
             #scroll-container { overflow-y: auto; display: block; }
             #menu { display: flex !important; flex-direction: column; height: auto; gap: 15px; }
+            .category { height: auto; min-height: 120px; }
+            #cucina-footer { display: none !important; }
         }
     </style>
 </head>
@@ -66,7 +70,7 @@
 
 <div id="header">
     <img id="logo">
-    <h1 id="title">Caricamento...</h1>
+    <h1 id="title">Inizializzazione...</h1>
     <div id="clock"><div id="clock-time">00:00</div></div>
 </div>
 
@@ -81,32 +85,35 @@
 
 <script>
 /* ==========================================================================
-   2. LOGICA DI SINCRONIZZAZIONE (Il cuore del sistema)
+   2. LOGICA DI SINCRONIZZAZIONE (Integrata con le tue funzioni originali)
    ========================================================================== */
 const SHEET_ID = "1wKMa0cmpQVWNmzYb9y3oTB5lpuEIa8GTXdYqiG3836c";
 let currentTheme = "";
 let promoInterval = null;
 
-// Utility per link diretti Drive (Necessaria per velocità iniziale)
+// --- LE TUE FUNZIONI DI FORMATTAZIONE ORIGINALI ---
+function smartTitle(str) {
+    if (!str) return "";
+    const articoli = ["al", "il", "lo", "la", "i", "gli", "le", "un", "una", "uno", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "e", "ed", "o"];
+    return str.toLowerCase().split(' ').map((w, i) => (i > 0 && articoli.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 function fixGoogleDriveUrl(url) {
     if (!url || !url.includes("drive.google.com")) return url;
     const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
     return id ? `https://docs.google.com/uc?export=view&id=${id}` : url;
 }
 
-// Lettore flessibile per le celle dello Sheet
 const getVal = (r, k) => { 
     const key = Object.keys(r).find(y => y.toLowerCase().trim() === k.toLowerCase().trim()); 
     return key ? r[key] : ""; 
 };
 
-/**
- * Gestione Intelligente Media: Controlla se GitHub ha finito, altrimenti usa Drive.
- */
+// --- MIGLIORAMENTO: GESTIONE MEDIA INTELLIGENTE ---
 async function loadMediaSmart(S) {
     const ts = Date.now();
     
-    // 1. LOGO
+    // Logo
     const logoUrl = S["Logo URL"];
     if (logoUrl) {
         const check = await fetch(`logo_static.png.txt?t=${ts}`).then(r => r.text()).catch(() => "");
@@ -114,7 +121,7 @@ async function loadMediaSmart(S) {
         document.getElementById("logo").style.display = "block";
     }
 
-    // 2. PROMO
+    // Promo
     const promoUrl = S["Immagine Promo"];
     if (promoUrl) {
         const check = await fetch(`promo_static.jpg.txt?t=${ts}`).then(r => r.text()).catch(() => "");
@@ -132,32 +139,64 @@ async function loadMediaSmart(S) {
     }
 }
 
-/**
- * Aggiornamento Dati e Menu (Anti-Lampeggio)
- */
+// --- AGGIORNAMENTO DATI (Senza ricaricare la pagina) ---
 async function updateData() {
     try {
         const settingsRaw = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/Impostazioni`).then(r => r.json());
         const S = {}; settingsRaw.forEach(r => S[getVal(r, "Proprietà")] = getVal(r, "Valore"));
 
-        // Gestione Tema e Titolo
         const MODE = (S["Modalità"] || "Bar").toLowerCase();
+        
+        // Cambio Tema (Solo se necessario per evitare flickering)
         const theme = `theme-${(MODE === "bar" ? S["Tema Bar"] : S["Tema Cucina"] || "classic").toLowerCase()}`;
         if (currentTheme !== theme) { document.body.className = theme; currentTheme = theme; }
+
         document.getElementById("title").innerText = MODE === "bar" ? S["Titolo Bar"] : S["Titolo Cucina"];
 
-        // Avvio caricamento media
+        // Caricamento Media
         loadMediaSmart(S);
 
-        // Caricamento piatti
-        const data = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
+        // Banner Messaggio (Funzione originale)
+        const banner = document.getElementById("banner");
+        const msg = S["Messaggio"];
+        if (MODE === "bar" && msg) {
+            document.getElementById("banner-text").innerText = msg;
+            banner.style.display = "block";
+        } else { banner.style.display = "none"; }
+
+        // Prezzo Cucina Footer (Funzione originale)
+        const foot = document.getElementById("cucina-footer");
+        const pC = document.getElementById("prezzo-cucina-box");
+        const mobPrice = document.getElementById("mobile-price-container");
+        const prezzo = S["Prezzo"];
+
+        if (MODE === "cucina" && prezzo) {
+            if(window.innerWidth <= 950) {
+                mobPrice.innerHTML = `<div id="prezzo-cucina-box" style="display:block; margin: 10px auto; text-align:center;">${prezzo}</div>`;
+                foot.style.display = "none";
+            } else {
+                pC.innerText = prezzo;
+                foot.style.display = "flex";
+                mobPrice.innerHTML = "";
+            }
+        } else {
+            foot.style.display = "none";
+            mobPrice.innerHTML = "";
+        }
+
+        // Caricamento Menu
+        const menuData = await fetch(`https://opensheet.elk.sh/${SHEET_ID}/${MODE === "cucina" ? "Menu" : "Bar"}`).then(r => r.json());
         const grouped = {};
-        data.forEach(r => {
+        menuData.forEach(r => {
             if (getVal(r, "Disponibile").toLowerCase() !== "si") return;
             const cat = getVal(r, "Categoria").toUpperCase();
             if (!cat) return;
             if (!grouped[cat]) grouped[cat] = [];
-            grouped[cat].push({ n: getVal(r, "Piatto") || getVal(r, "Nome"), p: getVal(r, "Prezzo"), i: getVal(r, "Ingredienti") });
+            grouped[cat].push({ 
+                n: smartTitle(getVal(r, "Piatto") || getVal(r, "Nome")), 
+                p: getVal(r, "Prezzo"), 
+                i: smartTitle(getVal(r, "Ingredienti")) 
+            });
         });
 
         let categories = Object.keys(grouped);
@@ -167,7 +206,7 @@ async function updateData() {
         }
 
         document.getElementById("menu").innerHTML = categories.map((cat, idx) => `
-            <div class="category ${grouped[cat].length > 7 ? 'voluminous' : ''}" id="cat-${idx+1}">
+            <div class="category ${grouped[cat].length > (MODE === "cucina" ? 6 : 8) ? 'voluminous' : ''}" id="cat-${idx+1}">
                 <h2>${cat}</h2>
                 <div class="items-list">
                     ${grouped[cat].map(x => `
@@ -181,18 +220,12 @@ async function updateData() {
 
         if(window.innerWidth > 950) { applyGrid(categories.length); maximizeFont(); }
 
-    } catch (e) { console.error("Errore caricamento:", e); }
+    } catch (e) { console.error("Errore Sync:", e); }
 }
 
 /* ==========================================================================
-   3. FUNZIONI DI SERVIZIO (Orologio, Layout, Fullscreen)
+   3. LE TUE FUNZIONI DI LAYOUT ORIGINALI (Intatte)
    ========================================================================== */
-function startClock() {
-    setInterval(() => {
-        document.getElementById('clock-time').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    }, 1000);
-}
-
 function applyGrid(count) {
     const m = document.getElementById("menu");
     const pos = { 1:[1,1], 2:[1,2], 3:[2,1], 4:[2,2], 5:[1,3], 6:[2,3], 7:[1,4], 8:[2,4], 9:[1,5], 10:[2,5], 11:[3,1], 12:[3,2], 13:[3,3], 14:[3,4], 15:[3,5] };
@@ -211,10 +244,16 @@ function maximizeFont() {
     });
 }
 
-// Avvio Iniziale
+function startClock() {
+    setInterval(() => {
+        document.getElementById('clock-time').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    }, 1000);
+}
+
+// Avvio
 startClock();
 updateData();
-setInterval(updateData, 20000);
+setInterval(updateData, 20000); // Aggiorna ogni 20 secondi senza ricaricare la pagina
 document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); });
 </script>
 </body>
